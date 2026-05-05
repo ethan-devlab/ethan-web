@@ -885,4 +885,8 @@ a:focus-visible {
     background: rgba(16, 38, 32, 0.98);
     border-color: rgba(255, 255, 255, 0.2);
   }
+
+  :root[data-theme='light'] .header--scrolled .header__menu-button {
+    color: #000000;
+  }
 }
