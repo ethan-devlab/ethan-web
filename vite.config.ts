@@ -204,7 +204,7 @@ function remarkHackmdCallouts() {
 
 // https://vite.dev/config/
 export default defineConfig({
-  base: '/ethan-web/',
+  base: '/',
   plugins: [
     {
       enforce: 'pre',
