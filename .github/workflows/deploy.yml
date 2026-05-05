@@ -39,6 +39,7 @@ jobs:
 
       - name: Build
         run: npm run build
+             echo "VITE_GA_MEASUREMENT_ID= ${{ vars.VITE_GA_MEASUREMENT_ID }}"
         env:
           VITE_GA_MEASUREMENT_ID: ${{ vars.VITE_GA_MEASUREMENT_ID }}
 

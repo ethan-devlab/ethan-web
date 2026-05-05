@@ -1,5 +1,5 @@
 export const SITE_NAME = 'Ethan Chan'
-export const SITE_URL = 'https://example.com'
+export const SITE_URL = 'https://ethan-devlab.github.io/ethan-web/'
 
 export function getCanonicalUrl(path: string): string {
   if (!path.startsWith('/')) {
