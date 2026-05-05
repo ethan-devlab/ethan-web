@@ -1,0 +1,92 @@
+---
+title: "Windows 安裝MinGW / MinGW-w64"
+description: "在 Windows 上安裝 MinGW 或 MinGW-w64 的兩種方法，包含使用 Installer 和無 Installer 的手動安裝，並介紹它們的差異和適用情況。"
+date: "2025-09-29"
+category: "Tutorial"
+tags: ["MinGW", "MinGW-w64", "C++", "Windows"]
+published: true
+pin: false
+lang: "zh"
+slug: "windows-install-mingw"
+---
+
+這裡會介紹兩個方法來安裝 MinGW，分為有 Installer 和無 Installer，想要懶人安裝的可以選擇前者，若是有其它需求，或想要手動選擇版本，可以選擇後者。這篇主要會講解無 Installer 的安裝方法，也是為了下一篇在 VSCode 環境下設置 C++ 的 OpenCV 做準備。
+
+## 兩者差異
+:::info
+Installer 的 MinGW 是 Win32 版本，使用了 native Win32 threading functions, 本文介紹的MinGW-w64是posix版本的，基於 winpthreads（Windows版 pthreads）,兩者在特性上會有差別。一般使用前者就足夠，但若有其它需求，如C11支持的 \<thread>, \<mutex>, 或 \<future>，就要使用 posix 版 MinGW-w64。
+:::
+
+- <a href="https://en.wikipedia.org/wiki/Pthreads" target="_blank" rel="noopener noreferrer">What is Pthreads</a>
+- <a href="https://man7.org/linux/man-pages/man7/pthreads.7.html" target="_blank" rel="noopener noreferrer">Linux pthreads manual</a>
+- <a href="https://sourceware.org/pthreads-win32/" target="_blank" rel="noopener noreferrer">Pthreads-w32</a>，一個早期用來解決在Win32上沒有辦法使用pthreads的資源，但現在好像已經沒有繼續維護了。
+
+## 方法一：Installer
+#### Step1. 在 <a href="https://sourceforge.net/projects/mingw/" target="_blank" rel="noopener noreferrer">SourceForge</a> 下載 setup tool
+<img src="https://hackmd.io/_uploads/HydFq8U2ee.png" alt="image" />
+
+下載好的檔案應該會長這樣：
+<img src="https://hackmd.io/_uploads/rJYs2LInge.png" alt="image" />
+
+#### Step2. `mingw-get-setup.exe`，點擊 **install**。
+<img src="https://hackmd.io/_uploads/HJeJHPUheg.png" alt="image" width="400" height="300" />
+之後就一路 **continue**，默認安裝在 `C:\MinGW`
+接著會進入 **Installation Manager** 介面，如下：
+<img src="https://hackmd.io/_uploads/rkzF_vI2xg.png" alt="image" width="600" height="300" />
+右鍵選擇 **mingw32-base** 和 **mingw32-gcc-g++**，然後選左上角**Installation下拉選單**，點擊 **Apply Changes**，編譯C和C\++的工具就會開始下載啦~
+<img src="https://hackmd.io/_uploads/HJXBtwU3le.png" alt="image" width="400" height="230" />
+>[!Tip]
+> 如果有其它package的需求，可自行勾選。
+
+全部完成後，可以看到`C:\MinGW\bin`裡多了很多檔案，其中包含gcc.exe和g++.exe這兩個用來編譯C和C\++的執行檔。
+
+前：<img src="https://hackmd.io/_uploads/HJPAiPI3xg.png" alt="image" />
+
+後：<img src="https://hackmd.io/_uploads/ryJQ0wI3lg.png" alt="image" />
+
+#### Step3. 設定**環境變數 System Environment Variables**
+System > About > Device specifications > Advanced system settings > Environment Variables > User Variables for xxx > Path > New > Enter `C:\MinGW\bin`
+中文版的設定也大同小異，各位就自行理解和翻譯啦~
+<img src="https://hackmd.io/_uploads/ryh08OL2ll.png" alt="image" width="300" height="330" />
+
+>[!Note]
+> 如果電腦有多個 users ，又不想設定 System Variables，就使用 User Variables 設定。
+
+到這裡，MinGW的設定就全部完成了，這時候打開Terminal或CMD，輸入`gcc --version`或`g++ --version`，出現這樣的畫面代表安裝成功了，就可以開始編譯了！
+<img src="https://hackmd.io/_uploads/ByVQPuIngl.png" alt="image" />
+
+## 方法二：無Installer
+這個方法是直接從MinGW-w64的github下載完整的執行檔、編譯器和相關函式庫，不需要像方法一那樣要自行選擇要下載的工具。
+
+#### Step1. 下載 MinGW64 seh壓縮檔
+從 <a href="https://github.com/niXman/mingw-builds-binaries/releases" target="_blank" rel="noopener noreferrer">GitHub Releases</a> 下載
+<img src="https://hackmd.io/_uploads/ry7xmcU3lx.png" alt="image" width="600" height="500" />
+點進去之後可以看到不同的配置組合，在早一點的`12.2-rev1`版本沒有分ucrt和msvcrt，有興趣了解可以參考以下網址：
+
+>[!Note]
+> mscvrt vs ucrt: <a href="https://stackoverflow.com/questions/67848972/differences-between-msvcrt-ucrt-and-vcruntime-libraries" target="_blank" rel="noopener noreferrer">Differences between msvcrt, ucrt and vcruntime libraries</a> <br />
+> sjlj、dwarf、seh異同：<a href="https://blog.csdn.net/AMDDMA/article/details/111600238" target="_blank" rel="noopener noreferrer">https://blog.csdn.net/AMDDMA/article/details/111600238</a>
+
+這裡我選擇的是 `14.2` 這個版本，也可以下載最新版本的 `15.2`。
+>[!Important] 小貼士：
+>通常不建議下載最新版本的，可能會有各種兼容問題。
+
+選擇 `x86_64-14.2.0-release-posix-seh-ucrt-rt_v12-rev0.7z`，然後下載。
+
+#### Step2. 解壓縮
+解壓縮後會得到`mingw64`的資料夾，可以自由選擇要放在哪裡，以本文為例，是放在`C:\opt\`的資料夾內，所以最後`mingw64`的路徑會是`C:\opt\mingw64\`
+<img src="https://hackmd.io/_uploads/H1_L65I3xg.png" alt="image" width="600" height="320" />
+
+#### Step3. 配置環境變數
+這一步跟方法一的步驟3一樣，但若路徑名稱有更改，記得要更新。
+<img src="https://hackmd.io/_uploads/SkEd0qLhee.png" alt="image" width="300" height="330" />
+
+打開 Terminal/CMD 測試，可以跑起來，就是安裝成功咯！
+<img src="https://hackmd.io/_uploads/r1e55iw2le.png" alt="image" />
+
+## 後記
+一開始用 C/C++ 的時候由於沒有特殊需求，所以就用方法一安裝，用的都很順利，直到最近需要OpenCV，所以就改用方法二。至於為什麼不用Python的OpenCV，請聽下回揭曉。
+
+## 參考來源
+* <a href="https://blog.csdn.net/qq_42218706/article/details/132377836" target="_blank" rel="noopener noreferrer">windows+Cmake+MinGW+编译opencv4.5 sources安装过程以及opencv踩坑日记</a>
+* <a href="https://wiki.qt.io/MinGW-64-bit" target="_blank" rel="noopener noreferrer">MinGW-64-bit</a>

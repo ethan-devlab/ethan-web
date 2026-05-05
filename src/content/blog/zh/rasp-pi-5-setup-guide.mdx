@@ -1,0 +1,176 @@
+---
+title: "Raspberry Pi 5 Setup Guide"
+description: "Raspberry Pi 5 的設置指南，包含前置準備、Python 環境設置、攝像頭設置和 OpenCV 設置等步驟。"
+date: "2026-03-10"
+category: "Tutorial"
+tags: ["Raspberry Pi"]
+published: true
+pin: false
+lang: "zh"
+slug: "rasp-pi-5-setup-guide"
+---
+
+官方指示已經很明確了，可參考 <a href="https://www.raspberrypi.com/documentation/computers/getting-started.html#setting-up-your-raspberry-pi" target="_blank" rel="noopener noreferrer">Raspberry Pi 官方設置指南</a>
+
+---
+
+## Prerequisite
+前置準備的部分參考 <a href="https://hackmd.io/@EthanChan/jetson-nano-setup-guide#%E7%A1%AC%E9%AB%94%E8%A8%AD%E5%82%99" target="_blank" rel="noopener noreferrer">Jetson Nano Setup Guide</a>，以下部分有不同需注意：
+* HDMI cable 需要準備 HDMI to Micro USB cable，不是雙向 HDMI
+* 充電器是 type C，支援 5V/5A 或 5V/3A (會降低性能)，建議購買官方充電器（但有點貴）
+See https://www.raspberrypi.com/documentation/computers/getting-started.html#power-supply
+* 自帶 wifi adapter 和藍牙模組，要用 RJ45 也可以
+
+---
+
+## Python Setup
+最新版的 Raspberry Pi 5 已經自帶 Python 3.13.x，基本上很夠用了，如果要最新版，可參考 <a href="https://hackmd.io/@EthanChan/jetson-nano-setup-guide#%E5%AE%89%E8%A3%9D-Python-31xx-Optional" target="_blank" rel="noopener noreferrer">Jetson Nano Setup Guide</a> 設置。
+
+---
+
+## Camera Setup
+:::danger
+Raspberry Pi 5 的攝像頭連接是使用 15-pin 的 CSI 接口，一般模組是 22-pin，需要一條 15pin-22pin 的轉接線。
+:::
+設置部分可參考 
+* <a href="https://www.raspberrypi.com/documentation/accessories/camera.html#install-a-raspberry-pi-camera" target="_blank" rel="noopener noreferrer">Raspberry Pi Camera Documentation</a>
+* <a href="https://www.raspberrypi.com/documentation/computers/camera_software.html" target="_blank" rel="noopener noreferrer">Raspberry Pi Camera Software Documentation</a>
+
+要在 Raspberry Pi 5 用攝像頭，可以用官方自帶的 rpicam-apps、gstreamer、libcamera 或者最底層的 v4l2。
+**難易度**：rpicams-app < gstreamer = libcamera < v4l2
+> 如果追求非常流暢的串流體驗或者想接觸底層，可以用 v4l2。
+
+用 rpicam 測試攝像頭：
+```bash
+rpicam-still -t 0
+```
+
+### 安裝 gstreamer
+```bash
+sudo apt-get update
+sudo apt-get install gstreamer1.0-tools libgstreamer1.0-dev libgstreamer-plugins-base1.0-dev gstreamer1.0-plugins-base-apps -y
+```
+
+### 安裝 libcamera
+```bash
+sudo apt install libyaml-dev python3-yaml python3-ply python3-jinja2 libpython3-dev pybind11-dev python3-libcamera
+git clone https://git.libcamera.org/libcamera/libcamera.git
+cd libcamera
+meson setup build --buildtype=release -Dgstreamer=enabled -Dpycamera=enabled
+ninja -C build install
+```
+
+新增 `PYTHONPATH` 和將 `GST_PLUGIN_PATH` 放入 `~/.bashrc`：
+```bash
+export PYTHONPATH=$PYTHONPATH:/usr/lib/python3/dist-packages
+export GST_PLUGIN_PATH=$HOME/libcamera/build/src/gstreamer:$GST_PLUGIN_PATH
+```
+執行：
+```bash
+source ~/.bashrc
+```
+
+用 gstreamer 測試：
+```bash
+gst-launch-1.0 libcamerasrc ! video/x-raw,format=NV12,width=1280,height=720,framerate=60/1 ! queue max-size-buffers=1 leaky=downstream ! glimagesink sync=false
+```
+
+---
+
+## OpenCV Setup
+同上，可從 <a href="https://hackmd.io/@EthanChan/jetson-nano-setup-guide#%E5%88%AA%E9%99%A4%E8%88%8A%E7%89%88-OpenCV" target="_blank" rel="noopener noreferrer">Jetson Nano Setup Guide</a> 這裡開始做，由於樹莓派沒有 CUDA，CUDA 的步驟都可以跳過。
+如果把原本的 libcamera 刪除了（sudo apt-get purge libopencv*），記得要載回來，不然可能開不了攝像頭。
+```bash
+sudo apt install python3-libcamera
+```
+CMake 的地方可以把 CUDA 相關的都移除，以下設置建議開起來：
+```
+-D WITH_OPENCL=ON \
+-D ENABLE_NEON=ON \
+-D WITH_OPENGL=ON \
+-D WITH_FFMPEG=ON \
+-D WITH_GSTREAMER=ON \
+-D WITH_TBB=ON \
+-D BUILD_TBB=ON \
+-D WITH_V4L=ON \
+-D WITH_LIBV4L=ON \
+```
+
+### OpenCV Read Camera Input
+OpenCV 在 Linux 上沒辦法直接用 `/dev/video0` 讀取 CSI camera，主要有三種方法：**GStreamer**、**V4L2**、**picamera2**
+
+V4L2 的方法可參考 <a href="https://blog.arducam.com/faq/opencv-v4l2-python-rpi/" target="_blank" rel="noopener noreferrer">https://blog.arducam.com/faq/opencv-v4l2-python-rpi/</a>
+
+這裡使用 GStreamer 的方法：
+```python=
+import cv2
+
+pipeline = (
+    "libcamerasrc camera_name=/base/axi/pcie@1000120000/rp1/i2c@88000/imx477@1a ! "
+    "video/x-raw,format=NV12,width=1280,height=720,framerate=30/1 ! "
+    "queue max-size-buffers=1 leaky=downstream ! "
+    "videoconvert ! "
+    "video/x-raw,format=BGR,width=1280,height=720 ! "
+    "appsink caps=video/x-raw,format=BGR drop=true max-buffers=1 sync=false"
+)
+
+cap = cv2.VideoCapture(pipeline, cv2.CAP_GSTREAMER)
+
+while True:
+    ret, frame = cap.read()
+    if not ret:
+        break
+
+    cv2.imshow("frame", frame)
+    if cv2.waitKey(1) & 0xFF == ord('q'):
+        break
+
+cap.release()
+cv2.destroyAllWindows()
+```
+這裡要注意的是要指定 pipeline 的 `camera_name`，可使用 `rpicam-hello` 來獲得：
+```bash
+rpicam-hello
+```
+找到一行 `Registered camera ...` 或者 `Adding camera '...'`，`...` 的部分就是 camera_name
+
+#### picamera2
+picamera2 是樹莓派官方提供的 Python OpenCV library 
+```bash
+pip install picamera2
+```
+```python=
+import cv2
+from picamera2 import Picamera2
+
+# Initialize and configure the camera
+picam2 = Picamera2()
+config = picam2.create_preview_configuration(main={"format": 'XRGB8888', "size": (640, 480)})
+picam2.configure(config)
+picam2.start()
+
+while True:
+    # Capture frame as a NumPy array (directly compatible with OpenCV)
+    frame = picam2.capture_array()
+
+    # Display the frame
+    cv2.imshow("Raspberry Pi 5 Camera", frame)
+
+    if cv2.waitKey(1) & 0xFF == ord('q'):
+        break
+
+picam2.stop()
+cv2.destroyAllWindows()
+```
+
+---
+
+## 後記
+我有用 venv 做為虛擬環境，主要用來安裝專案需要的函式庫，但像 OpenCV、GStreamer、libcamera 等函式庫我都是直接用 `apt install` 來裝，再把 `PYTHONPATH` 設定好，在虛擬環境共用了系統的函式庫。如果怕虛擬環境跟系統環境搞混了，還是都安裝在系統環境吧。
+
+---
+
+## References
+* <a href="https://www.raspberrypi.com/documentation/computers/getting-started.html#setting-up-your-raspberry-pi" target="_blank" rel="noopener noreferrer">Raspberry Pi Official Setup Guide</a>
+* <a href="https://www.raspberrypi.com/documentation/accessories/camera.html#install-a-raspberry-pi-camera" target="_blank" rel="noopener noreferrer">Raspberry Pi Camera Documentation</a>
+* <a href="https://libcamera.org/getting-started.html" target="_blank" rel="noopener noreferrer">Libcamera Getting Started</a>

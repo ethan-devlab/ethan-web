@@ -1,0 +1,60 @@
+:root[data-theme='dark'] {
+  --body-bg: radial-gradient(circle at 40% 0%, rgba(196, 219, 213, 0.35), transparent 50%),
+    var(--color-void);
+  --color-void: #000000;
+  --color-deep-teal: #02090a;
+  --color-dark-forest: #061a1c;
+  --color-forest: #102620;
+  --color-card-border: #1e2c31;
+  --color-white: #ffffff;
+  --color-muted-text: #a1a1aa;
+  --color-neon-green: #36f4a4;
+  --color-aloe: #c1fbd4;
+  --color-pistachio: #d4f9e0;
+  --color-input-border: #3f3f46;
+  --color-code-bg: #061a1c;
+  --color-surface: #02090a;
+  --color-surface-2: #061a1c;
+  --color-surface-3: #102620;
+  --shadow-card:
+    rgba(0, 0, 0, 0.1) 0 0 0 1px,
+    rgba(0, 0, 0, 0.1) 0 2px 2px,
+    rgba(0, 0, 0, 0.1) 0 4px 4px,
+    rgba(0, 0, 0, 0.1) 0 8px 8px,
+    rgba(255, 255, 255, 0.03) 0 1px 0 inset;
+  --shadow-elevated:
+    rgba(0, 0, 0, 0.16) 0 0 0 1px,
+    rgba(0, 0, 0, 0.2) 0 8px 20px -4px,
+    rgba(255, 255, 255, 0.04) 0 1px 0 inset;
+  --color-badge-bg: rgba(255, 255, 255, 0.08);
+  --shiki-dark: rgba(255, 255, 255, 0.8);
+}
+
+:root[data-theme='light'] {
+  --body-bg: radial-gradient(circle at 40% 0%, rgba(16, 38, 32, 0.35), transparent 50%),
+    var(--color-void);
+  --color-void: #f6f8f8;
+  --color-deep-teal: #ffffff;
+  --color-dark-forest: #edf2f2;
+  --color-forest: #d9e8e1;
+  --color-card-border: #d0dde0;
+  --color-white: #0f1720;
+  --color-muted-text: #4b5563;
+  --color-neon-green: #2bbe81;
+  --color-aloe: #f0fff5;
+  --color-pistachio: #e9fff0;
+  --color-input-border: #cad5da;
+  --color-code-bg: #eef4f4;
+  --color-surface: #ffffff;
+  --color-surface-2: #f3f7f7;
+  --color-surface-3: #e7f0ec;
+  --shadow-card:
+    rgba(0, 0, 0, 0.08) 0 0 0 1px,
+    rgba(0, 0, 0, 0.08) 0 2px 4px,
+    rgba(0, 0, 0, 0.08) 0 6px 12px;
+  --shadow-elevated:
+    rgba(0, 0, 0, 0.12) 0 0 0 1px,
+    rgba(0, 0, 0, 0.1) 0 10px 20px -6px;
+  --color-badge-bg: rgba(209, 211, 214, 0.15);
+  --shiki-light: rgba(0, 0, 0, 0.8);
+}

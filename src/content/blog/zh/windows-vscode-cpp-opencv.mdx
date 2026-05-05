@@ -1,0 +1,284 @@
+---
+title: "Windows VSCode 安裝 C++ OpenCV"
+description: "在 Windows 上使用 VSCode 配合 MinGW 和 CMake 安裝和配置 OpenCV 的詳細步驟。"
+date: "2025-09-29"
+category: "Tutorial"
+tags: ["MinGW", "MinGW-w64", "C++", "Windows", "OpenCV", "VSCode"]
+published: true
+pin: false
+lang: "zh"
+slug: "windows-vscode-cpp-opencv"
+---
+
+<a href="https://hackmd.io/@EthanChan/windows-install-mingw" target="_blank" rel="noopener noreferrer"> 上一篇 </a>完成了 MinGW 的安裝，這一篇會介紹如何配合 CMake 來安裝OpenCV。
+
+## What is CMAKE?
+:::info
+**CMake** 是一個跨平台的專案編譯工具，支援 C / C++ / Java 等>語言，它可以產生編譯專用檔案，如 **Makefile**，再進行編譯。
+:::
+
+## 注意事項
+>[!Warning] **2025/9/29：**
+>今天測試了 4.12.0 版本的 OpenCV，一切順利，所以就改成了 4.12.0 版本的，但本篇教程依然適用，無論是想更新至 4.12.0 或保留在 4.5.5 都行，要更新就只需要把 4.5.5 的內容換成 4.12.0，其它照舊。
+
+## 下載 CMake 和 OpenCV
+### 1. 下載和安裝 CMake
+到 <a href="https://cmake.org/download/" target="_blank" rel="noopener noreferrer">CMake官網</a> 下載：
+<img src="https://hackmd.io/_uploads/rJPmh3Uhge.png" alt="image" />
+可根據自己的電腦系統選擇對應的 msi，這裡我選擇 **Windows x64 Installer**
+下載好後按照指示安裝，默認路徑是`C:\Program Files\CMake`
+
+### 2. 下載 OpenCV
+<a href="https://opencv.org/" target="_blank" rel="noopener noreferrer">OpenCV官網</a>
+到 <a href="https://github.com/opencv/opencv/releases" target="_blank" rel="noopener noreferrer">OpenCV GitHub Releases</a> 下載 source code
+<img src="https://hackmd.io/_uploads/ryYZzT8nlg.png" alt="image" width="500" height="450" />
+選擇 **OpenCV 4.5.5** 版本的 **Source code (zip)**，`.exe`是用 MSVC 編譯的，不是 MinGW，它們編譯的文件不能共用。
+>[!Caution] 不同版本編譯問題
+>4.5以上的版本在編譯時都會出問題，<a href="https://blog.csdn.net/qq_42218706/article/details/132377836" target="_blank" rel="noopener noreferrer">這篇</a>測試了4.6和4.8，我測試了4.12，也會出錯
+
+### 3. 解壓縮 OpenCV
+<img src="https://hackmd.io/_uploads/r1h6Sp82gl.png" alt="image" />
+
+進入 **opencv-4.5.5** 的資料夾後會看到 source code 文件
+<img src="https://hackmd.io/_uploads/rJ0DwaI2le.png" alt="image" width="500" height="400" />
+
+新建一個 **src** 資料夾，把 **opencv-4.5.5** 所有的文件移到 **src** 裡，另外建立 **middle-build** 和 **build** 兩個資料夾。
+<img src="https://hackmd.io/_uploads/SyA6OpUnxg.png" alt="image" />
+:::success
+middle-build：存放 CMake 會產生編譯的中間檔案
+build: 存放真正編譯後產生的執行檔、dll files等
+:::
+
+## 配置 CMake 和產生中間檔案
+### 1. 打開 CMake 進行初步配置
+個別設定 source code 路徑 和中間檔案路徑，需注意斜線 "/" 和 "\\" 的差別，這裡要使用斜線 "/"
+>[!Note] 路徑設定
+>**source code 路徑**：剛才建立的 src 資料夾，`C:/opt/opencv-4.5.5/src`
+>**build path**：剛才建立的 middle-build 資料夾，`C:/opt/opencv-4.5.5/middle-build`
+
+<img src="https://hackmd.io/_uploads/HksGT6L2gg.png" alt="image" width="400" />
+
+接著選擇左下角的 **Configure**，選擇 **Specify native compilers**，按下 **Next**
+<img src="https://hackmd.io/_uploads/H1vSbRLhge.png" alt="image" width="400" />
+
+進入下面這個介面後，在 **C** 和 **C++** 的欄位分別選擇<a href="https://hackmd.io/@EthanChan/windows-install-mingw" target="_blank" rel="noopener noreferrer">上一篇</a>提到的`gcc.exe`和`g++.exe`的路徑
+<img src="https://hackmd.io/_uploads/HyFFzAIhgl.png" alt="image" width="400" />
+
+第一次configure結束後，會出現類似下面的畫面，一片紅是正常的。
+<img src="https://hackmd.io/_uploads/Byl4rAI3ge.png" alt="image" width="500" />
+
+### 2. 第二次configure
+這一步要進行一些參數的調整，直接在 **Search** 輸入然後更改
+* 輸入"world"，打勾 **BUILD_opencv_world**
+<img src="https://hackmd.io/_uploads/ryRS8R82ee.png" alt="image" />
+* 輸入"type"，**CMAKE_BUILD_TYPE** 默認是 Release，這裡可以繼續默認使用，之後再進行 **Debug** 的編譯。
+<img src="https://hackmd.io/_uploads/BJNsDR8hge.png" alt="image" />
+* 輸入"install"，更改 **CMAKE_INSTALL_PREFIX**，換成<a href="https://hackmd.io/@EthanChan/windows-install-mingw" target="_blank" rel="noopener noreferrer">上一篇</a>建立的 **build** 資料夾路徑，`C:/opt/opencv-4.5.5/build`
+<img src="https://hackmd.io/_uploads/HJSNo08hxx.png" alt="image" />
+* 這裡沒有額外添加 OpenCV Contrib（OpenCV 擴充套件），所以就不需要設定相關路徑，有擴充套件的可以將路徑設為 `C:/opt/opencv-4.5.5/opencv_contrib-4.5.5/modules`
+<img src="https://hackmd.io/_uploads/rJ4I3RIhxg.png" alt="image" />
+擴充套件傳送門：<a href="https://github.com/opencv/opencv_contrib/tags" target="_blank" rel="noopener noreferrer">OpenCV Contrib Tags</a>
+
+    >[!Tip] 擴充套件版本注意
+    >擴充套件的版本需與 OpenCV 相同，以本篇為例，擴充套件的版本需為 4.5.5
+
+* 額外設定（Python和Java），若沒有這兩個語言的需求，也可以選擇取消打勾。
+<img src="https://hackmd.io/_uploads/ry-hTAU2eg.png" alt="image" />
+<img src="https://hackmd.io/_uploads/HJx20CUhgl.png" alt="image" />
+
+完成參數調整後，再次按下configure。第二次configure完成之後，就可以按下 **Generate**，出現以下畫面代表成功了：
+<img src="https://hackmd.io/_uploads/ryryxJDnxx.png" alt="image" />
+
+
+## 編譯和安裝
+到了這一步才是真正開始編譯和安裝
+### 1. make
+先以系統管理員權限打開 **CMD**，然後進入 **middle-build** 目錄，輸入 `mingw32-make -j 15`，15 表示將以 15 個執行緒來編譯，可依據CPU能力自行調整。
+<img src="https://hackmd.io/_uploads/r155MkPneg.png" alt="image" />
+
+出現這個畫面代表編譯成功：
+<img src="https://hackmd.io/_uploads/B1wd2Jv2xl.png" alt="image" width="600" />
+
+### 2. install
+接著輸入 `mingw32-make install`，就會開始安裝到 `C:\opt\opencv4.5.5\build`，也就是 CMAKE_INSTALL_PREFIX 所設定的路徑。
+<img src="https://hackmd.io/_uploads/Hks03JD2xe.png" alt="image" />
+
+## 設置環境變數 System Environment Variables
+新增一個名為 **OpenCV** 的環境變數，值設定為
+`C:\opt\opencv-4.5.5\build\x64\mingw\bin;C:\opt\opencv-4.5.5\build\include`
+<img src="https://hackmd.io/_uploads/BJqGCyw3lx.png" alt="image" />
+
+接著到 **Path** 變數裡新增一筆資料，設定為 `%OpenCV%`
+<img src="https://hackmd.io/_uploads/ByF5Aywnxx.png" alt="image" width="400" />
+
+>[!Note] 名稱設定
+>會額外設定 OpenCV 變數是為了管理以及方便後續修改版本，這樣的設計方法很常在環境變數裡使用
+
+## VSCode 設定
+在想編譯的 `.cpp` 的同個目錄下，新增 `.vscode` 資料夾和 `c_cpp_properties.json` 和 `tasks.json` 兩個 json 檔案，若已有了就可以忽略這一步。
+<img src="https://hackmd.io/_uploads/BJL_lgPhxx.png" alt="image" width="400" />
+
+#### c_cpp_properties.json
+若使用 C，將 compilerPath 的 g++ 改成 gcc 即可
+```json=
+{
+    "configurations": [
+        {
+            "name": "Win32",
+            "includePath": [
+                "${workspaceFolder}/**",
+                "C:\\opt\\opencv-4.5.5\\build\\include",
+                "C:\\opt\\opencv-4.5.5\\build\\include\\opencv2"
+            ],
+            "defines": [
+                "_DEBUG",
+                "UNICODE",
+                "_UNICODE"
+            ],
+            "compilerPath": "C:\\opt\\mingw64\\bin\\g++.exe",
+            "cStandard": "c17",
+            "cppStandard": "c++17",
+            "intelliSenseMode": "windows-gcc-x64"
+        }
+    ],
+    "version": 4
+}
+```
+:::info
+includePath 裡的這兩行路徑表示OpenCV的標頭檔案路徑，要讓 VSCode 找得到相關檔案
+"C:\\opt\\opencv-4.5.5\\build\\include",
+"C:\\opt\\opencv-4.5.5\\build\\include\\opencv2"
+:::
+
+#### tasks.json
+同理，若使用 C，將 command 的 g++ 改成 gcc 即可
+```json=
+{
+    "tasks": [
+        {
+            "type": "cppbuild",
+            "label": "C/C++: g++.exe build active file",
+            "command": "C:\\opt\\mingw64\\bin\\g++.exe",
+            "args": [
+                "-fdiagnostics-color=always",
+                "-g",
+                "${file}",
+                "-o",
+                "${fileDirname}\\${fileBasenameNoExtension}.exe",
+                "-I", "C:\\opt\\opencv-4.5.5\\build\\include",
+                "-L", "C:\\opt\\opencv-4.5.5\\build\\x64\\mingw\\bin",
+                "-l", "libopencv_world455"
+            ],
+            "options": {
+                "cwd": "${fileDirname}"
+            },
+            "problemMatcher": [
+                "$gcc"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "detail": "Task generated by Debugger."
+        }
+    ],
+    "version": "2.0.0"
+}
+```
+>[!Note] 參數含義：<br />
+>"-I"，表示標頭文件路徑，如`C:\\opt\\opencv-4.5.5\\build\\include` <br />
+>"-L"，表示庫檔案路徑，如dll檔，`C:\\opt\\opencv-4.5.5\\build\\x64\\mingw\\bin` <br />
+>"-l"，表示要鏈接的函式庫，如`libopencv_world455`
+
+#### main.cpp
+範例檔案，`test.png`要換成自己的圖片路徑
+```cpp=
+#include <opencv2/opencv.hpp>
+#include <iostream>
+
+using namespace std;
+using namespace cv;
+
+int main() {
+    Mat img = imread("test.png");
+    if (img.empty()) {
+        cout << "Could not read the image: " << endl;
+        return 1;
+    }
+    imshow("Display window", img);
+    waitKey(0);
+    return 0;
+}
+```
+
+## Demo
+以上步驟完成後，右上角的play按鈕選擇 **Run C/C++ File**，最後圖片顯示出來，就代表成功啦！
+<img src="https://hackmd.io/_uploads/BkEySxP3xg.png" alt="image" />
+
+## Additional: Use CMake and CMakeLists.txt to Compile
+這個方法是通過配置 **CMakeLists.txt**，搭配 **CMake** 來編譯。上面的方法直接設定 VSCode 的配置檔案，兩者不一樣，但可以共存。
+:::warning
+請注意，這裡的opencv版本已經改成了4.12.0，所以實際輸入請依照你自己下載的版本。像上面的教程是4.5.5，那路徑設定就依然保持4.5.5，不要改成4.12.0
+:::
+>[!tip] **補充說明：** <br />
+><a href="https://cmake.org/cmake/help/book/mastering-cmake/chapter/Writing%20CMakeLists%20Files.html" target="_blank" rel="noopener noreferrer">Writing CMakeLists.txt</a> <br />
+><a href="https://www.jetbrains.com/help/clion/cmakelists-txt-file.html" target="_blank" rel="noopener noreferrer">What is CMakeLists.txt</a>
+
+### 1. 配置環境變數
+新增一個變數 **OpenCV_DIR**
+<img src="https://hackmd.io/_uploads/BJjce2w2xg.png" alt="image" />
+
+將標頭文檔路徑和庫檔案路徑配置進去：
+<img src="https://hackmd.io/_uploads/Skl3ghwhgg.png" alt="image" />
+
+新增進去 **Path**
+<img src="https://hackmd.io/_uploads/S14Jw2v2ge.png" alt="image" />
+
+### 2. 編寫 CMakeLists.txt 和 新增 Build 資料夾
+在與 main.cpp 同一個路徑底下新增 **CMakeLists.txt** 和 **build** 資料夾
+<img src="https://hackmd.io/_uploads/BJdqf3vnxe.png" alt="image" width="400" />
+
+#### CMakeLists.txt
+```cmake=
+cmake_minimum_required(VERSION 3.10)
+
+project(Demo)
+
+# Find OpenCV package
+find_package(OpenCV REQUIRED)
+
+# Include OpenCV headers
+include_directories(${OpenCV_INCLUDE_DIRS})
+
+# Add executable
+add_executable(Demo main.cpp)
+
+# Link OpenCV libraries
+target_link_libraries(Demo ${OpenCV_LIBS})
+```
+
+### 3. 編譯和執行
+```shell=
+cmake -G "MinGW Makefiles" -S . -B build
+cmake --build build --config Release
+./build/Demo.exe
+```
+先輸入 `cmake -G "MinGW Makefiles" -S . -B build`，這一步就是我們在 CMake GUI 裡的 Configure 和 Generate，出現下面的畫面就代表沒有問題。
+<img src="https://hackmd.io/_uploads/Sy1H43Dnll.png" alt="image" />
+
+然後輸入 `cmake --build build --config Release`，這一步相當於 `mingw32-make -j [num]` 和 `mingw32-make install`，會編譯和產生執行檔。
+<img src="https://hackmd.io/_uploads/r13Arhw2xl.png" alt="image" />
+
+最後產生的執行檔就在 build 資料夾裡，輸入 `./build/Demo.exe`就可以打開了。
+
+### 4. 實測：
+<img src="https://hackmd.io/_uploads/HktN82wnll.png" alt="image" width="600" />
+
+
+## 後記
+在 VSCode 設定 OpenCV 的環境算是踩了很多坑，由於本人實在不想下載 Visual Studio，所以鐵了心要找到可以在 VSCode 直接設定的方法。花了很多時間去研究和解決各種兼容問題，最開始卡在 MSVC Runtime 的 MinGW ，後來才發現 Win32 的 MinGW 無法配合 OpenCV 去編譯，然後就換成了 posix 版 MinGW64。接著發現太高版本的 OpenCV 也不行（算是另外一個坑），再一次降版成 4.5.5 版本，總算設定好了，後面想說再測看看最新的版本，結果也可以。其實看著蠻容易的，但就是意外踩了太多坑了吧~~~~
+
+
+## 參考來源
+* <a href="https://home.gamer.com.tw/artwork.php?sn=6119329" target="_blank" rel="noopener noreferrer">【教學】VSCode C++ OpenCV Windows安裝</a>
+* <a href="https://blog.csdn.net/qq_42218706/article/details/132377836" target="_blank" rel="noopener noreferrer">windows+Cmake+MinGW+编译opencv4.5 sources安装过程以及opencv踩坑日记</a>

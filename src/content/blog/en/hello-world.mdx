@@ -1,0 +1,29 @@
+---
+title: "System Design Note: From Requirements to Maintainable Structure"
+description: "A practical workflow for requirement decomposition, module boundaries, and data design."
+date: "2026-04-29"
+category: "System Design"
+tags: ["Architecture", "Database", "React"]
+published: false
+pin: false
+lang: "en"
+slug: "system-design-note"
+---
+
+## Why define boundaries first
+
+When scope expands, clear module boundaries reduce coupling and keep the codebase easier to evolve.
+
+```ts
+type Requirement = {
+  id: string
+  domain: 'routing' | 'data' | 'ui'
+  owner: string
+}
+```
+
+## A practical sequence
+
+1. Define the domain model and core fields
+2. Design route responsibilities
+3. Componentize the UI and connect delivery flow

@@ -1,0 +1,110 @@
+---
+title: "Using Phone Camera as OpenCV Capture Source"
+description: "How to use a phone camera as a video capture source for OpenCV applications."
+date: "2025-12-16"
+category: "OpenCV"
+tags: ["OpenCV", "Computer Vision", "Mobile Development"]
+published: true
+pin: false
+lang: "en"
+slug: "use-phone-camera-opencv"
+---
+
+## Install IP Camera / IP Camera Lite
+<img src="https://hackmd.io/_uploads/BJeTCKTMWl.png" alt="image" width="150" />
+### Android
+Download from <a href="https://play.google.com/store/apps/details?id=com.shenyaocn.android.WebCam" target="_blank" rel="noopener noreferrer">Google Play Store</a>
+
+### Iphone
+Download from <a href="https://apps.apple.com/us/app/ip-camera-lite/id1013455241" target="_blank" rel="noopener noreferrer">App Store</a>
+
+## Phone Setup
+>[!Note]
+> This tutorial uses iphone as example, but android setup is similar to iphone.
+
+### Go to Settings page
+Tap the setting button on the top-right corner and go to `Settings` page
+<div>
+<img src="https://hackmd.io/_uploads/ryEtz2pzbl.png" width="200" />
+<img src="https://hackmd.io/_uploads/Skm6GhpGbl.png" width="200" />
+</div>
+
+### Set up username and password
+<img src="https://hackmd.io/_uploads/B1W34hTGbl.png" alt="image" width="200" />
+
+
+### Turn on IP Camera Server
+Make sure your phone and computer are on the same network. Go to main page and tap `Turn on IP Camera Server`
+<img src="https://hackmd.io/_uploads/BJUgrhafbe.png" alt="image" width="200" />
+
+
+### Get camera ip addr and port
+<img src="https://hackmd.io/_uploads/SkgtHn6z-e.png" alt="image" width="200" />
+
+Get the WAN or LAN connection string as below:
+:::success
+http://\<ip-addr\>:\<port\>/video
+:::
+
+We will use this url as OpenCV camera source.
+
+## OpenCV Setup
+Extract `ip-cam.zip`
+### Install Packages
+```shell
+cd ip-cam
+pip install -r requirements.txt
+# pip3 on mac/linux
+```
+ 
+### Environment Variable
+Modify `.env`, use the username, password and url above to set up your camera source.
+```bash=
+# .env
+# example: CAMERA_SRC=http://abc:abcde@192.168.0.1:8081/video
+CAMERA_SRC=http://<username>:<password>@<ip-addr>:<port>/video
+```
+
+### Main Program
+```python=
+# phone_cam.py
+import os
+import cv2
+from dotenv import load_dotenv
+
+load_dotenv()
+
+cap = cv2.VideoCapture(os.getenv("CAMERA_SRC"))
+
+# Check if the camera opened successfully
+if not cap.isOpened():
+    print("Error: Could not open video stream or file")
+else:
+    print("Camera opened successfully")
+
+while True:
+    # Capture frame-by-frame
+    ret, frame = cap.read()
+
+    # If the frame was captured successfully ('ret' is True)
+    if ret:
+        # Display the resulting frame
+        cv2.imshow('Camera Feed', frame)
+
+        # Press 'q' on the keyboard to exit the loop
+        if cv2.waitKey(1) & 0xFF == ord('q'):
+            break
+    else:
+        break
+
+# Release the capture when everything is done
+cap.release()
+# Destroy all the windows
+cv2.destroyAllWindows()
+```
+
+### Run and Test
+```shell
+cd ip-cam
+python phone_cam.py
+```

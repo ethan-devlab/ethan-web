@@ -1,0 +1,413 @@
+---
+title: "Jetson Nano Setup Guide (Windows)"
+description: "關於 Jetson Nano 的初始設定流程，包含燒錄 image、基本配置和安裝 OpenCV with CUDA。"
+date: "2026-03-29"
+category: "Tutorial"
+tags: ["Jetson Nano", "OpenCV", "CUDA", "Setup Guide", "Windows"]
+published: true
+pin: false
+lang: "zh"
+slug: "jetson-nano-setup-guide"
+---
+
+## 前置準備
+
+:::warning
+Jetson Nano 和 Jetson Orin Nano 的 setup 流程不同
+<a href="https://www.jetson-ai-lab.com/tutorials/initial-setup-jetson-orin-nano/" target="_blank" rel="noopener noreferrer">Jetson Orin Nano Initial Setup Guide</a>
+<a href="https://developer.nvidia.com/embedded/learn/get-started-jetson-nano-devkit" target="_blank" rel="noopener noreferrer">Jetson Nano Initial Setup Guide</a>
+:::
+
+### 硬體設備
+- microSD card (32GB UHS-1 minimum recommended) 官方建議 32GB，但建議買大一點，64GB 以上
+- USB keyboard and mouse
+- Computer display (HDMI or DP)
+- 5V-4A power supply，要買轉接器。5V-2A micro-USB power supply 也可以，但建議提供足夠功率使用。See <a href="https://developer.nvidia.com/embedded/dlc/Jetson_Nano_Developer_Kit_User_Guide" target="_blank" rel="noopener noreferrer">Jetson Nano Developer Kit User Guide</a>
+- RJ45 cable 或 wifi adapter
+
+---
+
+## 開始 setup
+
+### 下載
+
+- 下載 <a href="https://developer.nvidia.com/jetson-nano-sd-card-image" target="_blank" rel="noopener noreferrer">Jetson Nano Developer Kit SD Card Image</a>
+- 安裝 <a href="https://www.sdcard.org/downloads/formatter_4/eula_windows/" target="_blank" rel="noopener noreferrer">SD Memory Card Formatter for Windows</a>
+- 安裝 <a href="https://www.balena.io/etcher" target="_blank" rel="noopener noreferrer">Etcher</a>
+
+>[!Note] Linux / MacOS
+><a href="https://developer.nvidia.com/embedded/learn/get-started-jetson-nano-devkit#write" target="_blank" rel="noopener noreferrer">Jetson Nano Initial Setup Guide</a>
+
+### 格式化 SD 卡
+1. 打開 **SD Card Formatter**
+2. 選擇卡槽 (Select Card)
+3. 選擇  Quick format
+4. Volume label 留空
+5. 按下 **Format**，出現警告選擇 **Yes**
+<img src="https://hackmd.io/_uploads/B1Tw2fdcbx.png" alt="image" width="300" />
+6. 出現這個畫面代表好了：
+<img src="https://hackmd.io/_uploads/By5faz_9bg.png" alt="image" width="300" />
+
+### 燒錄 Jetson Nano Image
+1. 打開 **Etcher**
+2. 選擇下載好的 **Jetson Nano Image 壓縮檔**
+3. 選擇 **SD Card disk**，SD Card 讀卡器建議插在 USB3.0 以上標準的 port 或 Thunderbolt4，可以加快燒錄。
+4. 按下 **Flash**
+<img src="https://hackmd.io/_uploads/SJMSz7dqWl.png" alt="image" width="600" />
+
+>[!Warning]如果出現下方畫面，選擇 **Cancel**
+<img src="https://hackmd.io/_uploads/B1X047d9be.png" alt="image" />
+
+### First boot
+跟著官方步驟做即可，如果有外接顯示器，參考 **Initial Setup with Display Attached**，沒有外接的，參考 **Initial Setup Headless Mode**
+<a href="https://developer.nvidia.com/embedded/learn/get-started-jetson-nano-devkit#setup" target="_blank" rel="noopener noreferrer">Jetson Nano Initial Setup Guide</a>
+
+---
+
+## Basic config
+>[!Tip] 如果沒有 wifi adapter，可以使用 rj45 接入 jetson nano
+
+按下 `Ctrl + Alt + T` 打開 terminal
+```bash
+sudo apt-get update && sudo apt upgrade -y
+```
+更新完畢後重啟：
+```bash
+sudo reboot
+```
+
+### 安裝 Python 3.1x.x (Optional)
+Ubuntu 18.04 不支援直接從 deadsnakes 下載 Python3.8 以後的版本，只好直接 compile source code。
+```bash
+# sudo apt install software-properties-common
+# sudo add-apt-repository ppa:deadsnakes/ppa
+# sudo apt update
+```
+#### 下載 Source 和 解壓縮
+```bash
+cd /usr/local/src
+sudo wget https://www.python.org/ftp/python/3.12.13/Python-3.12.13.tar.xz
+sudo tar -xvf Python-3.12.13.tar.xz
+```
+#### make and altinstall
+```bash
+cd Python-3.12.13
+sudo ./configure --prefix=/opt/python3.12 --enable-optimizations
+sudo make -j$(nproc)
+sudo make install
+```
+如果要讓 Python library 也能被外部應用用 dynamic linking 的方式連接（如自編譯的 OpenCV、ffmpeg 等），可以使用這套指令：
+```bash
+cd Python-3.12.13
+sudo ./configure --prefix=/opt/python3.12 --enable-optimizations --enable-shared
+sudo make -j$(nproc)
+sudo make install
+echo "/opt/python3.12/lib" | sudo tee /etc/ld.so.conf.d/python3.12.conf
+sudo ldconfig
+```
+或者
+```bash
+cd Python-3.12.13
+sudo ./configure --prefix=/opt/python3.12 --enable-optimizations --enable-shared LDFLAGS="-Wl,-rpath=/opt/python3.12/lib"
+sudo make -j$(nproc)
+sudo make install
+```
+
+### 修改 .bashrc
+```bash
+sudo vi ~/.bashrc
+```
+把下面兩行加進去
+```bash
+alias python3.12=/opt/python3.12/bin/python3.12
+alias pip3.12=/opt/python3.12/bin/pip3.12
+```
+如果要覆蓋默認的 `python3` (官方提供 3.6 版本)，直接寫
+```bash
+alias python3=/opt/python3.12/bin/python3.12
+alias pip3=/opt/python3.12/bin/pip3.12
+```
+存檔退出後執行
+```bash
+source ~/.bashrc
+```
+確認 Python 版本：
+```bash
+$ python3.12  # or python3
+```
+
+### 安裝 jetson-stats (optional)
+jetson-stats 是官方提供的可以監控 jetson nano 系統狀態的庫
+```bash
+sudo apt update
+sudo apt install python3-pip python3-setuptools -y
+sudo pip3 install -U jetson-stats
+```
+其它使用看這裡 <a href="https://github.com/rbonghi/jetson_stats" target="_blank" rel="noopener noreferrer">jetson_stats</a>
+
+### 配置 CUDA Toolkit
+```bash
+echo 'export CUDA_HOME=/usr/local/cuda' >> ~/.bashrc
+echo 'export PATH=/usr/local/cuda/bin:$PATH' >> ~/.bashrc
+echo 'export LD_LIBRARY_PATH=/usr/local/cuda/lib64:$LD_LIBRARY_PATH' >> ~/.bashrc
+source ~/.bashrc
+sudo sh -c "echo '/usr/local/cuda/lib64' >> /etc/ld.so.conf.d/nvidia-tegra.conf" -y
+sudo ldconfig
+```
+執行 `nvcc -V` 來查看 CUDA 資訊。
+
+---
+
+## OpenCV with CUDA
+
+### 更換介面
+更換介面來減輕 memory 負擔：
+```bash
+sudo apt update
+sudo apt install lightdm
+sudo apt install lightdm-gtk-greeter
+sudo dpkg-reconfigure gdm3
+```
+選擇 `lightdm`，按下 **OK**，然後重啟：
+```bash
+sudo reboot
+```
+
+### 增加 memory swap space
+
+由於手動編譯 OpenCV 需要大一點的 memory swap 空間（6GB 以上為佳），所以需要修改 memory swap 大小：
+jetson nano 的默認 swap space 是 2GB，可執行 `jtop` 看看
+```bash
+jtop
+```
+可以看到 swap 是 2GB，執行：
+```bash
+sudo jetson_swap -d ~ -s 4 -a
+```
+再執行 `jtop` 會發現 swap space 接近 6GB 了。
+
+### 刪除舊版 OpenCV
+刪除舊版 OpenCV，避免造成新舊版本衝突
+```bash
+sudo apt-get purge libopencv* python3-opencv
+```
+
+### 安裝依賴庫
+```bash=
+#!/bin/bash
+sudo apt-get install build-essential cmake git unzip pkg-config -y
+sudo apt-get install libjpeg-dev libpng-dev libtiff-dev -y
+sudo apt-get install libavcodec-dev libavformat-dev libswscale-dev -y
+sudo apt-get install libgtk2.0-dev libcanberra-gtk* -y
+sudo apt-get install python3-dev python3-numpy python3-pip -y
+sudo apt-get install libxvidcore-dev libx264-dev libgtk-3-dev -y
+sudo apt-get install libtbb2 libtbb-dev
+sudo apt-get install -y libdc1394-22-dev
+sudo apt-get install gstreamer1.0-tools libv4l-dev v4l-utils -y
+sudo apt-get install libgstreamer1.0-dev libgstreamer-plugins-base1.0-dev -y
+sudo apt-get install libavresample-dev libvorbis-dev libxine2-dev -y
+sudo apt-get install libfaac-dev libmp3lame-dev libtheora-dev -y
+sudo apt-get install libopencore-amrnb-dev libopencore-amrwb-dev -y
+sudo apt-get install libopenblas-dev libatlas-base-dev libblas-dev -y
+sudo apt-get install liblapack-dev libeigen3-dev gfortran -y
+sudo apt-get install libhdf5-dev protobuf-compiler -y
+sudo apt-get install libprotobuf-dev libgoogle-glog-dev libgflags-dev -y
+```
+可將以上指令打包成 `install.sh`，一次過執行。
+賦予 `install.sh` 執行權：
+```bash
+sudo chmod +x install.sh
+```
+執行：
+```bash
+./install.sh
+```
+
+### 下載並解壓縮 OpenCV-4.11 和 OpenCV-Contrib-4.11
+>[!Caution] 注意
+> OpenCV 和 OpenCV-Contrib 的版本必須一樣
+```bash=
+cd ~
+sudo wget -O opencv.tar.gz https://github.com/opencv/opencv/archive/refs/tags/4.11.0.tar.gz
+sudo wget -O opencv_contrib.tar.gz https://github.com/opencv/opencv_contrib/archive/refs/tags/4.11.0.tar.gz
+sudo tar -xvf opencv.tar.gz && sudo tar -xvf opencv_contrib.tar.gz
+```
+
+### Build | CMake | Install
+
+更名 + 產生 `/build`
+```bash=
+sudo mv opencv-4.11.0 opencv
+sudo mv opencv_contrib-4.11.0 opencv_contrib
+cd opencv
+mkdir build && cd build
+```
+
+使用 CMake 執行（Python3.12 版本）：
+```bash
+cmake \
+-D CMAKE_BUILD_TYPE=RELEASE \
+-D CMAKE_INSTALL_PREFIX=/usr/local \
+-D OPENCV_EXTRA_MODULES_PATH=~/opencv_contrib/modules \
+-D EIGEN_INCLUDE_PATH=/usr/include/eigen3 \
+-D WITH_OPENCL=OFF \
+-D WITH_CUDA=ON \
+-D CUDA_ARCH_BIN=5.3 \
+-D CUDA_ARCH_PTX="" \
+-D WITH_CUDNN=ON \
+-D WITH_CUBLAS=ON \
+-D ENABLE_FAST_MATH=ON \
+-D CUDA_FAST_MATH=ON \
+-D OPENCV_DNN_CUDA=ON \
+-D ENABLE_NEON=ON \
+-D WITH_QT=OFF \
+-D WITH_OPENMP=ON \
+-D WITH_OPENGL=ON \
+-D BUILD_TIFF=ON \
+-D WITH_FFMPEG=ON \
+-D WITH_GSTREAMER=ON \
+-D WITH_TBB=ON \
+-D BUILD_TBB=ON \
+-D BUILD_TESTS=OFF \
+-D BUILD_EXAMPLES=OFF \
+-D WITH_EIGEN=ON \
+-D WITH_V4L=ON \
+-D WITH_LIBV4L=ON \
+-D OPENCV_ENABLE_NONFREE=ON \
+-D INSTALL_C_EXAMPLES=OFF \
+-D INSTALL_PYTHON_EXAMPLES=OFF \
+-D BUILD_opencv_python3=ON \
+-D BUILD_opencv_python2=OFF \
+-D PYTHON3_EXECUTABLE=/opt/python3.12/bin/python3.12 \
+-D PYTHON3_INCLUDE_DIR=/opt/python3.12/include/python3.12 \
+-D PYTHON3_LIBRARY=/opt/python3.12/lib/libpython3.12.so \
+-D PYTHON3_PACKAGES_PATH=/opt/python3.12/lib/python3.12/site-packages \
+-D PYTHON3_NUMPY_INCLUDE_DIRS=/opt/python3.12/lib/python3.12/site-packages/numpy/_core/include \
+-D OPENCV_GENERATE_PKGCONFIG=ON \
+..
+```
+或 CMake (Python3.6)：
+```bash
+cmake \
+-D CMAKE_BUILD_TYPE=RELEASE \
+-D CMAKE_INSTALL_PREFIX=/usr \
+-D OPENCV_EXTRA_MODULES_PATH=~/opencv_contrib/modules \
+-D EIGEN_INCLUDE_PATH=/usr/include/eigen3 \
+-D WITH_OPENCL=OFF \
+-D WITH_CUDA=ON \
+-D CUDA_ARCH_BIN=5.3 \
+-D CUDA_ARCH_PTX="" \
+-D WITH_CUDNN=ON \
+-D WITH_CUBLAS=ON \
+-D ENABLE_FAST_MATH=ON \
+-D CUDA_FAST_MATH=ON \
+-D OPENCV_DNN_CUDA=ON \
+-D ENABLE_NEON=ON \
+-D WITH_QT=OFF \
+-D WITH_OPENMP=ON \
+-D WITH_OPENGL=ON \
+-D BUILD_TIFF=ON \
+-D WITH_FFMPEG=ON \
+-D WITH_GSTREAMER=ON \
+-D WITH_TBB=ON \
+-D BUILD_TBB=ON \
+-D BUILD_TESTS=OFF \
+-D BUILD_EXAMPLES=OFF \
+-D WITH_EIGEN=ON \
+-D WITH_V4L=ON \
+-D WITH_LIBV4L=ON \
+-D OPENCV_ENABLE_NONFREE=ON \
+-D INSTALL_C_EXAMPLES=OFF \
+-D INSTALL_PYTHON_EXAMPLES=OFF \
+-D BUILD_opencv_python3=ON \
+-D BUILD_opencv_python2=OFF \
+-D OPENCV_GENERATE_PKGCONFIG=ON \
+..
+```
+
+:::warning
+CMake 執行結束後，注意關於 Python3 的一些路徑，特別是 install path：
+- Interpreter (eg. /usr/bin/python3 (ver 3.6.9))
+- Libraries (eg. /usr/lib/aarch64-linux-gnu/libpython3.6m.so (ver 3.6.9))
+- numpy (eg. /usr/lib/python3/dist-packages/numpy/core/include)
+- install path (eg. lib/python3.6/site-packages/cv2/python-3.6)
+:::
+
+下一步執行：
+```bash
+sudo make -j$(nproc)
+```
+這一步會跑很久，實測要兩個小時左右，CPU usage 會滿載，要注意是否過熱，建議加裝散熱風扇或者在散熱環境良好的執行。
+
+make 完成後，執行 install：
+```bash
+sudo make install
+```
+
+### 讓系統共享動態鏈接庫
+```bash
+sudo ldconfig
+```
+
+### 刪除 build 的暫存檔案
+```bash
+sudo make clean
+```
+
+### 查看 OpenCV 是否編譯成功及支援 CUDA
+#### 支援 CUDA
+```bash
+jetson_release
+```
+<img src="https://hackmd.io/_uploads/Skncf3jcZe.png" alt="image" />
+
+#### 檢查 OpenCV 能不能跑起來
+```python
+# $ python3
+>>> import cv2
+```
+<img src="https://hackmd.io/_uploads/rJMDEni9Wl.png" alt="image" />
+
+出現 ModuleNotFoundError，執行 `sys.path` 看看 library 路徑
+```python
+>>> import sys
+>>> sys.path
+```
+<img src="https://hackmd.io/_uploads/r1GfShi9-l.png" alt="image" />
+
+可以發現剛才 make 的 install path 並沒有出現，代表 opencv 沒有被 python 納入 modules 或 packages 的搜索范圍，進入 `~/.bashrc` 修改：
+
+```bash
+sudo vi ~/.bashrc
+```
+
+把 install path 加入：
+```bash
+export PYTHONPATH=$PYTHONPATH:/usr/lib/python3.6/site-packages
+```
+執行：
+```bash
+source ~/.bashrc
+```
+
+再檢查一次：
+```python
+>>> import sys
+>>> sys.path
+```
+<img src="https://hackmd.io/_uploads/S126Dniqbg.png" alt="image" />
+```python
+>>> import cv2
+>>> cv2.cuda.getCudaEnabledDeviceCount()
+1
+```
+代表 OpenCV with CUDA 已經成功安裝在 Jetson Nano 了。
+
+---
+
+## References
+- <a href="https://developer.nvidia.com/embedded/dlc/Jetson_Nano_Developer_Kit_User_Guide" target="_blank" rel="noopener noreferrer">Jetson Nano Developer Kit User Guide</a>
+- <a href="https://developer.nvidia.com/embedded/learn/get-started-jetson-nano-devkit" target="_blank" rel="noopener noreferrer">Jetson Nano Initial Setup Guide</a>
+- <a href="https://github.com/rbonghi/jetson_stats" target="_blank" rel="noopener noreferrer">jetson_stats</a>
+- <a href="https://forums.developer.nvidia.com/t/how-to-install-cuda-and-open-cv-in-jetson-nano/293706" target="_blank" rel="noopener noreferrer">How to Install CUDA and OpenCV in Jetson Nano</a>
+- <a href="https://medium.com/@scofield44165/jetson-nano-dev-kit中安裝opencv-4-5-5-with-cuda-intall-opencv-4-5-5-with-cuda-in-jetson-nano-dev-kit-6bfa91ce350" target="_blank" rel="noopener noreferrer">Installing OpenCV 4.5.5 with CUDA in Jetson Nano Dev Kit</a>
