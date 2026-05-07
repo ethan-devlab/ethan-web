@@ -3,6 +3,7 @@ import { BlogLayout } from '../components/blog/BlogLayout'
 import { Callout, MdxCodeBlock, MdxInlineCode } from '../components/blog/MDXComponents'
 import { SEO } from '../components/common/SEO'
 import { DEFAULT_LANGUAGE, isLanguage, type Language } from '../i18n/locales'
+import { trackButtonClick } from '../utils/analytics'
 import { getPublishedPostBySlug } from '../utils/blog'
 
 function resolveLanguage(lang: string | undefined): Language {
@@ -23,7 +24,13 @@ export function BlogPostPage() {
         <div className="empty-state">
           {language === 'zh' ? '文章不存在或尚未發佈。' : 'The post does not exist or is not published yet.'}
         </div>
-        <Link className="btn btn--secondary" to={`/${language}/blog`}>
+        <Link
+          className="btn btn--secondary"
+          to={`/${language}/blog`}
+          onClick={() =>
+            trackButtonClick({ label: 'back_to_blog', area: 'blog_post_empty_state', target: `/${language}/blog` })
+          }
+        >
           {language === 'zh' ? '返回部落格' : 'Back to Blog'}
         </Link>
       </BlogLayout>

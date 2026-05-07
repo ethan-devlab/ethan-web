@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import type { Language } from '../../i18n/locales'
 import { translations } from '../../i18n/translations'
+import { trackButtonClick } from '../../utils/analytics'
 import { getButtonClass } from '../../utils/button'
 import avatarImage from '../../assets/me.jpg'
 
@@ -62,13 +63,29 @@ export function HeroSection({ lang }: HeroSectionProps) {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4, delay: 0.24 }}
         >
-          <Link className={getButtonClass('primary')} to={`/${lang}/experience`}>
+          <Link
+            className={getButtonClass('primary')}
+            to={`/${lang}/experience`}
+            onClick={() =>
+              trackButtonClick({ label: 'hero_experience', area: 'hero', target: `/${lang}/experience` })
+            }
+          >
             {t.home.ctaExperience}
           </Link>
-          <Link className={getButtonClass('secondary')} to={`/${lang}/contact`}>
+          <Link
+            className={getButtonClass('secondary')}
+            to={`/${lang}/contact`}
+            onClick={() => trackButtonClick({ label: 'hero_contact', area: 'hero', target: `/${lang}/contact` })}
+          >
             {t.home.ctaContact}
           </Link>
-          <Link className={getButtonClass('tertiary')} to={`/${lang}/blog/hello-world`}>
+          <Link
+            className={getButtonClass('tertiary')}
+            to={`/${lang}/blog/hello-world`}
+            onClick={() =>
+              trackButtonClick({ label: 'hero_about_me', area: 'hero', target: `/${lang}/blog/hello-world` })
+            }
+          >
             {t.home.ctaAboutMe}
           </Link>
         </motion.div>

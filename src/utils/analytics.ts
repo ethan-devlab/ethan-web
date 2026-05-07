@@ -1,55 +1,55 @@
-declare global {
-  interface Window {
-    dataLayer: unknown[]
-    gtag: (...args: unknown[]) => void
-  }
-}
+import ReactGA from 'react-ga4'
 
 const measurementId = import.meta.env.VITE_GA_MEASUREMENT_ID
 let analyticsReady = false
 
+export type ButtonClickPayload = {
+  label: string
+  area: string
+  target?: string
+}
+
+function canTrackAnalytics(): boolean {
+  return Boolean(measurementId && analyticsReady && typeof window !== 'undefined')
+}
+
 export function initializeAnalytics(): void {
-  if (
-    !measurementId ||
-    typeof window === 'undefined' ||
-    typeof document === 'undefined' ||
-    analyticsReady
-  ) {
+  if (!measurementId || typeof window === 'undefined' || analyticsReady) {
     return
   }
 
-  window.dataLayer = window.dataLayer || []
-  window.gtag = function gtag(...args: unknown[]) {
-    window.dataLayer.push(args)
-  }
-
-  window.gtag('js', new Date())
-  window.gtag('config', measurementId, {
-    send_page_view: false,
+  ReactGA.initialize(measurementId, {
+    gtagOptions: {
+      send_page_view: false,
+    },
   })
-
-  const script = document.createElement('script')
-  script.async = true
-  script.src = `https://www.googletagmanager.com/gtag/js?id=${measurementId}`
-  document.head.appendChild(script)
 
   analyticsReady = true
 }
 
 export function trackPageView(path: string, title?: string): void {
-  if (
-    !measurementId ||
-    !analyticsReady ||
-    typeof window === 'undefined' ||
-    typeof document === 'undefined' ||
-    typeof window.gtag !== 'function'
-  ) {
+  if (!canTrackAnalytics()) {
     return
   }
 
-  window.gtag('event', 'page_view', {
-    page_path: path,
-    page_location: window.location.origin + path,
-    page_title: title ?? document.title,
+  ReactGA.send({
+    hitType: 'pageview',
+    page: path,
+    location: window.location.origin + path,
+    title: title ?? (typeof document !== 'undefined' ? document.title : undefined),
+  })
+}
+
+export function trackButtonClick({ label, area, target }: ButtonClickPayload): void {
+  if (!canTrackAnalytics()) {
+    return
+  }
+
+  ReactGA.event('button_click', {
+    event_category: 'Button Clicks',
+    button_label: label,
+    button_area: area,
+    page_path: window.location.pathname,
+    ...(target ? { link_target: target } : {}),
   })
 }

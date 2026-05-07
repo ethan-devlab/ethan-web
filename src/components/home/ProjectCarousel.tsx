@@ -7,6 +7,7 @@ import { Section } from '../common/Section'
 import { Card } from '../common/Card'
 import { Badge } from '../common/Badge'
 import { FaGithub } from 'react-icons/fa'
+import { trackButtonClick } from '../../utils/analytics'
 
 type ProjectCarouselProps = {
   lang: Language
@@ -41,7 +42,18 @@ export function ProjectCarousel({ lang }: ProjectCarouselProps) {
               transition={{ duration: 0.35, delay: index * 0.04 }}
             >
               <Card className="project-card">
-                <h3><a href={project.githubUrl} target="_blank" rel="noreferrer">
+                <h3><a
+                  href={project.githubUrl}
+                  target="_blank"
+                  rel="noreferrer"
+                  onClick={() =>
+                    trackButtonClick({
+                      label: `project_title_github_${index + 1}`,
+                      area: 'project_carousel',
+                      target: 'github',
+                    })
+                  }
+                >
                   {project.title[lang]}
                 </a></h3>
                 <p>{project.description[lang]}</p>
@@ -55,7 +67,19 @@ export function ProjectCarousel({ lang }: ProjectCarouselProps) {
                     <Badge key={highlight}>{highlight}</Badge>
                   ))}
                 </div>
-                <a className="header__link" href={project.githubUrl} target="_blank" rel="noreferrer">
+                <a
+                  className="header__link"
+                  href={project.githubUrl}
+                  target="_blank"
+                  rel="noreferrer"
+                  onClick={() =>
+                    trackButtonClick({
+                      label: `project_github_${index + 1}`,
+                      area: 'project_carousel',
+                      target: 'github',
+                    })
+                  }
+                >
                   <FaGithub /> GitHub
                 </a>
               </Card>

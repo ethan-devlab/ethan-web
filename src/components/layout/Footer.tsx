@@ -1,4 +1,5 @@
 import { contactChannels } from '../../data/contact'
+import { trackButtonClick } from '../../utils/analytics'
 import { FaGithub, FaFacebook } from "react-icons/fa";
 import { MdEmail } from "react-icons/md";
 
@@ -12,18 +13,33 @@ export function Footer() {
         <div className="footer__links">
         <p className="footer__text">
           {/* Email: {' '} */}
-          <a href={`mailto:${contactChannels.email}`} target="_blank" rel="noreferrer">
+          <a
+            href={`mailto:${contactChannels.email}`}
+            target="_blank"
+            rel="noreferrer"
+            onClick={() => trackButtonClick({ label: 'footer_email', area: 'footer_links', target: 'email' })}
+          >
             <MdEmail size={20} />
           </a>
         </p>
         <p className="footer__text">
           {/* GitHub:{' '} */}
-          <a href={contactChannels.github} target="_blank" rel="noreferrer">
+          <a
+            href={contactChannels.github}
+            target="_blank"
+            rel="noreferrer"
+            onClick={() => trackButtonClick({ label: 'footer_github', area: 'footer_links', target: 'github' })}
+          >
             <FaGithub size={20} />
           </a>
         </p>
         <p className="footer__text">
-          <a href={contactChannels.facebook} target="_blank" rel="noreferrer">
+          <a
+            href={contactChannels.facebook}
+            target="_blank"
+            rel="noreferrer"
+            onClick={() => trackButtonClick({ label: 'footer_facebook', area: 'footer_links', target: 'facebook' })}
+          >
             <FaFacebook size={20} />
           </a>
         </p>

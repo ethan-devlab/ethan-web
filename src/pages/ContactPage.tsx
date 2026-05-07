@@ -4,6 +4,7 @@ import { Card } from '../components/common/Card'
 import { contactChannelItems, contactIntro } from '../data/contact'
 import { DEFAULT_LANGUAGE, isLanguage, type Language } from '../i18n/locales'
 import { SEO } from '../components/common/SEO'
+import { trackButtonClick } from '../utils/analytics'
 
 function resolveLanguage(lang: string | undefined): Language {
   if (!lang || !isLanguage(lang)) {
@@ -76,6 +77,13 @@ export function ContactPage() {
                   href={channel.href}
                   target="_blank"
                   rel="noreferrer"
+                  onClick={() =>
+                    trackButtonClick({
+                      label: `contact_${channel.key}`,
+                      area: 'contact_channels',
+                      target: channel.key,
+                    })
+                  }
                 >
                   <span className="contact-channel__icon" aria-hidden="true">
                     <ContactIcon type={channel.key} />
