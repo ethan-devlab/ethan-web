@@ -15,6 +15,7 @@ dist-ssr
 .env.local
 hackmd
 mdxjs
+.README.md
 
 # Editor directories and files
 .vscode/*

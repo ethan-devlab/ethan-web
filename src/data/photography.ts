@@ -97,7 +97,7 @@ export const photographyItems: PhotographyItem[] = [
   {
     id: 'taipei-101',
     images: [
-      'IMG_2880.jpeg',
+      'IMG_2880.jpg',
     ],
     name: { zh: '台北101', en: 'Taipei 101' },
     datetime: '2025-08-25, 6:31 PM',
