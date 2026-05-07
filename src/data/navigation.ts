@@ -1,8 +1,8 @@
 import type { LocalizedText } from './types'
 
 export type NavigationItem = {
-  key: 'home' | 'experience' | 'blog' | 'contact'
-  segment: '' | 'experience' | 'blog' | 'contact'
+  key: 'home' | 'experience' | 'photography' | 'blog' | 'contact'
+  segment: '' | 'experience' | 'photography' | 'blog' | 'contact'
   label: LocalizedText
 }
 
@@ -16,6 +16,11 @@ export const navigationItems: NavigationItem[] = [
     key: 'experience',
     segment: 'experience',
     label: { zh: '經歷', en: 'Experience' },
+  },
+  {
+    key: 'photography',
+    segment: 'photography',
+    label: { zh: '攝影', en: 'Photography' },
   },
   {
     key: 'blog',

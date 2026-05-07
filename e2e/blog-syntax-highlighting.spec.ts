@@ -6,7 +6,7 @@ test.describe('blog syntax highlighting', () => {
             window.localStorage.setItem('ethan-theme', 'dark')
         })
 
-        await page.goto('/ethan-web/en/blog/use-phone-camera-opencv')
+        await page.goto('/en/blog/use-phone-camera-opencv')
 
         const html = page.locator('html')
         await expect(html).toHaveAttribute('data-theme', 'dark')

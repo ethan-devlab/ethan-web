@@ -5,6 +5,7 @@ export type TranslationTree = {
   nav: {
     home: string
     experience: string
+    photography: string
     blog: string
     contact: string
   }
@@ -28,6 +29,7 @@ export const translations: Record<Language, TranslationTree> = {
     nav: {
       home: '首頁',
       experience: '經歷',
+      photography: '攝影',
       blog: '部落格',
       contact: '聯絡',
     },
@@ -49,6 +51,7 @@ export const translations: Record<Language, TranslationTree> = {
     nav: {
       home: 'Home',
       experience: 'Experience',
+      photography: 'Photography',
       blog: 'Blog',
       contact: 'Contact',
     },

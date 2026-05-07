@@ -24,6 +24,10 @@ export function Layout() {
   }, [themeState])
 
   useEffect(() => {
+    document.documentElement.lang = lang === 'zh' ? 'zh-Hant' : 'en'
+  }, [lang])
+
+  useEffect(() => {
     trackPageView(location.pathname)
   }, [location.pathname])
 
@@ -32,7 +36,7 @@ export function Layout() {
   }
 
   return (
-    <div className="app-shell">
+    <div className="app-shell" lang={lang === 'zh' ? 'zh-Hant' : 'en'}>
       <Header lang={lang} theme={themeState} onToggleTheme={toggleTheme} />
       <main className="main-content">
         <Outlet />

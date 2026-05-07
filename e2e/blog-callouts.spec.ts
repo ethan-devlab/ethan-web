@@ -2,7 +2,7 @@ import { expect, test } from '@playwright/test'
 
 test.describe('blog callouts', () => {
   test('renders HackMD alerts and directive containers as styled callouts', async ({ page }) => {
-    await page.goto('/ethan-web/en/blog/use-phone-camera-opencv')
+    await page.goto('/en/blog/use-phone-camera-opencv')
 
     const article = page.locator('.blog-article')
     await expect(article).toBeVisible()
@@ -15,7 +15,7 @@ test.describe('blog callouts', () => {
   })
 
   test('renders inline code with a visible background', async ({ page }) => {
-    await page.goto('/ethan-web/en/blog/use-phone-camera-opencv')
+    await page.goto('/en/blog/use-phone-camera-opencv')
 
     const inlineCode = page.locator('.blog-article p code', { hasText: 'Settings' })
     await expect(inlineCode).toBeVisible()

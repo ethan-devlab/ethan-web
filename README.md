@@ -6,7 +6,7 @@ Ethan Chan 曾嘉誠 Personal Portfolio
 
 ## Project description
 
-A bilingual (Chinese/English) personal brand website for Ethan Chan, focused on software engineering capabilities, system architecture thinking, project experience, technical blog writing, and contact channels.
+A bilingual (Chinese/English) personal brand website for Ethan Chan, focused on software engineering capabilities, system architecture thinking, project experience, photography work, technical blog writing, and contact channels.
 
 ## Tech stack
 
@@ -18,6 +18,7 @@ A bilingual (Chinese/English) personal brand website for Ethan Chan, focused on 
 - gray-matter
 - Fuse.js
 - Framer Motion
+- react-icons
 - Swiper
 - react-helmet-async
 
@@ -80,10 +81,26 @@ Then write your article content below frontmatter using Markdown/MDX syntax.
 
 ## Bilingual content guide
 
-- Chinese routes: `/zh/`, `/zh/experience`, `/zh/blog`, `/zh/blog/:slug`, `/zh/contact`
-- English routes: `/en/`, `/en/experience`, `/en/blog`, `/en/blog/:slug`, `/en/contact`
+- Chinese routes: `/zh/`, `/zh/experience`, `/zh/photography`, `/zh/blog`, `/zh/blog/:slug`, `/zh/contact`
+- English routes: `/en/`, `/en/experience`, `/en/photography`, `/en/blog`, `/en/blog/:slug`, `/en/contact`
 - Language switcher keeps current page intent (`/zh/experience` -> `/en/experience`)
 - Keep paired zh/en articles with consistent slugs where possible
+
+## Photography content guide
+
+Photography entries live in `src/data/photography.ts`.
+
+The placeholder version uses stable Lorem Picsum URLs. To replace them with real work, add image files under:
+
+```txt
+public/photography/
+```
+
+Then change an entry's `images` value to one or more filenames, for example:
+
+```ts
+images: ['taipei-night-01.jpg', 'taipei-night-02.jpg']
+```
 
 ## Deployment guide for Zeabur
 

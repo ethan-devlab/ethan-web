@@ -120,7 +120,7 @@ build: 存放真正編譯後產生的執行檔、dll files等
 
 #### c_cpp_properties.json
 若使用 C，將 compilerPath 的 g++ 改成 gcc 即可
-```json=
+```json
 {
     "configurations": [
         {
@@ -152,7 +152,7 @@ includePath 裡的這兩行路徑表示OpenCV的標頭檔案路徑，要讓 VSCo
 
 #### tasks.json
 同理，若使用 C，將 command 的 g++ 改成 gcc 即可
-```json=
+```json
 {
     "tasks": [
         {
@@ -192,7 +192,7 @@ includePath 裡的這兩行路徑表示OpenCV的標頭檔案路徑，要讓 VSCo
 
 #### main.cpp
 範例檔案，`test.png`要換成自己的圖片路徑
-```cpp=
+```cpp
 #include <opencv2/opencv.hpp>
 #include <iostream>
 
@@ -239,7 +239,7 @@ int main() {
 <img src="https://hackmd.io/_uploads/BJdqf3vnxe.png" alt="image" width="400" />
 
 #### CMakeLists.txt
-```cmake=
+```cmake
 cmake_minimum_required(VERSION 3.10)
 
 project(Demo)
@@ -258,7 +258,7 @@ target_link_libraries(Demo ${OpenCV_LIBS})
 ```
 
 ### 3. 編譯和執行
-```shell=
+```shell
 cmake -G "MinGW Makefiles" -S . -B build
 cmake --build build --config Release
 ./build/Demo.exe
