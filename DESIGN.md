@@ -4,7 +4,7 @@
 
 Shopify.com is a dark-first digital theatre — a website that stages its commerce platform like a cinematic premiere. The entire experience unfolds against an abyss of near-black surfaces that carry the faintest whisper of deep forest green (`#02090A`, `#061A1C`, `#102620`), creating a nocturnal atmosphere that feels less like a SaaS marketing page and more like an exclusive product reveal at a tech keynote. This darkness isn't cold or corporate — it's the warm, enveloping dark of a luxury experience, like sitting in the front row of a darkened auditorium.
 
-The typography is the undeniable star. NeueHaasGrotesk — a refined Helvetica descendant — appears at monumental scale (96px) with impossibly light weight (330-400), creating headlines that feel etched in light rather than printed in ink. The `ss03` OpenType feature gives letterforms a distinctive character that separates Shopify's type from generic Helvetica usage. Below the display layer, Inter Variable handles body text with surgical precision, using equally unusual variable weights (420, 450, 550) that live in the spaces between traditional weight stops. This precision signals a company that sweats every detail.
+The typography is the undeniable star. Inter is loaded from Google Fonts and used as the unified English typeface across Windows and macOS, avoiding unavailable local fonts such as Neue Haas Grotesk or Helvetica. At display scale (96px) with impossibly light weight (330-400), it creates headlines that feel etched in light rather than printed in ink. The same variable family handles body text with surgical precision, using unusual weights (420, 450, 550) that live in the spaces between traditional weight stops. This precision signals a company that sweats every detail.
 
 Color is used with extreme restraint. The primary accent is Shopify Neon Green (`#36F4A4`) — an electric mint that appears exclusively on focus rings and accent highlights, pulsing like a bioluminescent signal against the dark canvas. Softer green tints (Aloe `#C1FBD4`, Pistachio `#D4F9E0`) provide atmospheric washes. White is the only text color that matters on dark surfaces, while a zinc-based neutral scale (`#A1A1AA` through `#3F3F46`) handles the hierarchy of quiet information. The result is a design that makes commerce technology feel like it belongs in a science-fiction future.
 
@@ -64,17 +64,17 @@ Color is used with extreme restraint. The primary accent is Shopify Neon Green (
 
 ### Font Family
 
-**Display:** NeueHaasGrotesk (refined Helvetica descendant, variable font)
-- Fallbacks: Helvetica, Arial, sans-serif
-- OpenType features: `ss03` (stylistic set 3 — distinctive letterform alternates)
-- Available weights: 330, 360, 400, 500, 750 (variable)
+**Display:** Inter (Google Fonts variable font)
+- Fallbacks: Noto Sans TC, Arial, sans-serif
+- Available weights: 100-900; use 330, 360, 400, 500, and 750 where the design calls for precision
 - Used for all headings, hero text, and large display elements
 
-**Body:** Inter-Variable
-- Fallbacks: Helvetica, Arial, sans-serif
-- OpenType features: `ss03`
-- Available weights: 400, 420, 450, 500, 550 (variable)
+**Body:** Inter (Google Fonts variable font)
+- Fallbacks: Noto Sans TC, Arial, sans-serif
+- Available weights: 100-900; use 400, 420, 450, 500, and 550 for body and UI hierarchy
 - Used for body text, links, buttons, UI elements
+
+**Traditional Chinese:** Noto Serif TC for localized Chinese page typography, with Noto Sans TC available for mixed-language hero/name fallback.
 
 **Mono:** ui-monospace
 - Fallbacks: SFMono-Regular, Menlo, Monaco, Consolas, Liberation Mono, Courier New
@@ -84,26 +84,26 @@ Color is used with extreme restraint. The primary accent is Shopify Neon Green (
 
 | Role | Size | Weight | Line Height | Letter Spacing | Notes |
 |------|------|--------|-------------|----------------|-------|
-| Display XL | 96px | 400 | 1.00 | — | NeueHaasGrotesk, hero headlines, "ss03" |
-| Display XL Bold | 90.74px | 750 | 1.00 | 4.54px | NeueHaasGrotesk, emphasis display |
-| Display XL Tracked | 96px | 400 | 1.00 | 2.4px | NeueHaasGrotesk, spaced display |
-| Display Light | 96px | 330 | 0.96 | — | NeueHaasGrotesk, ethereal display |
-| Heading 1 | 70px | 330 | 1.00 | — | NeueHaasGrotesk, section titles |
-| Heading 2 | 55px | 330 | 1.16 | — | NeueHaasGrotesk, subsections |
-| Heading 3 | 48px | 330 | 1.14 | — | NeueHaasGrotesk, feature titles |
-| Heading 4 | 32px | 360 | 1.14 | 0.32px | NeueHaasGrotesk, card headings |
-| Heading 5 | 28px | 500 | 1.28 | 0.42px | NeueHaasGrotesk, small headings |
-| Heading 6 | 24px | 400 | 1.14 | 0.36px | NeueHaasGrotesk, minor headings |
-| Body Large | 20px | 500 | 1.40 | 0.3px | NeueHaasGrotesk / Inter, lead paragraphs |
-| Body | 18px | 400 | 1.56 | — | Inter-Variable, standard body |
-| Body Medium | 18px | 550 | 1.56 | — | Inter-Variable, emphasized body |
-| Body Small | 16px | 400 | 1.50 | — | Inter / NeueHaasGrotesk, compact body |
-| Body Small Medium | 16px | 420 | 1.50 | — | Inter-Variable, slightly emphasized |
-| Button | 16px | 400 | 1.50 | — | NeueHaasGrotesk, CTA text |
-| Nav Link | 18px | 500 | 1.25 | 0.72px | NeueHaasGrotesk, navigation items |
-| Caption | 14px | 500 | 1.49 | 0.28px | NeueHaasGrotesk / Inter, metadata |
-| Caption Medium | 14px | 550 | 1.49 | 0.28px | Inter-Variable, emphasized caption |
-| Overline | 15.36px | 400 | 1.50 | 1.54px | NeueHaasGrotesk, wide-tracked labels |
+| Display XL | 96px | 400 | 1.00 | — | Inter, hero headlines |
+| Display XL Bold | 90.74px | 750 | 1.00 | 4.54px | Inter, emphasis display |
+| Display XL Tracked | 96px | 400 | 1.00 | 2.4px | Inter, spaced display |
+| Display Light | 96px | 330 | 0.96 | — | Inter, ethereal display |
+| Heading 1 | 70px | 330 | 1.00 | — | Inter, section titles |
+| Heading 2 | 55px | 330 | 1.16 | — | Inter, subsections |
+| Heading 3 | 48px | 330 | 1.14 | — | Inter, feature titles |
+| Heading 4 | 32px | 360 | 1.14 | 0.32px | Inter, card headings |
+| Heading 5 | 28px | 500 | 1.28 | 0.42px | Inter, small headings |
+| Heading 6 | 24px | 400 | 1.14 | 0.36px | Inter, minor headings |
+| Body Large | 20px | 500 | 1.40 | 0.3px | Inter, lead paragraphs |
+| Body | 18px | 400 | 1.56 | — | Inter, standard body |
+| Body Medium | 18px | 550 | 1.56 | — | Inter, emphasized body |
+| Body Small | 16px | 400 | 1.50 | — | Inter, compact body |
+| Body Small Medium | 16px | 420 | 1.50 | — | Inter, slightly emphasized |
+| Button | 16px | 400 | 1.50 | — | Inter, CTA text |
+| Nav Link | 18px | 500 | 1.25 | 0.72px | Inter, navigation items |
+| Caption | 14px | 500 | 1.49 | 0.28px | Inter, metadata |
+| Caption Medium | 14px | 550 | 1.49 | 0.28px | Inter, emphasized caption |
+| Overline | 15.36px | 400 | 1.50 | 1.54px | Inter, wide-tracked labels |
 | Micro | 13px | 500 | 1.50 | -0.13px | Inter, tight-tracked small text |
 | Label | 12px | 400 | 1.20 | 0.72px | Inter, uppercase labels |
 | Code | 16px | 400 | 1.50 | — | ui-monospace, uppercase, code blocks |
@@ -111,7 +111,7 @@ Color is used with extreme restraint. The primary accent is Shopify Neon Green (
 
 ### Principles
 
-Shopify's typography is a masterclass in variable font precision. The display layer lives almost exclusively at weights 330-400 — featherweight text that appears to hover above the dark background like projected light. This is the opposite of the bold, heavy approach most SaaS sites take: where others shout, Shopify whispers at scale. The 96px headlines at weight 330 create a paradox of enormous size and delicate stroke that feels both monumental and fragile. The `ss03` OpenType feature activates a stylistic set that gives specific characters (likely 'a', 'g', and certain numerals) a more refined appearance, distinguishing Shopify's typography from standard Helvetica Neue usage. Inter Variable handles the body layer with surgical precision, using weights like 420 and 550 that exist between the traditional stops — every piece of text has exactly the visual weight it needs.
+Shopify's typography is a masterclass in variable font precision. The display layer lives almost exclusively at weights 330-400 — featherweight text that appears to hover above the dark background like projected light. This is the opposite of the bold, heavy approach most SaaS sites take: where others shout, Shopify whispers at scale. The 96px headlines at weight 330 create a paradox of enormous size and delicate stroke that feels both monumental and fragile. Inter handles both the display and body layers with surgical precision, using weights like 420 and 550 that exist between the traditional stops — every piece of text has exactly the visual weight it needs while rendering consistently across Windows and macOS.
 
 ## 4. Component Stylings
 
@@ -171,7 +171,7 @@ Shopify's typography is a masterclass in variable font precision. The display la
 - Background: transparent (overlaid on dark hero), becomes Forest (`#102620`) on scroll
 - Height: ~64px
 - Left: Shopify wordmark logo (SVG, white on dark)
-- Center/Right: nav links in 18px/500 NeueHaasGrotesk, white, letter-spacing 0.72px
+- Center/Right: nav links in 18px/500 Inter, white, letter-spacing 0.72px
 - CTA: White pill button "Start for free" (right)
 - Secondary CTA: Ghost button with white border
 - Hover: links shift to Muted Text (`#A1A1AA`) or gain underline
@@ -189,7 +189,7 @@ Shopify's typography is a masterclass in variable font precision. The display la
 ### Trust Indicators
 
 - Statistics displayed prominently: "15+" (years), "150M+" (buyers)
-- Numbers at display scale in NeueHaasGrotesk
+- Numbers at display scale in Inter
 - Partner/developer ecosystem callout sections
 - Dark-themed testimonials integrated into the page flow
 
@@ -264,21 +264,22 @@ Shopify's shadow system is unusually sophisticated. Rather than single-value sha
 - Use Neon Green (`#36F4A4`) exclusively for focus states and critical accent highlights
 - Apply 9999px radius to all primary CTA buttons — the full pill is non-negotiable
 - Use the multi-layered shadow system for card elevation — single shadows look flat
-- Maintain the `ss03` OpenType feature across all text — it's part of the typographic identity
-- Use Inter Variable for body text and NeueHaasGrotesk for headings — never mix their roles
+- Use Inter for English body text, headings, navigation, buttons, and display typography
+- Use Noto Serif TC for localized Traditional Chinese page typography and Noto Sans TC for mixed-language fallback
 - Create theatrical spacing between sections (80px+) for cinematic pacing
 
 ### Don't
 
 - Don't use pure black (#000000) for text on dark backgrounds — use white (#FFFFFF) only
 - Don't introduce warm colors (orange, red, yellow) — the palette is strictly cool (greens, teals, neutrals)
-- Don't use font weights above 500 for NeueHaasGrotesk body text — heavy weights break the ethereal feel
+- Don't rely on unavailable proprietary or system-dependent English fonts such as Neue Haas Grotesk or Helvetica
+- Don't use font weights above 500 for standard body text — heavy weights break the ethereal feel
 - Don't apply green accents to large surfaces — Neon Green is for small, precise highlights only
 - Don't use sharp corners (0px radius) on interactive elements — everything rounds
 - Don't add bright backgrounds — the dark theme is fundamental, not optional
 - Don't use single-layer box shadows — the stacked approach is the system
 - Don't set line-height above 1.56 for body text — Shopify's text is relatively compact
-- Don't mix NeueHaasGrotesk and Inter at the same size/role — their weight scales differ
+- Don't mix multiple English sans families for the same role — Inter should remain the unified English font
 - Don't use letter-spacing below 0 for headings — Shopify headings track neutral or positive
 
 ## 8. Responsive Behavior
@@ -331,9 +332,9 @@ Shopify's shadow system is unusually sophisticated. Rather than single-value sha
 
 ### Example Component Prompts
 
-- "Create a hero section on true black (#000000) background with a 96px/330 NeueHaasGrotesk headline in white, a 20px/500 subtitle in #A1A1AA, and two pill buttons: white filled (9999px radius) and ghost with 2px white border"
+- "Create a hero section on true black (#000000) background with a 96px/330 Inter headline in white, a 20px/500 subtitle in #A1A1AA, and two pill buttons: white filled (9999px radius) and ghost with 2px white border"
 - "Design a feature card on Deep Teal (#02090A) with 1px #1E2C31 border, 12px radius, multi-layer shadow (1px ring + 2px/4px/8px blur at 10% black), containing a 32px/360 white heading and 18px/400 #A1A1AA body text"
-- "Build a stats section on Dark Forest (#061A1C) with 96px/750 white numbers (NeueHaasGrotesk), 16px/400 #A1A1AA descriptive labels, and generous 64px spacing between stat blocks"
+- "Build a stats section on Dark Forest (#061A1C) with 96px/750 white numbers (Inter), 16px/400 #A1A1AA descriptive labels, and generous 64px spacing between stat blocks"
 - "Create a sticky nav with transparent background (becomes #102620 on scroll), white Shopify logo left, 18px/500 white nav links with 0.72px letter-spacing, and a white pill 'Start for free' button right"
 - "Design a tag/badge with rgba(255,255,255,0.2) frosted glass background, 4px radius, 12px 16px padding, white 16px text — floating over a dark card surface"
 
@@ -347,4 +348,4 @@ When refining existing screens generated with this design system:
 5. Neon Green (#36F4A4) is precious — use sparingly for focus and accent only
 6. The dark surface hierarchy (black → deep teal → dark forest → forest) creates subtle depth
 7. Shadows are multi-layered — a single `box-shadow` value won't capture the Shopify card feel
-8. `ss03` OpenType feature must be active on all text for typographic consistency
+8. Inter must remain the unified English font for typographic consistency across Windows and macOS
