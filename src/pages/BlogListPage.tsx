@@ -5,7 +5,7 @@ import { BlogFilters } from '../components/blog/BlogFilters'
 import { BlogLayout } from '../components/blog/BlogLayout'
 import { SEO } from '../components/common/SEO'
 import { DEFAULT_LANGUAGE, isLanguage, type Language } from '../i18n/locales'
-import { filterPosts, getAllPosts, getCategories, getPublishedPostsByLang, getTags } from '../utils/blog'
+import { filterPosts, getAllPosts, getCategories, getTags } from '../utils/blog'
 
 function resolveLanguage(lang: string | undefined): Language {
   if (!lang || !isLanguage(lang)) {
