@@ -6,7 +6,7 @@ export const contactIntro: LocalizedText = {
 }
 
 export const contactChannels = {
-  email: 'jcwork.chan@gmail.com',
+  email: 'hello@ethan-devlab.com',
   github: 'https://github.com/ethan-devlab',
   facebook: 'https://www.facebook.com/jcheng.chan',
 }
