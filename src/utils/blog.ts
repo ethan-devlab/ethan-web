@@ -102,6 +102,10 @@ function buildPostList(): BlogPost[] {
 
 const allPosts = buildPostList()
 
+export function getAllPosts(): BlogPost[] {
+  return allPosts.filter((post) => post.published)
+}
+
 export function getPublishedPostsByLang(lang: Language): BlogPost[] {
   return allPosts.filter((post) => post.lang === lang && post.published)
 }
@@ -121,10 +125,15 @@ export function getTags(posts: BlogPost[]): string[] {
 export function filterPosts(
   posts: BlogPost[],
   searchText: string,
+  language: string,
   category: string,
   tag: string,
 ): BlogPost[] {
   let current = posts
+
+  if (language !== 'all') {
+    current = current.filter((post) => post.lang === language)
+  }
 
   if (category !== 'all') {
     current = current.filter((post) => post.category === category)

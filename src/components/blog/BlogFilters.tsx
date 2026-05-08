@@ -8,12 +8,16 @@ type BlogFiltersProps = {
   tag: string
   onTagChange: (value: string) => void
   tags: string[]
+  language: string
+  onLanguageChange: (value: string) => void
 }
 
 export function BlogFilters({
   lang,
   searchText,
   onSearchTextChange,
+  language,
+  onLanguageChange,
   category,
   onCategoryChange,
   categories,
@@ -29,6 +33,12 @@ export function BlogFilters({
         placeholder={lang === 'zh' ? '搜尋標題、摘要、標籤、分類' : 'Search title, description, tags, category'}
         onChange={(event) => onSearchTextChange(event.target.value)}
       />
+
+      <select value={language} onChange={(event) => onLanguageChange(event.target.value)}>
+        <option value="all">{lang === 'zh' ? '所有語言' : 'All languages'}</option>
+        <option value="zh">中文</option>
+        <option value="en">English</option>
+      </select>
 
       <select value={category} onChange={(event) => onCategoryChange(event.target.value)}>
         <option value="all">{lang === 'zh' ? '所有分類' : 'All categories'}</option>

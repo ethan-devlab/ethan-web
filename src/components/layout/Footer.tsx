@@ -44,7 +44,7 @@ export function Footer() {
           </a>
         </p>
         </div>
-        <p className="footer__text">© 2026 Ethan Chan. All rights reserved.</p>
+        <p className="footer__text">© 2026 Ethan DevLab. All rights reserved.</p>
       </div>
     </footer>
   )

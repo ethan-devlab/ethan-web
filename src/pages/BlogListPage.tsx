@@ -5,7 +5,7 @@ import { BlogFilters } from '../components/blog/BlogFilters'
 import { BlogLayout } from '../components/blog/BlogLayout'
 import { SEO } from '../components/common/SEO'
 import { DEFAULT_LANGUAGE, isLanguage, type Language } from '../i18n/locales'
-import { filterPosts, getCategories, getPublishedPostsByLang, getTags } from '../utils/blog'
+import { filterPosts, getAllPosts, getCategories, getPublishedPostsByLang, getTags } from '../utils/blog'
 
 function resolveLanguage(lang: string | undefined): Language {
   if (!lang || !isLanguage(lang)) {
@@ -17,17 +17,19 @@ function resolveLanguage(lang: string | undefined): Language {
 export function BlogListPage() {
   const { lang } = useParams()
   const language = resolveLanguage(lang)
-  const posts = useMemo(() => getPublishedPostsByLang(language), [language])
+  // const posts = useMemo(() => getPublishedPostsByLang(language), [language])
+  const posts = useMemo(() => getAllPosts(), [])
   const categories = useMemo(() => getCategories(posts), [posts])
   const tags = useMemo(() => getTags(posts), [posts])
 
   const [searchText, setSearchText] = useState('')
+  const [selectedLanguage, setSelectedLanguage] = useState('all')
   const [selectedCategory, setSelectedCategory] = useState('all')
   const [selectedTag, setSelectedTag] = useState('all')
 
   const filtered = useMemo(
-    () => filterPosts(posts, searchText, selectedCategory, selectedTag),
-    [posts, searchText, selectedCategory, selectedTag],
+    () => filterPosts(posts, searchText, selectedLanguage, selectedCategory, selectedTag),
+    [posts, searchText, selectedLanguage, selectedCategory, selectedTag],
   )
 
   return (
@@ -47,6 +49,8 @@ export function BlogListPage() {
           lang={language}
           searchText={searchText}
           onSearchTextChange={setSearchText}
+          language={selectedLanguage}
+          onLanguageChange={setSelectedLanguage}
           category={selectedCategory}
           onCategoryChange={setSelectedCategory}
           categories={categories}
