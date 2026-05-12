@@ -10,10 +10,10 @@ type HeroSectionProps = {
   lang: Language
 }
 
-const heroDescription = {
-  zh: '喜歡 coding 和研究新科技，對 AI、資安、IoT 和軟體工程都有興趣。目前專注在無人機影像處理、無人機導航算法、地端 AI 應用開發、自動化應用開發、網站開發和系統架構分析與設計。',
-  en: 'Passionate about coding and exploring new technologies, with interests spanning AI, information security, IoT, and software engineering. Currently focused on drone image processing, drone navigation algorithms, ground-based AI application development, automation application development, web development, and system architecture analysis and design.',
-}
+// const heroDescription = {
+//   zh: '喜歡 coding 和研究新科技，對 AI、資安、IoT 和軟體工程都有興趣。目前專注在無人機影像處理、無人機導航算法、地端 AI 應用開發、自動化應用開發、網站開發和系統架構分析與設計。',
+//   en: 'Passionate about coding and exploring new technologies, with interests spanning AI, information security, IoT, and software engineering. Currently focused on drone image processing, drone navigation algorithms, ground-based AI application development, automation application development, web development, and system architecture analysis and design.',
+// }
 
 export function HeroSection({ lang }: HeroSectionProps) {
   const t = translations[lang]
