@@ -21,10 +21,7 @@ Other common commands:
 Blog posts live in `src/content/blog/zh/` and `src/content/blog/en/`. Add matching posts in both folders when you want bilingual coverage, and keep frontmatter complete with `title`, `description`, `date`, `category`, `tags`, `published`, `lang`, and `slug`.
 
 ## Environment
-Set `VITE_GA_MEASUREMENT_ID` locally only if you want Google Analytics enabled. Cloudflare Pages deployments also require `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID` as GitHub secrets.
-
-## Deployment
-GitHub Actions deploys the main branch to Cloudflare Pages through `.github/workflows/deploy.yml`. SPA fallback is handled by `public/_redirects`.
+Set `VITE_GA_MEASUREMENT_ID` locally only if you want Google Analytics enabled.
 
 ## Contact
 - Email: [hello@ethan-devlab.com](mailto:hello@ethan-devlab.com)
