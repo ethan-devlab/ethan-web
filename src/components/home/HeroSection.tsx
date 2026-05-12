@@ -49,21 +49,21 @@ export function HeroSection({ lang }: HeroSectionProps) {
           <br />
           <strong>Based in Malaysia, anak 🇲🇾. Currently studying in Taiwan.</strong>
         </motion.p>
-        <motion.p
+        {/* <motion.p
           className="hero__description"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.45, delay: 0.16 }}
         >
           {heroDescription[lang]}
-        </motion.p>
+        </motion.p> */}
         <motion.div
           className="hero__cta"
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4, delay: 0.24 }}
         >
-          <Link
+          {/* <Link
             className={getButtonClass('primary')}
             to={`/${lang}/experience`}
             onClick={() =>
@@ -71,7 +71,7 @@ export function HeroSection({ lang }: HeroSectionProps) {
             }
           >
             {t.home.ctaExperience}
-          </Link>
+          </Link> */}
           <Link
             className={getButtonClass('secondary')}
             to={`/${lang}/contact`}

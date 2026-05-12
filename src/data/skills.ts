@@ -3,38 +3,24 @@ import type { SkillGroup } from './types'
 export const skillGroups: SkillGroup[] = [
   {
     title: {
-      en: 'Languages',
-      zh: '語言',
-    },
-    items: ['JavaScript', 'Python', 'SQL', 'HTML', 'CSS', 'Java', 'C/C++', 'Assembly'],
-  },
-  {
-    title: {
-      en: 'Frontend Engineering',
-      zh: '前端',
-    },
-    items: ['HTML', 'CSS', 'JavaScript', 'Responsive Web Design', 'UI Implementation'],
-  },
-  {
-    title: {
       en: 'Backend Engineering',
       zh: '後端',
     },
-    items: ['Node.js', 'Python', 'RESTful APIs', 'Microservices', 'API Integration'],
+    items: ['Node.js', 'Python', 'Java', 'RESTful APIs', 'Microservices', 'API Integration'],
   },
   {
     title: {
-      en: 'Web Frameworks & Libraries',
-      zh: 'Web 框架與函式庫',
+      en: 'Web',
+      zh: 'Web',
     },
-    items: ['React', 'Django', 'Flask', 'Tailwind CSS'],
+    items: ['React', 'Django', 'Flask', 'Tailwind CSS', 'HTML', 'CSS', 'JavaScript', 'Responsive Web Design'],
   },
   {
     title: {
       en: 'AI Tools',
       zh: 'AI 工具',
     },
-    items: ['Machine Learning', 'Deep Learning', 'OpenAI', 'Gemini', 'Claude', 'LangChain', 'Ollama', 'oMLX', 'Prompt Engineering',],
+    items: ['Machine Learning', 'Deep Learning', 'OpenAI', 'Gemini', 'Claude', 'LangChain', 'Ollama', 'oMLX', 'LlamaIndex',],
   },
   {
     title: {

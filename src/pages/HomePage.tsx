@@ -17,7 +17,7 @@ export function HomePage() {
   const language = resolveLanguage(lang)
   const description =
     language === 'zh'
-      ? 'Ethan Chan 曾嘉誠的個人技術品牌網站，記錄做過的專案、學過的技能和部落格寫作。'
+      ? 'Ethan Chan 曾嘉誠的個人技術品牌網站，記錄做過的專案、學過的技能、攝影集和部落格寫作。'
       : 'Ethan Chan\'s personal tech brand website, documenting projects, skills learned, and blog writing.'
 
   return (
