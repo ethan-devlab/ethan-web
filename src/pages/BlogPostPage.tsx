@@ -16,7 +16,7 @@ function resolveLanguage(lang: string | undefined): Language {
 export function BlogPostPage() {
   const { lang, slug } = useParams()
   const language = resolveLanguage(lang)
-  const post = getPublishedPostBySlug(language, slug ?? '')
+  const post = getPublishedPostBySlug(slug ?? '')
 
   if (!post) {
     return (

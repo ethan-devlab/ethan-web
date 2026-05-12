@@ -106,12 +106,12 @@ export function getAllPosts(): BlogPost[] {
   return allPosts.filter((post) => post.published)
 }
 
-export function getPublishedPostsByLang(lang: Language): BlogPost[] {
-  return allPosts.filter((post) => post.lang === lang && post.published)
-}
+// export function getPublishedPostsByLang(lang: Language): BlogPost[] {
+//   return allPosts.filter((post) => post.lang === lang && post.published)
+// }
 
-export function getPublishedPostBySlug(lang: Language, slug: string): BlogPost | undefined {
-  return getPublishedPostsByLang(lang).find((post) => post.slug === slug)
+export function getPublishedPostBySlug(slug: string): BlogPost | undefined {
+  return allPosts.find((post) => post.slug === slug && post.published)
 }
 
 export function getCategories(posts: BlogPost[]): string[] {
