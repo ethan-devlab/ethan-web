@@ -71,15 +71,15 @@ This repository is near completion. Keep changes small, preserve the current arc
 
 - Generate one final English commit message only after the work is complete. Use conventional prefix like `feat:`, `fix:`, `docs:`, etc.
 - Don't commit. Let the author, Ethan, review the final changes and commit.
-- Run `npm run build`, `npm run lint`, and `npm run typecheck` when the scripts exist.
-- CI lives in `.github/workflows/ci.yml` and currently runs on Node 24 with `npm ci`, lint, typecheck, and build.
-- Zeabur should keep `npm install` as the install command, `npm run build` as the build command, and `dist` as the output directory.
-- Preserve `BrowserRouter` and keep SPA fallback behavior working for deep links.
+- Run `pnpm build`, `pnpm lint`, and `pnpm typecheck` when the scripts exist.
+- CI lives in `.github/workflows/ci.yml` and currently runs on Node 24 with `pnpm install --frozen-lockfile`, lint, typecheck, and build.
+- Cloudflare Pages should keep `pnpm install --frozen-lockfile` as the install command, `pnpm build` as the build command, and `dist` as the output directory.
+- Preserve `BrowserRouter` and keep SPA fallback behavior working for deep links. Cloudflare Pages fallback is handled by `public/_redirects`.
 
 ## 9. README and Documentation
 
 - Keep `README.md` concise but complete.
-- It should cover project name, project description, tech stack, design system source, local development, environment variables, blog authoring, bilingual content, Zeabur deployment, GitHub Actions CI, and git workflow.
+- It should cover project name, project description, tech stack, design system source, local development, environment variables, blog authoring, bilingual content, Cloudflare Pages deployment, GitHub Actions CI, and git workflow.
 - Include a short guide for adding new blog posts in both language folders.
 
 ## 10. Non-Negotiables
