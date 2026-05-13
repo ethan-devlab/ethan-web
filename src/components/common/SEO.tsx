@@ -6,9 +6,10 @@ type SEOProps = {
   description: string
   path: string
   type?: 'website' | 'article'
+  robots?: string
 }
 
-export function SEO({ title, description, path, type = 'website' }: SEOProps) {
+export function SEO({ title, description, path, type = 'website', robots }: SEOProps) {
   const canonical = getCanonicalUrl(path)
   const fullTitle = `${title} | ${SITE_NAME}`
 
@@ -21,6 +22,7 @@ export function SEO({ title, description, path, type = 'website' }: SEOProps) {
       <meta property="og:description" content={description} />
       <meta property="og:type" content={type} />
       <meta property="og:url" content={canonical} />
+      {robots ? <meta name="robots" content={robots} /> : null}
     </Helmet>
   )
 }

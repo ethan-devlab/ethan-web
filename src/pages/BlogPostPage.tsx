@@ -1,10 +1,10 @@
-import { Link, useParams } from 'react-router-dom'
+import { Link, useParams, useSearchParams } from 'react-router-dom'
 import { BlogLayout } from '../components/blog/BlogLayout'
 import { Callout, MdxCodeBlock, MdxInlineCode } from '../components/blog/MDXComponents'
 import { SEO } from '../components/common/SEO'
 import { DEFAULT_LANGUAGE, isLanguage, type Language } from '../i18n/locales'
 import { trackButtonClick } from '../utils/analytics'
-import { getPublishedPostBySlug } from '../utils/blog'
+import { getBlogPostBySlug, isDraftPreviewEnabled } from '../utils/blog'
 
 function resolveLanguage(lang: string | undefined): Language {
   if (!lang || !isLanguage(lang)) {
@@ -15,8 +15,11 @@ function resolveLanguage(lang: string | undefined): Language {
 
 export function BlogPostPage() {
   const { lang, slug } = useParams()
+  const [searchParams] = useSearchParams()
   const language = resolveLanguage(lang)
-  const post = getPublishedPostBySlug(slug ?? '')
+  const draftPreviewEnabled = isDraftPreviewEnabled(searchParams)
+  const post = getBlogPostBySlug(slug ?? '', language, { includeDrafts: draftPreviewEnabled })
+  const blogIndexPath = draftPreviewEnabled ? `/${language}/blog?preview=drafts` : `/${language}/blog`
 
   if (!post) {
     return (
@@ -26,9 +29,9 @@ export function BlogPostPage() {
         </div>
         <Link
           className="btn btn--secondary"
-          to={`/${language}/blog`}
+          to={blogIndexPath}
           onClick={() =>
-            trackButtonClick({ label: 'back_to_blog', area: 'blog_post_empty_state', target: `/${language}/blog` })
+            trackButtonClick({ label: 'back_to_blog', area: 'blog_post_empty_state', target: blogIndexPath })
           }
         >
           {language === 'zh' ? '返回部落格' : 'Back to Blog'}
@@ -51,6 +54,7 @@ export function BlogPostPage() {
         description={post.description}
         path={`/${language}/blog/${post.slug}`}
         type="article"
+        robots={post.published ? undefined : 'noindex,nofollow'}
       />
 
       <BlogLayout lang={language}>
@@ -58,6 +62,9 @@ export function BlogPostPage() {
           <header>
             <p className="timeline__period">
               {post.date} · {post.category}
+              {!post.published ? (
+                <span className="blog-article__draft-badge">{language === 'zh' ? '草稿' : 'Draft'}</span>
+              ) : null}
             </p>
             <h1>{post.title}</h1>
             <p>{post.description}</p>

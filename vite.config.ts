@@ -15,7 +15,13 @@ type MarkdownNode = {
     name: string
     value: string
   }>
+  data?: Record<string, unknown>
   children?: MarkdownNode[]
+}
+
+type ParsedCalloutStart = {
+  type: string
+  title?: string
 }
 
 const CALLOUT_ALIASES: Record<string, string> = {
@@ -52,6 +58,10 @@ function normalizeCalloutType(rawType: string): string | null {
   return CALLOUT_ALIASES[rawType.trim().toLowerCase()] ?? null
 }
 
+function normalizeCalloutTitle(rawTitle: string): string {
+  return rawTitle.replace(/(?:<br\s*\/?>\s*)+$/gi, '').trim()
+}
+
 function isParagraph(node: MarkdownNode): boolean {
   return node.type === 'paragraph'
 }
@@ -60,17 +70,25 @@ function isContainerEnd(node: MarkdownNode): boolean {
   return isParagraph(node) && getTextContent(node).trim() === ':::'
 }
 
-function parseContainerStart(node: MarkdownNode): string | null {
+function parseContainerStart(node: MarkdownNode): ParsedCalloutStart | null {
   if (!isParagraph(node)) {
     return null
   }
 
-  const match = getTextContent(node).trim().match(/^:::\s*([a-z-]+)\s*$/i)
+  const match = getTextContent(node).trim().match(/^:::\s*([a-z-]+)(?:[ \t]+(.*))?$/i)
   if (!match) {
     return null
   }
 
-  return normalizeCalloutType(match[1])
+  const type = normalizeCalloutType(match[1])
+  if (!type) {
+    return null
+  }
+
+  return {
+    type,
+    title: match[2] === undefined ? undefined : normalizeCalloutTitle(match[2]),
+  }
 }
 
 function parseDirectiveCallout(node: MarkdownNode): MarkdownNode | null {
@@ -83,24 +101,110 @@ function parseDirectiveCallout(node: MarkdownNode): MarkdownNode | null {
     return null
   }
 
-  const contentChildren = node.children ?? []
+  const { contentChildren, title } = extractDirectiveLabelTitle(node.children ?? [])
   transformCallouts({ type: 'root', children: contentChildren })
 
-  return createCalloutNode(type, contentChildren)
+  return createCalloutNode(type, contentChildren, title)
 }
 
-function createCalloutNode(type: string, children: MarkdownNode[]): MarkdownNode {
+function createCalloutNode(type: string, children: MarkdownNode[], title?: string): MarkdownNode {
+  const attributes: NonNullable<MarkdownNode['attributes']> = [
+    {
+      type: 'mdxJsxAttribute',
+      name: 'type',
+      value: type,
+    },
+  ]
+
+  if (title !== undefined) {
+    attributes.push({
+      type: 'mdxJsxAttribute',
+      name: 'title',
+      value: title,
+    })
+  }
+
   return {
     type: 'mdxJsxFlowElement',
     name: 'Callout',
-    attributes: [
-      {
-        type: 'mdxJsxAttribute',
-        name: 'type',
-        value: type,
-      },
-    ],
+    attributes,
     children,
+  }
+}
+
+function isDirectiveLabel(node: MarkdownNode): boolean {
+  return node.data?.directiveLabel === true
+}
+
+function extractDirectiveLabelTitle(children: MarkdownNode[]): {
+  contentChildren: MarkdownNode[]
+  title?: string
+} {
+  const [firstChild, ...restChildren] = children
+
+  if (!firstChild || !isDirectiveLabel(firstChild)) {
+    return { contentChildren: children }
+  }
+
+  return {
+    contentChildren: restChildren,
+    title: normalizeCalloutTitle(getTextContent(firstChild)),
+  }
+}
+
+function splitParagraphAfterAlertMarker(paragraph: MarkdownNode): {
+  bodyParagraph: MarkdownNode
+  title: string
+} {
+  const bodyParagraph = structuredClone(paragraph)
+  const children = bodyParagraph.children ?? []
+  const firstInlineChild = children[0]
+
+  if (firstInlineChild?.type === 'text' && typeof firstInlineChild.value === 'string') {
+    firstInlineChild.value = firstInlineChild.value.replace(/^\[!([a-z-]+)\][^\S\r\n]*/i, '')
+  }
+
+  const titleChildren: MarkdownNode[] = []
+  const bodyChildren: MarkdownNode[] = []
+  let hasLineBreak = false
+
+  for (const child of children) {
+    if (hasLineBreak) {
+      bodyChildren.push(child)
+      continue
+    }
+
+    if (child.type !== 'text' || typeof child.value !== 'string') {
+      titleChildren.push(child)
+      continue
+    }
+
+    const lineBreakIndex = child.value.search(/\r?\n/)
+
+    if (lineBreakIndex === -1) {
+      titleChildren.push(child)
+      continue
+    }
+
+    const titleValue = child.value.slice(0, lineBreakIndex)
+    const bodyValue = child.value.slice(lineBreakIndex).replace(/^\r?\n/, '')
+
+    if (titleValue) {
+      titleChildren.push({ ...child, value: titleValue })
+    }
+
+    if (bodyValue) {
+      bodyChildren.push({ ...child, value: bodyValue })
+    }
+
+    hasLineBreak = true
+  }
+
+  bodyParagraph.children = bodyChildren
+
+  return {
+    bodyParagraph,
+    title: normalizeCalloutTitle(getTextContent({ type: 'root', children: titleChildren })),
   }
 }
 
@@ -119,7 +223,7 @@ function parseAlertBlockquote(node: MarkdownNode): MarkdownNode | null {
     return null
   }
 
-  const match = firstInlineChild.value.match(/^\[!([a-z-]+)\]\s*/i)
+  const match = firstInlineChild.value.match(/^\[!([a-z-]+)\][^\S\r\n]*/i)
   if (!match) {
     return null
   }
@@ -129,18 +233,14 @@ function parseAlertBlockquote(node: MarkdownNode): MarkdownNode | null {
     return null
   }
 
-  const normalizedFirstChild = structuredClone(firstChild)
-  const normalizedFirstInlineChild = normalizedFirstChild.children?.[0]
-  if (normalizedFirstInlineChild?.type === 'text' && typeof normalizedFirstInlineChild.value === 'string') {
-    normalizedFirstInlineChild.value = normalizedFirstInlineChild.value.replace(/^\[!([a-z-]+)\]\s*/i, '')
-  }
+  const { bodyParagraph, title } = splitParagraphAfterAlertMarker(firstChild)
 
   const contentChildren =
-    getTextContent(normalizedFirstChild).trim().length > 0
-      ? [normalizedFirstChild, ...restChildren]
+    getTextContent(bodyParagraph).trim().length > 0
+      ? [bodyParagraph, ...restChildren]
       : restChildren
 
-  return createCalloutNode(type, contentChildren)
+  return createCalloutNode(type, contentChildren, title)
 }
 
 function transformCalloutChildren(children: MarkdownNode[]): MarkdownNode[] {
@@ -155,9 +255,9 @@ function transformCalloutChildren(children: MarkdownNode[]): MarkdownNode[] {
       continue
     }
 
-    const containerType = parseContainerStart(node)
+    const containerStart = parseContainerStart(node)
 
-    if (containerType) {
+    if (containerStart) {
       const containerChildren: MarkdownNode[] = []
       let cursor = index + 1
 
@@ -168,7 +268,7 @@ function transformCalloutChildren(children: MarkdownNode[]): MarkdownNode[] {
 
       if (cursor < children.length && isContainerEnd(children[cursor])) {
         transformCallouts({ type: 'root', children: containerChildren })
-        transformedChildren.push(createCalloutNode(containerType, containerChildren))
+        transformedChildren.push(createCalloutNode(containerStart.type, containerChildren, containerStart.title))
         index = cursor
         continue
       }

@@ -25,6 +25,13 @@ export type BlogModule = {
   frontmatter?: Record<string, unknown>
 }
 
+type BlogPostQueryOptions = {
+  includeDrafts?: boolean
+}
+
+const DRAFT_PREVIEW_PARAM = 'preview'
+const DRAFT_PREVIEW_VALUE = 'drafts'
+
 const compiledModules = import.meta.glob('../content/blog/*/*.mdx', {
   eager: true,
 }) as Record<string, BlogModule>
@@ -102,13 +109,27 @@ function buildPostList(): BlogPost[] {
 
 const allPosts = buildPostList()
 
-export function getAllPosts(): BlogPost[] {
-  return allPosts.filter((post) => post.published)
+export function isDraftPreviewEnabled(searchParams: URLSearchParams): boolean {
+  return import.meta.env.DEV && searchParams.get(DRAFT_PREVIEW_PARAM) === DRAFT_PREVIEW_VALUE
 }
 
-// export function getPublishedPostsByLang(lang: Language): BlogPost[] {
-//   return allPosts.filter((post) => post.lang === lang && post.published)
-// }
+export function getBlogPosts(options: BlogPostQueryOptions = {}): BlogPost[] {
+  return allPosts.filter((post) => options.includeDrafts || post.published)
+}
+
+export function getAllPosts(): BlogPost[] {
+  return getBlogPosts()
+}
+
+export function getBlogPostBySlug(
+  slug: string,
+  lang: Language,
+  options: BlogPostQueryOptions = {},
+): BlogPost | undefined {
+  return allPosts.find(
+    (post) => post.slug === slug && post.lang === lang && (options.includeDrafts || post.published),
+  )
+}
 
 export function getPublishedPostBySlug(slug: string): BlogPost | undefined {
   return allPosts.find((post) => post.slug === slug && post.published)

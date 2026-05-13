@@ -3,6 +3,7 @@ import { motion } from 'framer-motion'
 import type { Language } from '../../i18n/locales'
 import { translations } from '../../i18n/translations'
 import { trackButtonClick } from '../../utils/analytics'
+import { getBlogPostBySlug } from '../../utils/blog'
 import { getButtonClass } from '../../utils/button'
 import avatarImage from '../../assets/me.jpg'
 
@@ -17,6 +18,8 @@ type HeroSectionProps = {
 
 export function HeroSection({ lang }: HeroSectionProps) {
   const t = translations[lang]
+  const aboutMePost = getBlogPostBySlug('hello-world', lang) ?? getBlogPostBySlug('hello-world', 'zh')
+  const aboutMePath = aboutMePost ? `/${aboutMePost.lang}/blog/${aboutMePost.slug}` : `/${lang}/blog`
 
   return (
     <section className="section hero-section">
@@ -81,10 +84,8 @@ export function HeroSection({ lang }: HeroSectionProps) {
           </Link>
           <Link
             className={getButtonClass('tertiary')}
-            to={`/${lang}/blog/hello-world`}
-            onClick={() =>
-              trackButtonClick({ label: 'hero_about_me', area: 'hero', target: `/${lang}/blog/hello-world` })
-            }
+            to={aboutMePath}
+            onClick={() => trackButtonClick({ label: 'hero_about_me', area: 'hero', target: aboutMePath })}
           >
             {t.home.ctaAboutMe}
           </Link>
