@@ -1,0 +1,250 @@
+---
+title: 'Raspberry Pi 5 Hotspot (Without Internet)'
+description: 'This guide will show you how to set up a Wi-Fi hotspot on Raspberry Pi 5 without internet connection using NetworkManager.'
+date: '2026-06-04'
+category: 'Tutorial'
+tags: ['Raspberry Pi']
+published: true
+pin: false
+lang: 'en'
+slug: 'rasp-pi-5-hotspot'
+---
+
+## Install and Enable NetworkManager
+
+>[!info] Info
+Connect your Pi 5 to an ethernet to finish update and install.
+
+```bash
+sudo apt update
+sudo apt install -y network-manager dnsmasq-base
+sudo systemctl enable --now NetworkManager
+```
+
+See if work:
+
+```bash
+systemctl is-active NetworkManager
+nmcli general status
+```
+
+## Configure Wifi Country Code
+
+```bash
+sudo raspi-config nonint do_wifi_country TW
+```
+To confirm:
+```bash
+iw reg get
+```
+
+You will see
+
+```text
+country TW: ...
+```
+
+## Build Hotspot Connection
+
+Make sure there is no duplicate connection:
+
+```bash
+sudo nmcli connection delete RPI5-HOTSPOT 2>/dev/null
+```
+
+### Build AP
+
+```bash
+sudo nmcli connection add type wifi ifname wlan0 con-name RPI5-HOTSPOT autoconnect yes ssid RPI5-HOTSPOT
+```
+
+Default set to AP mode, 2.4 GHz, channel 6:
+
+```bash
+sudo nmcli connection modify RPI5-HOTSPOT \
+  802-11-wireless.mode ap \
+  802-11-wireless.band bg \
+  802-11-wireless.channel 6 \
+  802-11-wireless.hidden no
+```
+
+Set WPA password:
+
+```bash
+sudo nmcli connection modify RPI5-HOTSPOT \
+  wifi-sec.key-mgmt wpa-psk \
+  wifi-sec.psk "raspberry123"
+```
+
+Set fixed AP IP:
+
+```bash
+sudo nmcli connection modify RPI5-HOTSPOT \
+  ipv4.method shared \
+  ipv4.addresses 192.168.50.1/24 \
+  ipv6.method disabled
+```
+
+Set autoconnect:
+
+```bash
+sudo nmcli connection modify RPI5-HOTSPOT \
+  connection.autoconnect yes \
+  connection.autoconnect-priority 999 \
+  connection.interface-name wlan0
+```
+
+Start AP:
+
+```bash
+sudo nmcli connection up RPI5-HOTSPOT
+```
+
+### Verify AP
+
+```bash
+nmcli device status
+```
+
+you may see:
+
+|DEVICE | TYPE | STATE | CONNECTION |
+|---|---|---|---|
+|wlan0|wifi|connected| RPI5-HOTSPOT
+
+connection status:
+
+```bash
+nmcli connection show --active
+```
+
+you may see something like:
+```
+RPI5-HOTSPOT  wifi  wlan0
+```
+
+confirm ip:
+
+```bash
+ip addr show wlan0
+```
+
+you may see:
+```
+wlan0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc fq_codel state UP group default qlen 1000
+...
+inet 192.168.50.1/24
+```
+
+:::danger Caution
+
+At here, you must assure the output is <br/>
+**`<BROADCAST,MULTICAST,UP,LOWER_UP> state UP`** <br/>
+instead of <br/>
+**`<NO-CARRIER,BROADCAST,MULTICAST,UP> state DOWN`**
+
+:::
+
+Check wifi mode:
+
+```bash
+iw dev wlan0 info
+```
+
+Make sure you see:
+```
+type AP
+channel 6
+```
+
+>[!tip] Restart AP
+>```bash
+>sudo nmcli connection down RPI5-HOTSPOT
+>sudo nmcli connection up RPI5-HOTSPOT
+>```
+
+## Remove other saved Wi-Fi connections from wlan0
+
+If Raspberry Pi has old Wi-Fi client connections saved, NetworkManager may try those instead of your AP.
+
+List them:
+
+```
+nmcli connection show
+```
+
+Look for other wifi connections. For example:
+
+```
+HomeWiFi       wifi
+RPI5-HOTSPOT   wifi
+```
+
+Disable autoconnect on all Wi-Fi connections except the hotspot:
+
+```
+sudo nmcli connection modify "HomeWiFi" connection.autoconnect no
+```
+
+Do not disable `RPI5-HOTSPOT`.
+
+## Configure systemd
+
+This method is to make sure the AP restart after system reboot. If not, wlan0 will not actually run as an AP and the SSID is not going to be broadcasted.
+
+### Build Service
+
+```bash
+sudo vim /etc/systemd/system/rpi-hotspot.service
+```
+
+paste this inside:
+
+```
+[Unit]
+Description=Force start Raspberry Pi hotspot
+After=NetworkManager.service
+Wants=NetworkManager.service
+
+[Service]
+Type=oneshot
+ExecStartPre=/bin/sleep 15
+ExecStartPre=/usr/bin/nmcli radio wifi on
+ExecStart=/usr/bin/nmcli connection down RPI5-HOTSPOT
+ExecStart=/usr/bin/nmcli connection up RPI5-HOTSPOT
+ExecStart=/usr/bin/systemctl restart NetworkManager
+RemainAfterExit=yes
+
+[Install]
+WantedBy=multi-user.target
+```
+
+Enable the service:
+
+```bash
+sudo systemctl daemon-reload
+sudo systemctl enable rpi-hotspot.service
+```
+
+Test:
+
+```bash
+sudo systemctl start rpi-hotspot.service
+systemctl status rpi-hotspot.service
+```
+
+Reboot and test:
+
+```
+sudo reboot
+```
+
+## Computer Testing
+
+On your computer, connect to **`RPI5-HOTSPOT`**
+
+try to ping:
+
+```bash
+ping 192.168.50.1
+```

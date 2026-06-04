@@ -1,0 +1,1023 @@
+---
+title: 'Django Production-ready 部署設定：從 SECRET_KEY、環境變數到 HTTPS 安全協議'
+description: '整理 Django 專案上線前必須處理的 production settings，包含 secret 管理、環境變數、ALLOWED_HOSTS、HTTPS、HSTS、CSRF、Cookie、Static Files 與部署檢查。'
+date: '2026-05-25'
+category: 'Backend'
+tags: ['Django', 'Deployment', 'Security', 'Production']
+published: false
+pin: false
+lang: 'zh'
+slug: 'django-production-ready-deployment-settings'
+---
+
+Django 專案能不能穩定上線，很多時候不是卡在 View、Model 或 Template，而是卡在 `settings.py`。
+
+開發階段我們很容易把所有設定都塞在同一個檔案裡：`DEBUG=True`、SQLite、hard-coded `SECRET_KEY`、本機 `localhost`、直接用 `runserver`。這些在開發時很方便，但只要進到 production，就會變成風險。
+
+這篇不是部署平台教學，也不是「複製貼上就結束」的 checklist。我會從實際專案的角度整理一套我認為比較穩的 Django production settings 寫法，重點放在：
+
+- secret 與環境變數管理
+- settings 結構拆分
+- HTTP / HTTPS / reverse proxy 設定
+- Django security settings
+- CSRF / CORS / Cookie 安全
+- static files 與 media files
+- deployment 前的檢查流程
+
+---
+
+## 1. 不要把 production settings 和 local settings 混在一起
+
+最常見的問題是整個專案只有一個 `settings.py`，然後靠註解切換設定：
+
+```python
+DEBUG = True
+# DEBUG = False
+
+# DATABASES = sqlite
+# DATABASES = postgres
+```
+
+這種方式很容易在部署時忘記切換，而且不適合團隊維護。
+
+我比較推薦把 settings 拆成多個檔案：
+
+```txt
+config/
+  settings/
+    __init__.py
+    base.py
+    local.py
+    production.py
+```
+
+基本概念是：
+
+- `base.py`：共用設定
+- `local.py`：本機開發設定
+- `production.py`：正式環境設定
+
+例如：
+
+```python
+# config/settings/base.py
+
+from pathlib import Path
+
+BASE_DIR = Path(__file__).resolve().parent.parent.parent
+
+INSTALLED_APPS = [
+    'django.contrib.admin',
+    'django.contrib.auth',
+    'django.contrib.contenttypes',
+    'django.contrib.sessions',
+    'django.contrib.messages',
+    'django.contrib.staticfiles',
+
+    # project apps
+    'apps.blog',
+    'apps.accounts',
+]
+
+MIDDLEWARE = [
+    'django.middleware.security.SecurityMiddleware',
+    'django.contrib.sessions.middleware.SessionMiddleware',
+    'django.middleware.common.CommonMiddleware',
+    'django.middleware.csrf.CsrfViewMiddleware',
+    'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'django.contrib.messages.middleware.MessageMiddleware',
+    'django.middleware.clickjacking.XFrameOptionsMiddleware',
+]
+
+ROOT_URLCONF = 'config.urls'
+WSGI_APPLICATION = 'config.wsgi.application'
+
+DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+LANGUAGE_CODE = 'zh-hant'
+TIME_ZONE = 'Asia/Taipei'
+USE_I18N = True
+USE_TZ = True
+```
+
+然後 local settings：
+
+```python
+# config/settings/local.py
+
+from .base import *
+
+DEBUG = True
+
+SECRET_KEY = 'local-dev-secret-key'
+
+ALLOWED_HOSTS = ['localhost', '127.0.0.1']
+
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
+    }
+}
+```
+
+production settings 則完全不應該依賴 hard-coded secret：
+
+```python
+# config/settings/production.py
+
+from .base import *
+import os
+
+DEBUG = False
+
+SECRET_KEY = os.environ['DJANGO_SECRET_KEY']
+
+ALLOWED_HOSTS = os.environ['DJANGO_ALLOWED_HOSTS'].split(',')
+```
+
+部署時再指定：
+
+```bash
+DJANGO_SETTINGS_MODULE=config.settings.production
+```
+
+這樣的好處是很直接的：local 可以保持開發便利性，production 則強制走安全設定，不會因為一個註解沒改就把 `DEBUG=True` 帶上線。
+
+---
+
+## 2. SECRET_KEY 必須由環境變數注入
+
+`SECRET_KEY` 不是裝飾用設定，它會影響 session、password reset token、signed cookie 等安全機制。
+
+production 不應該這樣寫：
+
+```python
+SECRET_KEY = 'django-insecure-hard-coded-key'
+```
+
+比較合理的做法是：
+
+```python
+SECRET_KEY = os.environ['DJANGO_SECRET_KEY']
+```
+
+我會故意用 `os.environ[...]`，而不是 `os.environ.get(...)`。
+
+原因很簡單：production 如果沒有設定 secret，就應該直接 crash，而不是默默吃 fallback value。部署失敗比帶著錯誤設定上線好太多。
+
+如果你使用 `.env` 管理本機環境，可以搭配 `django-environ` 或 `python-dotenv`，但 production 上真正的 secret 應該放在部署平台的 environment variables / secrets manager 裡，不應該 commit 到 Git。
+
+範例 `.env.example` 可以放進 repo：
+
+```env
+DJANGO_SECRET_KEY=
+DJANGO_ALLOWED_HOSTS=example.com,www.example.com
+DATABASE_URL=postgres://USER:PASSWORD@HOST:PORT/DB_NAME
+```
+
+但真正的 `.env` 應該加入 `.gitignore`：
+
+```gitignore
+.env
+.env.*
+!.env.example
+```
+
+---
+
+## 3. DEBUG=False 不是建議，是 production 基本線
+
+`DEBUG=True` 在開發時很好用，因為它會顯示完整 traceback、settings、request context。
+
+但 production 絕對不該開。
+
+```python
+DEBUG = False
+```
+
+當 `DEBUG=True` 被放到正式環境，你等於把內部資訊暴露給使用者，包括：
+
+- Python traceback
+- installed apps
+- middleware
+- environment hints
+- database query context
+- project path
+
+這些資訊不一定直接造成攻擊，但它們會大幅降低攻擊者理解系統的成本。
+
+我通常會把 production 設定寫得很硬：
+
+```python
+DEBUG = os.environ.get('DJANGO_DEBUG') == 'true'
+
+if DEBUG:
+    raise RuntimeError('DEBUG must be False in production.')
+```
+
+不過更常見的方式是 production settings 直接固定：
+
+```python
+DEBUG = False
+```
+
+不要讓 production 有「切回 debug」的可能性，除非你非常確定自己在做什麼。
+
+---
+
+## 4. ALLOWED_HOSTS 要明確列出網域
+
+`ALLOWED_HOSTS` 是 Django 用來限制 Host header 的設定。
+
+production 不應該這樣寫：
+
+```python
+ALLOWED_HOSTS = ['*']
+```
+
+應該明確列出你的網域：
+
+```python
+ALLOWED_HOSTS = [
+    'example.com',
+    'www.example.com',
+]
+```
+
+如果用環境變數：
+
+```python
+ALLOWED_HOSTS = os.environ['DJANGO_ALLOWED_HOSTS'].split(',')
+```
+
+例如：
+
+```env
+DJANGO_ALLOWED_HOSTS=example.com,www.example.com
+```
+
+如果你部署在 Render、Railway、Fly.io、AWS、GCP 或其他平台，也要把平台分配的 domain 放進去，否則會出現 `DisallowedHost`。
+
+---
+
+## 5. Database：production 不要用 SQLite
+
+SQLite 對 local development 很方便，但 production 通常應該使用 PostgreSQL 或 MySQL。以 Django 專案來說，我通常會優先選 PostgreSQL。
+
+如果使用 `dj-database-url`，production settings 可以寫成：
+
+```python
+import dj_database_url
+
+DATABASES = {
+    'default': dj_database_url.config(
+        env='DATABASE_URL',
+        conn_max_age=600,
+        ssl_require=True,
+    )
+}
+```
+
+`DATABASE_URL` 範例：
+
+```env
+DATABASE_URL=postgres://USER:PASSWORD@HOST:5432/DB_NAME
+```
+
+這樣可以把 database credentials 從程式碼中移出，讓部署平台負責注入。
+
+`conn_max_age=600` 則是開啟 persistent database connections，減少每次 request 都重新建立連線的成本。不過這個值不是越大越好，要看你的 database connection limit、部署方式和 worker 數量調整。
+
+---
+
+## 6. HTTPS：Django 要知道自己在 reverse proxy 後面
+
+很多 Django production 架構會長這樣：
+
+```txt
+Client
+  ↓ HTTPS
+Cloudflare / Nginx / Load Balancer
+  ↓ HTTP or internal HTTPS
+Gunicorn / Uvicorn
+  ↓
+Django
+```
+
+這時候使用者連線是 HTTPS，但 Django 收到的 request 可能是 reverse proxy 轉發後的 HTTP。
+
+如果沒有設定好，Django 可能會誤判 request 不是 secure，進而影響：
+
+- `request.is_secure()`
+- secure redirect
+- CSRF origin checking
+- absolute URL generation
+- cookie secure behavior
+
+常見設定如下：
+
+```python
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+```
+
+這行的意思是：如果 proxy 傳進來的 `X-Forwarded-Proto` 是 `https`，Django 就把 request 視為 secure。
+
+但要注意，這個設定只有在你信任前面的 proxy 時才應該使用。也就是說，你的 app server 不應該直接暴露給 public internet，否則 client 可以自己偽造 header。
+
+---
+
+## 7. 強制 HTTPS redirect
+
+如果你的網站已經確認 HTTPS 正常，可以開啟：
+
+```python
+SECURE_SSL_REDIRECT = True
+```
+
+這會讓 Django 將 HTTP request redirect 到 HTTPS。
+
+但我通常不會第一天就直接打開，而是先確認：
+
+1. TLS certificate 正常
+2. reverse proxy forwarding 正常
+3. `SECURE_PROXY_SSL_HEADER` 正確
+4. 沒有 health check 被 redirect 影響
+5. 沒有內部服務仍依賴 HTTP callback
+
+如果你前面有 Cloudflare、Nginx 或 Load Balancer，也可以在那一層做 HTTP → HTTPS redirect。重點不是一定要在 Django 做，而是整條流量路徑要一致。
+
+---
+
+## 8. HSTS：確認 HTTPS 完整後再開
+
+HSTS 會告訴瀏覽器：之後只能用 HTTPS 連這個站。
+
+production 設定通常會長這樣：
+
+```python
+SECURE_HSTS_SECONDS = 31536000
+SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+SECURE_HSTS_PRELOAD = True
+```
+
+但這組設定不要無腦複製。
+
+我建議分階段開：
+
+```python
+# first stage
+SECURE_HSTS_SECONDS = 3600
+SECURE_HSTS_INCLUDE_SUBDOMAINS = False
+SECURE_HSTS_PRELOAD = False
+```
+
+確認沒問題後再提高：
+
+```python
+# mature production stage
+SECURE_HSTS_SECONDS = 31536000
+SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+SECURE_HSTS_PRELOAD = True
+```
+
+尤其是 `SECURE_HSTS_INCLUDE_SUBDOMAINS=True`，代表所有 subdomain 都會受到影響。如果你有某些 subdomain 還沒支援 HTTPS，會直接出問題。
+
+HSTS 是好東西，但它不是用來測試部署的設定。先確定 HTTPS 架構穩了，再把它打開。
+
+---
+
+## 9. Cookie 安全設定
+
+production 至少應該設定：
+
+```python
+SESSION_COOKIE_SECURE = True
+CSRF_COOKIE_SECURE = True
+
+SESSION_COOKIE_HTTPONLY = True
+CSRF_COOKIE_HTTPONLY = False
+
+SESSION_COOKIE_SAMESITE = 'Lax'
+CSRF_COOKIE_SAMESITE = 'Lax'
+```
+
+說明一下：
+
+`SESSION_COOKIE_SECURE=True` 表示 session cookie 只會透過 HTTPS 傳輸。
+
+`CSRF_COOKIE_SECURE=True` 表示 CSRF cookie 也只會透過 HTTPS 傳輸。
+
+`SESSION_COOKIE_HTTPONLY=True` 可以避免 JavaScript 直接讀取 session cookie。
+
+`CSRF_COOKIE_HTTPONLY` 是否要開，取決於你的前端架構。如果你是傳統 Django template，通常維持預設即可。如果你是 SPA，需要從 cookie 讀 CSRF token 再放到 header，就不能把 CSRF cookie 設成 HttpOnly。
+
+---
+
+## 10. CSRF_TRUSTED_ORIGINS 要包含 scheme
+
+如果你的 production domain 是：
+
+```txt
+https://example.com
+```
+
+那麼 CSRF trusted origins 應該寫：
+
+```python
+CSRF_TRUSTED_ORIGINS = [
+    'https://example.com',
+    'https://www.example.com',
+]
+```
+
+不要只寫 domain：
+
+```python
+# wrong
+CSRF_TRUSTED_ORIGINS = ['example.com']
+```
+
+Django 新版要求 origin 包含 scheme，也就是 `https://`。
+
+如果用環境變數：
+
+```python
+CSRF_TRUSTED_ORIGINS = os.environ.get(
+    'DJANGO_CSRF_TRUSTED_ORIGINS',
+    ''
+).split(',')
+```
+
+但要小心空字串：
+
+```python
+CSRF_TRUSTED_ORIGINS = [
+    origin
+    for origin in os.environ.get('DJANGO_CSRF_TRUSTED_ORIGINS', '').split(',')
+    if origin
+]
+```
+
+`.env` 範例：
+
+```env
+DJANGO_CSRF_TRUSTED_ORIGINS=https://example.com,https://www.example.com
+```
+
+---
+
+## 11. Security headers
+
+Django 內建的 `SecurityMiddleware` 可以處理多個安全 header。
+
+我通常會在 production 開這些：
+
+```python
+SECURE_CONTENT_TYPE_NOSNIFF = True
+X_FRAME_OPTIONS = 'DENY'
+REFERRER_POLICY = 'same-origin'
+```
+
+說明：
+
+```python
+SECURE_CONTENT_TYPE_NOSNIFF = True
+```
+
+要求瀏覽器不要自行猜測 content type，降低 MIME sniffing 相關風險。
+
+```python
+X_FRAME_OPTIONS = 'DENY'
+```
+
+禁止網站被放進 iframe，降低 clickjacking 風險。如果你的網站真的需要被特定頁面 iframe，才考慮改成其他策略。
+
+```python
+REFERRER_POLICY = 'same-origin'
+```
+
+控制瀏覽器送出 `Referer` header 的行為，避免把完整 URL 洩漏到外部網站。
+
+如果你的網站需要更完整的 CSP，可以額外使用 `django-csp`，但 CSP 建議逐步導入。尤其是已經有第三方 script、analytics、CDN、image host 的專案，CSP 一次開太嚴格很容易把 production 頁面打壞。
+
+---
+
+## 12. CORS 不等於 CSRF
+
+如果你的前端和後端是不同 origin，例如：
+
+```txt
+Frontend: https://app.example.com
+Backend:  https://api.example.com
+```
+
+那你可能需要 CORS。
+
+常見做法是使用 `django-cors-headers`：
+
+```python
+INSTALLED_APPS = [
+    'corsheaders',
+    # ...
+]
+
+MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
+    'django.middleware.security.SecurityMiddleware',
+    # ...
+]
+```
+
+production 不應該這樣寫：
+
+```python
+CORS_ALLOW_ALL_ORIGINS = True
+```
+
+應該明確列出允許的前端：
+
+```python
+CORS_ALLOWED_ORIGINS = [
+    'https://app.example.com',
+]
+```
+
+如果有帶 cookie 或 authorization credentials：
+
+```python
+CORS_ALLOW_CREDENTIALS = True
+```
+
+這時更不能使用隨便開放的 origin。
+
+一個常見誤解是：設定 CORS 就等於處理 CSRF。不是。
+
+CORS 控制的是瀏覽器是否允許跨 origin request 被前端 JavaScript 讀取；CSRF 防的是使用者在已登入狀態下，被第三方網站誘導送出非預期請求。兩者處理的是不同問題。
+
+---
+
+## 13. Static files：不要讓 Django development server 扛 production static
+
+local 開發時，Django 可以幫你處理 static files。但 production 應該使用專門的 static files 服務方式，例如：
+
+- Nginx
+- CDN
+- object storage
+- WhiteNoise
+- platform static hosting
+
+如果你想要簡單部署，WhiteNoise 是常見選擇。
+
+安裝：
+
+```bash
+pip install whitenoise
+```
+
+settings：
+
+```python
+MIDDLEWARE = [
+    'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
+    # ...
+]
+
+STATIC_URL = '/static/'
+STATIC_ROOT = BASE_DIR / 'staticfiles'
+
+STORAGES = {
+    'staticfiles': {
+        'BACKEND': 'whitenoise.storage.CompressedManifestStaticFilesStorage',
+    },
+}
+```
+
+部署時執行：
+
+```bash
+python manage.py collectstatic --noinput
+```
+
+這會把各 app 裡的 static files 收集到 `STATIC_ROOT`。
+
+production build pipeline 通常會長這樣：
+
+```bash
+python manage.py migrate --noinput
+python manage.py collectstatic --noinput
+gunicorn config.wsgi:application
+```
+
+實際順序要看部署平台，有些平台會把 migration 拆成 release phase。
+
+---
+
+## 14. Media files：不要和 static files 混在一起
+
+Static files 是程式碼的一部分，例如 CSS、JS、圖片 assets。
+
+Media files 是使用者上傳的內容，例如 avatar、文章封面、附件。
+
+這兩者不要混在一起。
+
+```python
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / 'media'
+```
+
+如果是 production，media files 通常不建議只存在 app container 裡，因為 container 可能會被重建。比較穩的方式是放到 object storage，例如 S3-compatible storage。
+
+架構上會像這樣：
+
+```txt
+Django app
+  ↓ upload
+Object Storage
+  ↓ serve
+CDN / public media domain
+```
+
+如果你的專案有使用者上傳功能，media storage 應該在一開始就設計好，不要等到上線後才發現部署重啟圖片全部不見。
+
+---
+
+## 15. Logging：production 不該只靠 print
+
+local 開發用 `print()` 還可以接受，但 production 需要可追蹤的 logging。
+
+簡單範例：
+
+```python
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+
+    'formatters': {
+        'verbose': {
+            'format': '[{levelname}] {asctime} {name}: {message}',
+            'style': '{',
+        },
+    },
+
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+            'formatter': 'verbose',
+        },
+    },
+
+    'root': {
+        'handlers': ['console'],
+        'level': 'INFO',
+    },
+
+    'loggers': {
+        'django.security': {
+            'handlers': ['console'],
+            'level': 'WARNING',
+            'propagate': False,
+        },
+    },
+}
+```
+
+大部分 PaaS / container 平台都會收集 stdout / stderr，所以 console logging 是最基本也最通用的方式。
+
+如果系統規模變大，可以再接：
+
+- Sentry
+- OpenTelemetry
+- CloudWatch
+- Grafana Loki
+- ELK / OpenSearch
+
+production debugging 的核心不是「出錯時進 server 看」，而是錯誤發生時，你已經有足夠的 log 和 trace 可以定位問題。
+
+---
+
+## 16. Email backend 也要獨立設定
+
+Django 很多功能會依賴 email，例如：
+
+- password reset
+- admin error report
+- account verification
+- notification
+
+production 不應該使用 console backend：
+
+```python
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+```
+
+應該改成 SMTP 或第三方 email service：
+
+```python
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+
+EMAIL_HOST = os.environ['EMAIL_HOST']
+EMAIL_PORT = int(os.environ.get('EMAIL_PORT', '587'))
+EMAIL_HOST_USER = os.environ['EMAIL_HOST_USER']
+EMAIL_HOST_PASSWORD = os.environ['EMAIL_HOST_PASSWORD']
+EMAIL_USE_TLS = True
+
+DEFAULT_FROM_EMAIL = os.environ.get(
+    'DEFAULT_FROM_EMAIL',
+    'noreply@example.com',
+)
+```
+
+email credentials 一樣不能寫死在 repo 裡。
+
+---
+
+## 17. Admin URL 不要只靠改路徑當安全策略
+
+很多人會把 Django admin 從：
+
+```txt
+/admin/
+```
+
+改成：
+
+```txt
+/some-random-admin-path/
+```
+
+這可以降低被掃描的機率，但它不是完整安全策略。
+
+你真正需要的是：
+
+- 強密碼
+- 2FA，如果專案允許
+- 限制 admin 使用者數量
+- admin action 審核
+- 登入失敗 rate limit
+- 必要時限制 IP
+- 定期檢查 superuser
+
+改 admin URL 可以做，但不要把它當成主要防線。
+
+---
+
+## 18. 不要用 runserver 跑 production
+
+`python manage.py runserver` 是開發伺服器，不是 production server。
+
+production 通常使用：
+
+- Gunicorn：WSGI
+- uWSGI：WSGI
+- Uvicorn：ASGI
+- Daphne：ASGI
+
+一般 Django 專案可以用 Gunicorn：
+
+```bash
+gunicorn config.wsgi:application
+```
+
+如果你有 WebSocket、async view 或 ASGI 架構，可以用 Uvicorn：
+
+```bash
+uvicorn config.asgi:application --host 0.0.0.0 --port 8000
+```
+
+如果部署在 container，常見啟動命令會像這樣：
+
+```bash
+gunicorn config.wsgi:application \
+  --bind 0.0.0.0:8000 \
+  --workers 3 \
+  --timeout 60
+```
+
+worker 數量不是越多越好。你要根據 CPU、記憶體、request 型態、database connection limit 去調整。
+
+---
+
+## 19. `manage.py check --deploy` 是上線前最低限度
+
+Django 內建 deployment check：
+
+```bash
+python manage.py check --deploy
+```
+
+這個指令會檢查一些常見 production 風險，例如 security middleware、cookie secure、HSTS、debug 等設定。
+
+我通常會把它放進部署前檢查流程：
+
+```bash
+python manage.py check --deploy
+python manage.py migrate --check
+python manage.py collectstatic --noinput
+```
+
+如果是 CI/CD，可以讓 check 失敗時直接中止部署。
+
+但也不要誤會：`check --deploy` 通過不代表你的系統完全安全。它只能幫你抓 Django 層級的常見錯誤，不能取代 infrastructure、database、dependency、permission、network policy 的檢查。
+
+---
+
+## 20. 我會使用的 production.py 範例
+
+下面是一個我會放進真實專案再依部署環境調整的 `production.py`：
+
+```python
+from .base import *
+
+import os
+import dj_database_url
+
+DEBUG = False
+
+SECRET_KEY = os.environ['DJANGO_SECRET_KEY']
+
+ALLOWED_HOSTS = [
+    host.strip()
+    for host in os.environ['DJANGO_ALLOWED_HOSTS'].split(',')
+    if host.strip()
+]
+
+CSRF_TRUSTED_ORIGINS = [
+    origin.strip()
+    for origin in os.environ.get('DJANGO_CSRF_TRUSTED_ORIGINS', '').split(',')
+    if origin.strip()
+]
+
+DATABASES = {
+    'default': dj_database_url.config(
+        env='DATABASE_URL',
+        conn_max_age=600,
+        ssl_require=True,
+    )
+}
+
+# HTTPS / Proxy
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+SECURE_SSL_REDIRECT = True
+
+# HSTS
+SECURE_HSTS_SECONDS = int(os.environ.get('DJANGO_SECURE_HSTS_SECONDS', '3600'))
+SECURE_HSTS_INCLUDE_SUBDOMAINS = os.environ.get(
+    'DJANGO_SECURE_HSTS_INCLUDE_SUBDOMAINS',
+    'false',
+) == 'true'
+SECURE_HSTS_PRELOAD = os.environ.get(
+    'DJANGO_SECURE_HSTS_PRELOAD',
+    'false',
+) == 'true'
+
+# Cookies
+SESSION_COOKIE_SECURE = True
+CSRF_COOKIE_SECURE = True
+
+SESSION_COOKIE_HTTPONLY = True
+SESSION_COOKIE_SAMESITE = 'Lax'
+CSRF_COOKIE_SAMESITE = 'Lax'
+
+# Security headers
+SECURE_CONTENT_TYPE_NOSNIFF = True
+X_FRAME_OPTIONS = 'DENY'
+REFERRER_POLICY = 'same-origin'
+
+# Static files
+STATIC_URL = '/static/'
+STATIC_ROOT = BASE_DIR / 'staticfiles'
+
+STORAGES = {
+    'staticfiles': {
+        'BACKEND': 'whitenoise.storage.CompressedManifestStaticFilesStorage',
+    },
+}
+
+# Media files
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / 'media'
+
+# Email
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = os.environ.get('EMAIL_HOST')
+EMAIL_PORT = int(os.environ.get('EMAIL_PORT', '587'))
+EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD')
+EMAIL_USE_TLS = os.environ.get('EMAIL_USE_TLS', 'true') == 'true'
+DEFAULT_FROM_EMAIL = os.environ.get('DEFAULT_FROM_EMAIL', 'noreply@example.com')
+
+# Logging
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+
+    'formatters': {
+        'verbose': {
+            'format': '[{levelname}] {asctime} {name}: {message}',
+            'style': '{',
+        },
+    },
+
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+            'formatter': 'verbose',
+        },
+    },
+
+    'root': {
+        'handlers': ['console'],
+        'level': os.environ.get('DJANGO_LOG_LEVEL', 'INFO'),
+    },
+
+    'loggers': {
+        'django.security': {
+            'handlers': ['console'],
+            'level': 'WARNING',
+            'propagate': False,
+        },
+    },
+}
+```
+
+對應的環境變數大概會是：
+
+```env
+DJANGO_SETTINGS_MODULE=config.settings.production
+DJANGO_SECRET_KEY=your-production-secret-key
+DJANGO_ALLOWED_HOSTS=example.com,www.example.com
+DJANGO_CSRF_TRUSTED_ORIGINS=https://example.com,https://www.example.com
+
+DATABASE_URL=postgres://USER:PASSWORD@HOST:5432/DB_NAME
+
+DJANGO_SECURE_HSTS_SECONDS=3600
+DJANGO_SECURE_HSTS_INCLUDE_SUBDOMAINS=false
+DJANGO_SECURE_HSTS_PRELOAD=false
+
+EMAIL_HOST=smtp.example.com
+EMAIL_PORT=587
+EMAIL_HOST_USER=your-email-user
+EMAIL_HOST_PASSWORD=your-email-password
+EMAIL_USE_TLS=true
+DEFAULT_FROM_EMAIL=noreply@example.com
+
+DJANGO_LOG_LEVEL=INFO
+```
+
+---
+
+## 21. 我的 production checklist
+
+正式上線前，我會至少確認這些項目：
+
+```txt
+[ ] DEBUG=False
+[ ] SECRET_KEY 由環境變數注入
+[ ] ALLOWED_HOSTS 沒有使用 *
+[ ] DATABASE_URL 指向 production database
+[ ] database connection 有 SSL
+[ ] static files 可以正常 collectstatic
+[ ] media files 不依賴 ephemeral container storage
+[ ] HTTPS 憑證正常
+[ ] HTTP 會 redirect 到 HTTPS
+[ ] SECURE_PROXY_SSL_HEADER 與 reverse proxy 設定一致
+[ ] SESSION_COOKIE_SECURE=True
+[ ] CSRF_COOKIE_SECURE=True
+[ ] CSRF_TRUSTED_ORIGINS 包含正確 scheme
+[ ] HSTS 已分階段測試
+[ ] admin 權限與 superuser 已檢查
+[ ] email backend 可正常寄信
+[ ] logging 可以在平台上查到
+[ ] migration 已測試
+[ ] python manage.py check --deploy 通過
+```
+
+這份 checklist 不複雜，但每一項都很容易在趕上線時漏掉。
+
+---
+
+## 結語
+
+Django 本身已經提供很多 production security 機制，但它不會自動替你做部署決策。
+
+真正 production-ready 的重點不是把所有安全設定都打開，而是理解你的部署拓樸：
+
+```txt
+Browser → CDN / Proxy → App Server → Django → Database / Storage
+```
+
+每一層都會影響 Django settings 的寫法。
+
+我的原則是：
+
+- secret 不進 Git
+- production settings 不靠人工註解切換
+- 沒有設定就讓部署失敗
+- HTTPS 先確認拓樸，再開 redirect 和 HSTS
+- cookie、CSRF、CORS 分開處理
+- static、media、database 都不要用 local development 思維設計
+- 上線前一定跑 `check --deploy`
+
+Django production settings 不需要寫得很炫，但一定要寫得明確、可重現、可檢查。這才是專案能穩定部署和長期維護的基礎。
