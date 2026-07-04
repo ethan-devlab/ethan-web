@@ -11,6 +11,7 @@ export type BlogPost = {
   title: string
   description: string
   date: string
+  lastmod: string
   category: string
   tags: string[]
   published: boolean
@@ -94,6 +95,7 @@ function buildPostList(): BlogPost[] {
         title: asString(data.title, slug),
         description: asString(data.description, ''),
         date: normalizeDate(asString(data.date, '2026-01-01')),
+        lastmod: (asString(data.lastmod, '') === '') ? "" : normalizeDate(asString(data.lastmod, '2026-01-01')),
         category: asString(data.category, 'General'),
         tags: asStringList(data.tags),
         published: data.published === true,

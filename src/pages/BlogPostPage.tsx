@@ -61,7 +61,7 @@ export function BlogPostPage() {
         <article className="blog-article">
           <header>
             <p className="timeline__period">
-              {post.date} · {post.category}
+              {post.date} · {post.category} {!post.lastmod ? null : `· ${language === 'zh' ? '最後更新' : 'Last Modified'}: ${post.lastmod}`}
               {!post.published ? (
                 <span className="blog-article__draft-badge">{language === 'zh' ? '草稿' : 'Draft'}</span>
               ) : null}

@@ -1,0 +1,292 @@
+---
+title: 'Direct Ethernet SSH from Windows to Raspberry Pi 5'
+description: 'Use an Ethernet cable to connect Windows directly to Raspberry Pi 5.'
+date: '2026-07-04'
+lastmod: ''
+category: 'Tutorial'
+tags: ['SSH', 'Raspberry Pi']
+published: true
+pin: false
+lang: 'en'
+slug: 'direct-eth-ssh-from-windows-to-raspi5'
+---
+
+## Goal
+
+Use an Ethernet cable to connect Windows directly to Raspberry Pi 5.
+
+```text
+Windows Laptop  ← Ethernet →  Raspberry Pi 5
+10.250.0.1                     10.250.0.2
+```
+
+Then SSH into Raspberry Pi:
+
+```powershell
+ssh <pi-user>@10.250.0.2
+```
+
+---
+
+## Raspberry Pi Setup
+
+Check the active Ethernet connection name:
+
+```bash
+nmcli -t -f NAME,DEVICE con show --active | grep ':eth0'
+```
+
+You may see something like:
+
+```text
+Wired connection 1:eth0
+```
+
+Add a second fixed IP to the current Ethernet connection:
+
+```bash
+sudo nmcli con mod "Wired connection 1" +ipv4.addresses 10.250.0.2/24
+```
+
+Apply the setting:
+
+```bash
+sudo nmcli dev reapply eth0
+```
+
+If `reapply` does not work, restart the connection:
+
+```bash
+sudo nmcli con down "Wired connection 1"
+sudo nmcli con up "Wired connection 1"
+```
+
+Confirm IP:
+
+```bash
+ip -4 addr show eth0
+```
+
+You should see:
+
+```text
+inet 10.250.0.2/24
+```
+
+If your Pi is also connected to a router at home, you may see two IPs:
+
+```text
+inet 192.168.x.x/24
+inet 10.250.0.2/24
+```
+
+This is correct.
+
+---
+
+## Enable SSH on Raspberry Pi
+
+```bash
+sudo systemctl enable --now ssh
+```
+
+Check status:
+
+```bash
+systemctl status ssh
+```
+
+---
+
+## Windows Setup
+
+Open:
+
+```text
+Control Panel
+→ Network and Internet
+→ Network Connections
+→ Ethernet
+→ Properties
+→ Internet Protocol Version 4 (TCP/IPv4)
+```
+
+There are two common methods.
+
+---
+
+## Method 1: If Windows Ethernet Uses DHCP
+
+Use this if Windows normally gets IP from router automatically.
+
+In **General**:
+
+```text
+Obtain an IP address automatically
+```
+
+In **Alternate Configuration**:
+
+```text
+IP address:      10.250.0.1
+Subnet mask:     255.255.255.0
+Default gateway: leave empty
+DNS:             leave empty
+```
+
+Result:
+
+```text
+Connected to router:
+Windows gets normal 192.168.x.x IP
+
+Directly connected to Pi:
+Windows uses 10.250.0.1
+```
+
+---
+
+## Method 2: If Windows Ethernet Uses Static IP
+
+Use this if Windows already has a fixed Ethernet IP.
+
+Do not remove the original IP.
+
+Go to:
+
+```text
+IPv4 Properties
+→ Advanced
+→ IP addresses
+→ Add
+```
+
+Add:
+
+```text
+IP address:  10.250.0.1
+Subnet mask: 255.255.255.0
+```
+
+Keep your original gateway only.
+
+Example:
+
+```text
+Original:
+192.168.1.50 / 255.255.255.0
+
+Add:
+10.250.0.1 / 255.255.255.0
+
+Gateway:
+192.168.1.1
+```
+
+Do not add gateway for `10.250.0.1`.
+
+---
+
+## Test Connection
+
+Connect Windows and Raspberry Pi directly with Ethernet.
+
+On Windows PowerShell:
+
+```powershell
+ping 10.250.0.2
+```
+
+If ping works, SSH:
+
+```powershell
+ssh <pi-user>@10.250.0.2
+```
+
+Example:
+
+```powershell
+ssh pi@10.250.0.2
+```
+
+---
+
+## Test File Transfer
+
+From Windows PowerShell:
+
+```powershell
+scp test.txt <pi-user>@10.250.0.2:/tmp/
+```
+
+Example:
+
+```powershell
+scp test.txt pi@10.250.0.2:/tmp/
+```
+
+---
+
+## Useful Commands
+
+Show active connections:
+
+```bash
+nmcli connection show --active
+```
+
+Show Ethernet IP:
+
+```bash
+ip -4 addr show eth0
+```
+
+Restart SSH:
+
+```bash
+sudo systemctl restart ssh
+```
+
+Restart Ethernet connection:
+
+```bash
+sudo nmcli con down "Wired connection 1"
+sudo nmcli con up "Wired connection 1"
+```
+
+---
+
+## Final Result
+
+Home network:
+
+```text
+Windows Laptop ← Ethernet → Router ← Ethernet → Raspberry Pi 5
+```
+
+Direct Ethernet:
+
+```text
+Windows Laptop  ← Ethernet →  Raspberry Pi 5
+10.250.0.1                     10.250.0.2
+```
+
+SSH:
+
+```powershell
+ssh <pi-user>@10.250.0.2
+```
+
+---
+
+## Note
+
+Do not create a separate field-debug connection profile and switch.
+
+If Raspberry Pi reboots and that connection does not start correctly, Ethernet SSH may fail.
+
+Better method:
+
+:::success
+Keep the original Ethernet connection and add 10.250.0.2/24 as a second IP.
+:::
