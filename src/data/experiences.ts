@@ -1,7 +1,7 @@
 import type { ExperienceItem, LocalizedText, ProjectExperience } from './types'
 
 export const professionalSummary: LocalizedText = {
-  zh: '喜歡 coding 和研究新科技，對 AI、資安、IoT 和軟體工程都有興趣。目前專注在無人機影像處理、無人機導航算法、地端 AI 應用開發、自動化應用開發、網站開發和系統架構分析與設計。',
+  zh: '喜歡 coding 和研究新科技，對 AI、資安、IoT 和軟體工程都有興趣。目前專注在無人機影像處理、無人機導航算法、AI Agent 應用、自動化應用開發、網站開發和系統架構分析與設計。',
   en: 'Passionate about coding and exploring new technologies, with interests spanning AI, information security, IoT, and software engineering. Currently focused on drone image processing, drone navigation algorithms, ground-based AI application development, automation application development, web development, and system architecture analysis and design.',
 }
 
@@ -97,30 +97,30 @@ export const projectExperiences: ProjectExperience[] = [
     },
     technologies: ['Python', 'n8n', 'oMLX', 'ngrok', 'Docker', 'Flask'],
   },
-  {
-    name: {
-      zh: '辯論計時器',
-      en: 'Debate Timer',
-    },
-    role: {
-      zh: '完整架構與實作',
-      en: 'System Design & Implementation',
-    },
-    period: '2021',
-    problem: {
-      zh: '辯論比賽中缺乏一個專門的計時工具，導致使用手機或其他不專業的計時方式，容易出現誤差和不便。',
-      en: 'Lack of a dedicated timing tool for debate competitions, leading to the use of phones or other non-professional timing methods that can be prone to errors and inconvenience.',
-    },
-    solution: {
-      zh: '使用 PyQt5/Pyside2 開發了一個專門的辯論計時器，提供清晰的界面和準確的計時功能，適用於各種辯論賽事。',
-      en: 'Developed a dedicated debate timer using PyQt5/Pyside2, providing a clear interface and accurate timing functionality for various debate competitions.',
-    },
-    impact: {
-      zh: '提供了一個專業的計時工具，提升了辯論比賽的效率和準確性，受到了辯論隊成員的歡迎。',
-      en: 'Provided a professional timing tool that improved the efficiency and accuracy of debate competitions, receiving positive feedback from debate team members.',
-    },
-    technologies: ['PyQt5', 'Pyside2', 'Python'],
-  },
+  // {
+  //   name: {
+  //     zh: '辯論計時器',
+  //     en: 'Debate Timer',
+  //   },
+  //   role: {
+  //     zh: '完整架構與實作',
+  //     en: 'System Design & Implementation',
+  //   },
+  //   period: '2021',
+  //   problem: {
+  //     zh: '辯論比賽中缺乏一個專門的計時工具，導致使用手機或其他不專業的計時方式，容易出現誤差和不便。',
+  //     en: 'Lack of a dedicated timing tool for debate competitions, leading to the use of phones or other non-professional timing methods that can be prone to errors and inconvenience.',
+  //   },
+  //   solution: {
+  //     zh: '使用 PyQt5/Pyside2 開發了一個專門的辯論計時器，提供清晰的界面和準確的計時功能，適用於各種辯論賽事。',
+  //     en: 'Developed a dedicated debate timer using PyQt5/Pyside2, providing a clear interface and accurate timing functionality for various debate competitions.',
+  //   },
+  //   impact: {
+  //     zh: '提供了一個專業的計時工具，提升了辯論比賽的效率和準確性，受到了辯論隊成員的歡迎。',
+  //     en: 'Provided a professional timing tool that improved the efficiency and accuracy of debate competitions, receiving positive feedback from debate team members.',
+  //   },
+  //   technologies: ['PyQt5', 'Pyside2', 'Python'],
+  // },
 ]
 
 // export const architectureHighlights: Record<'zh' | 'en', string[]> = {

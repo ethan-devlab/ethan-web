@@ -7,10 +7,10 @@ export const projects: ProjectItem[] = [
       en: 'Local AI Customer Service System (Private Project)',
     },
     description: {
-      zh: '以 Python、Flask、oMLX、n8n、Docker、ngrok 等實作的地端 AI 客服系統，提供具 AI 自判斷能力的客服解決方案',
-      en: 'Local AI Customer Service System implemented with Python, Flask, oMLX, n8n, Docker, ngrok, etc., providing AI-powered customer service solutions',
+      zh: '以 Python、Flask、oMLX、LlamaIndex、Docker、ngrok 等實作的地端 AI 客服系統，提供具 AI 自判斷能力的客服解決方案',
+      en: 'Local AI Customer Service System implemented with Python, Flask, oMLX, LlamaIndex, Docker, ngrok, etc., providing AI-powered customer service solutions',
     },
-    techStack: ['Python', 'Flask', 'oMLX', 'n8n', 'Docker', 'Line Messaging API', 'ngrok'],
+    techStack: ['Python', 'Flask', 'oMLX', 'LlamaIndex', 'Docker', 'Line Messaging API', 'ngrok'],
     highlights: {
       zh: ['API 整合', '系統設計', 'AI 模型應用', 'Agent 設計'],
       en: ['API Integration', 'System Design', 'AI Model Application', 'Agent Design'],
@@ -19,19 +19,19 @@ export const projects: ProjectItem[] = [
   },    
   {
     title: {
-      zh: '旅遊規劃平台',
-      en: 'Travel Planning Platform',
+      zh: '具 AI Agent 的旅遊規劃平台',
+      en: 'Travel Planning Platform with AI Agent',
     },
     description: {
-      zh: '網頁設計課程期末專題：以 Django 實作的旅遊規劃平台，提供天氣查詢、行程規劃、行事曆紀錄和地圖導航功能',
-      en: 'Web Design course project: A travel planning platform implemented with Django, providing weather information, trip planning, calendar recording, and map navigation features',
+      zh: '以 Django 實作的旅遊規劃平台，提供 AI Agent、天氣查詢、行程規劃、行事曆紀錄和地圖導航功能',
+      en: 'Web Design course project: A travel planning platform implemented with Django, providing AI Agent, weather information, trip planning, calendar recording, and map navigation features',
     },
-    techStack: ['Django', 'Leaflet.js', 'Python', 'JavaScript', 'HTML/CSS', 'OpenWeather API'],
+    techStack: ['Django', 'Leaflet.js', 'Python', 'JavaScript', 'LangChain', 'OpenWeather API'],
     highlights: {
-      zh: ['API 整合', '系統設計'],
-      en: ['API Integration', 'System Design'],
+      zh: ['API 整合', '系統設計', 'AI 模型應用', 'Agent 設計'],
+      en: ['API Integration', 'System Design', 'AI Model Application', 'Agent Design'],
     },
-    githubUrl: 'https://github.com/ethan-devlab/travel_planning',
+    githubUrl: 'https://github.com/ethan-devlab/travel_planner_agent',
   },    
   // {
   //   title: {
