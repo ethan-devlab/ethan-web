@@ -1,6 +1,34 @@
-@import url('https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;500;600;700&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@100..900&display=swap');
+@font-face {
+  font-family: 'Inter';
+  src: url('../assets/fonts/Inter/Inter-VariableFont_opsz,wght.woff2') format('woff2');
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Manrope';
+  src: url('../assets/fonts/Manrope/Manrope-VariableFont_wght.woff2') format('woff2');
+  font-weight: 200 800;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Noto Sans TC';
+  src: url('../assets/fonts/Noto_Sans_TC/NotoSansTC-VariableFont_wght.woff2') format('woff2');
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Noto Serif TC';
+  src: url('../assets/fonts/Noto_Serif_TC/NotoSerifTC-VariableFont_wght.woff2') format('woff2');
+  font-weight: 200 900;
+  font-style: normal;
+  font-display: swap;
+}
 
 *,
 *::before,
@@ -15,7 +43,7 @@
     Arial,
     sans-serif;
   --font-display:
-    'Inter',
+    'Manrope',
     'Noto Sans TC',
     Arial,
     sans-serif;
@@ -27,7 +55,7 @@
     'Songti TC',
     serif;
   --font-hero-name:
-    'Inter',
+    'Manrope',
     'Noto Sans TC',
     Arial,
     sans-serif;
@@ -43,8 +71,17 @@
 }
 
 :root:lang(zh) {
-  --font-body: var(--font-literary);
-  --font-display: var(--font-literary);
+  /* --font-body: var(--font-literary);
+  --font-display: var(--font-literary); */
+  --font-body:
+    'Inter',
+    'Noto Serif TC',
+    serif;
+
+  --font-display:
+    'Manrope',
+    'Noto Serif TC',
+    serif;
 }
 
 body {
@@ -93,8 +130,8 @@ img {
 
 .section__title {
   font-family: var(--font-display);
-  font-weight: 330;
-  font-size: clamp(2rem, 5vw, 3.4rem);
+  font-weight: 500; /* 330 */
+  font-size: clamp(1.9rem, 3.5vw, 2.65rem);
   line-height: 1.14;
   margin: 0 0 16px;
 }
@@ -103,6 +140,7 @@ img {
   color: var(--color-muted-text);
   margin: 0;
   max-width: 1200px;
+  line-height: 1.75;
 }
 
 .section--spacious .section__description {
@@ -164,23 +202,23 @@ a:focus-visible {
 }
 
 .btn--primary {
-  background: #ffffff;
-  color: #000000;
+  background: transparent;
+  color: var(--color-white);
+  border-color: rgb(81, 119, 119);
 }
 
 .btn--primary:hover {
-  opacity: 0.9;
+  background: rgba(81, 119, 119, 0.2);
 }
 
 .btn--secondary {
   background: transparent;
   color: var(--color-white);
-  border-color: var(--color-white);
+  border-color: rgb(81, 97, 108);
 }
 
 .btn--secondary:hover {
-  background: #ffffff;
-  color: #000000;
+  background: rgba(81, 97, 108, 0.2);
 }
 
 .btn--tertiary {
@@ -279,6 +317,10 @@ a:focus-visible {
   padding: 8px 12px;
   cursor: pointer;
 }
+.theme-toggle {
+  border: none;
+  padding-top: 12px;
+}
 
 :root[data-theme='dark'] .language-switcher,
 :root[data-theme='dark'] .theme-toggle {
@@ -346,11 +388,11 @@ a:focus-visible {
 }
 
 .hero__avatarFrame {
-  width: 200px;
-  height: 200px;
+  width: 250px;
+  height: 250px;
   border-radius: 50%;
   overflow: hidden;
-  flex: 0 0 200px;
+  flex: 0 0 250px;
   box-shadow: 0 20px 50px rgba(0, 0, 0, 0.28);
 }
 
@@ -362,6 +404,12 @@ a:focus-visible {
 }
 
 .hero__role {
+  font-size: 1.1rem;
+  margin: 0 0 16px;
+  color: var(--color-muted-text);
+}
+
+.hero__role-text {
   font-size: 1.1rem;
   margin: 0 0 16px;
   color: var(--color-muted-text);
@@ -396,6 +444,8 @@ a:focus-visible {
 .skill-card h3 {
   margin-top: 0;
   margin-bottom: 12px;
+  font-family: var(--font-display);
+  font-weight: 600;
 }
 
 .skill-badges {
@@ -411,6 +461,8 @@ a:focus-visible {
 
 .project-card h3 {
   margin: 0 0 12px;
+  font-family: var(--font-display);
+  font-weight: 600;
 }
 
 .project-card p {
@@ -1480,5 +1532,240 @@ a:focus-visible {
 
   .photography-modal__map {
     height: 190px;
+  }
+}
+
+.experience__resume-cta {
+  margin-top: 28px;
+}
+
+.skill-focus {
+  display: grid;
+  gap: 10px;
+  margin-bottom: 32px;
+}
+
+.skill-focus__title,
+.project-card__role span,
+.project-card__type,
+.project-card__status,
+.closing-cta__eyebrow,
+.resume__updated {
+  margin: 0;
+  color: var(--color-muted-text);
+  font-size: 0.8rem;
+  letter-spacing: 0.72px;
+  text-transform: uppercase;
+}
+
+.closing-cta__eyebrow {
+  font-size: 0.95rem;
+  font-weight: 500;
+}
+
+.skill-focus__items,
+.resume__actions,
+.closing-cta__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.badge.skill-focus__item {
+  background: radial-gradient(circle at 100% 0%, 
+color-mix(in srgb, var(--color-neon-green) 10%, transparent), transparent 42%), var(--color-surface-2);
+  border: 1px solid var(--color-card-border);
+}
+
+.skill-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.skill-card {
+  padding: 20px;
+}
+
+.project-carousel__item {
+  display: flex;
+  height: 100%;
+}
+
+.project-carousel__item .project-card {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+}
+
+.project-card__meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.project-card__type {
+  color: var(--color-white);
+}
+
+.project-card__status {
+  flex-shrink: 0;
+  letter-spacing: 0.32px;
+  text-transform: none;
+}
+
+.project-card__role {
+  display: grid;
+  gap: 4px;
+  margin-bottom: 16px;
+}
+
+.project-card__role strong {
+  font-size: 0.95rem;
+  font-weight: 500;
+}
+
+.project-card__tech-overflow {
+  align-self: center;
+  color: var(--color-muted-text);
+  font-size: 0.9rem;
+}
+
+.highlight-list {
+  display: grid;
+  gap: 8px;
+  margin: 0 0 20px;
+  padding-left: 20px;
+  color: var(--color-muted-text);
+}
+
+.highlight-list li::marker {
+  color: var(--color-neon-green);
+}
+
+.project-card__cta {
+  display: flex;
+  align-items: center;
+  min-height: 26px;
+  margin-top: auto;
+}
+
+.project-card__repository-link,
+.project-card__repository-unavailable {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--color-white);
+  font-size: 0.9rem;
+}
+
+.project-card__repository-link {
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
+.project-card__repository-link:hover {
+  color: var(--color-neon-green);
+}
+
+.project-card__repository-unavailable {
+  color: var(--color-muted-text);
+}
+
+.closing-cta-section {
+  padding-top: 20px;
+}
+
+.closing-cta {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+  padding: 28px;
+  background:
+    radial-gradient(circle at 100% 0%, color-mix(in srgb, var(--color-neon-green) 10%, transparent), transparent 42%),
+    var(--color-surface-2);
+}
+
+.closing-cta__description {
+  max-width: 680px;
+  margin: 8px 0 0;
+  color: var(--color-muted-text);
+}
+
+.resume-section {
+  padding-bottom: 80px;
+}
+
+.resume__updated {
+  margin: 24px 0;
+}
+
+.resume__documents {
+  display: grid;
+  gap: 16px;
+}
+
+.resume__document,
+.resume__preview {
+  padding: 24px;
+}
+
+.resume__document h3,
+.resume__preview h3 {
+  margin: 0 0 16px;
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+  font-weight: 500;
+}
+
+.resume__preview {
+  margin-top: 24px;
+}
+
+.resume__preview iframe {
+  display: block;
+  width: 100%;
+  min-height: 720px;
+  border: 1px solid var(--color-card-border);
+  border-radius: 8px;
+  background: var(--color-deep-teal);
+}
+
+.resume__preview-unavailable {
+  margin: 0;
+  color: var(--color-muted-text);
+}
+
+@media (min-width: 768px) {
+  .resume__documents {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .closing-cta {
+    align-items: center;
+    flex-direction: row;
+    justify-content: space-between;
+    padding: 36px;
+  }
+
+  .skill-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1200px) {
+  .skill-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 767px) {
+  .hero__avatarFrame {
+    margin-inline: auto;
+  }
+
+  .resume__preview {
+    display: none;
   }
 }

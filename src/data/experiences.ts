@@ -8,8 +8,8 @@ export const professionalSummary: LocalizedText = {
 export const experienceTimeline: ExperienceItem[] = [
   {
     title: {
-      zh: 'Programmer',
-      en: 'Programmer',
+      zh: 'Developer',
+      en: 'Developer',
     },
     organization: {
       zh: 'Ethan DevLab (Personal)',
@@ -34,7 +34,8 @@ export const experienceTimeline: ExperienceItem[] = [
         en: 'Evolved from just copying code from GitHub to becoming an open source contributor who can initiate pull requests, and from not writing commit messages to valuing the expression of commit messages',
       },
     ],
-    technologies: ['Python', 'JavaScript', 'HTML/CSS', 'Java', 'C/C++', 'Django', 'Git', 'n8n', 'Docker'],
+    // technologies: ['Python', 'JavaScript', 'HTML/CSS', 'Java', 'C/C++', 'Django', 'Git', 'n8n', 'Docker'],
+    technologies: [],
   },
   {
     title: {
@@ -68,7 +69,8 @@ export const experienceTimeline: ExperienceItem[] = [
         en: "Created a Bluetooth-connected Chinese Chess game using MIT App Inventor"
       }
     ],
-    technologies: ['Python', 'JavaScript', 'HTML/CSS', 'PyQt5', 'Dreamweaver', 'WordPress', 'MIT App Inventor'],
+    // technologies: ['Python', 'JavaScript', 'HTML/CSS', 'PyQt5', 'Dreamweaver', 'WordPress', 'MIT App Inventor'],
+    technologies: [],
   },
 ]
 
@@ -95,32 +97,9 @@ export const projectExperiences: ProjectExperience[] = [
       zh: '減輕人工客服負擔，並提供更即時的回應，同時不受限於特定 AI 服務商的限制。',
       en: 'Reduced the burden on human customer service and provided more immediate responses, while not being limited by specific AI service providers.',
     },
-    technologies: ['Python', 'n8n', 'oMLX', 'ngrok', 'Docker', 'Flask'],
+    technologies: ['Python', 'n8n', 'Ollama', 'ngrok', 'Docker', 'Flask'],
   },
-  // {
-  //   name: {
-  //     zh: '辯論計時器',
-  //     en: 'Debate Timer',
-  //   },
-  //   role: {
-  //     zh: '完整架構與實作',
-  //     en: 'System Design & Implementation',
-  //   },
-  //   period: '2021',
-  //   problem: {
-  //     zh: '辯論比賽中缺乏一個專門的計時工具，導致使用手機或其他不專業的計時方式，容易出現誤差和不便。',
-  //     en: 'Lack of a dedicated timing tool for debate competitions, leading to the use of phones or other non-professional timing methods that can be prone to errors and inconvenience.',
-  //   },
-  //   solution: {
-  //     zh: '使用 PyQt5/Pyside2 開發了一個專門的辯論計時器，提供清晰的界面和準確的計時功能，適用於各種辯論賽事。',
-  //     en: 'Developed a dedicated debate timer using PyQt5/Pyside2, providing a clear interface and accurate timing functionality for various debate competitions.',
-  //   },
-  //   impact: {
-  //     zh: '提供了一個專業的計時工具，提升了辯論比賽的效率和準確性，受到了辯論隊成員的歡迎。',
-  //     en: 'Provided a professional timing tool that improved the efficiency and accuracy of debate competitions, receiving positive feedback from debate team members.',
-  //   },
-  //   technologies: ['PyQt5', 'Pyside2', 'Python'],
-  // },
+
 ]
 
 // export const architectureHighlights: Record<'zh' | 'en', string[]> = {

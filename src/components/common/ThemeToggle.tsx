@@ -1,5 +1,6 @@
 import type { Theme } from '../../utils/theme'
 import { trackButtonClick } from '../../utils/analytics'
+import { MdOutlineLightMode, MdModeNight } from "react-icons/md";
 
 type ThemeToggleProps = {
   theme: Theme
@@ -19,7 +20,7 @@ export function ThemeToggle({ theme, onToggle }: ThemeToggleProps) {
       }}
       aria-label="Toggle theme"
     >
-      {theme === 'dark' ? 'Dark' : 'Light'}
+      {theme === 'dark' ? <MdOutlineLightMode size={23} /> : <MdModeNight size={23} />}
     </button>
   )
 }

@@ -1,10 +1,5 @@
-import { Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import type { Language } from '../../i18n/locales'
-import { translations } from '../../i18n/translations'
-import { trackButtonClick } from '../../utils/analytics'
-import { getBlogPostBySlug } from '../../utils/blog'
-import { getButtonClass } from '../../utils/button'
 import avatarImage from '../../assets/me.jpg'
 
 type HeroSectionProps = {
@@ -17,12 +12,8 @@ type HeroSectionProps = {
 // }
 
 export function HeroSection({ lang }: HeroSectionProps) {
-  const t = translations[lang]
-  const aboutMePost = getBlogPostBySlug('hello-world', lang) ?? getBlogPostBySlug('hello-world', 'zh')
-  const aboutMePath = aboutMePost ? `/${aboutMePost.lang}/blog/${aboutMePost.slug}` : `/${lang}/blog`
-
   return (
-    <section className="section hero-section">
+    <section className="section hero-section" lang={lang === 'zh' ? 'zh-Hant' : 'en'}>
       <div className="container">
         <div className="hero__intro">
           <motion.h1
@@ -39,7 +30,7 @@ export function HeroSection({ lang }: HeroSectionProps) {
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.45, delay: 0.06 }}
           >
-            <img src={avatarImage} alt="Ethan Chan portrait" className="hero__avatar" width={200} height={200} />
+            <img src={avatarImage} alt="Ethan Chan portrait" className="hero__avatar" />
           </motion.div>
         </div>
         <motion.p
@@ -48,7 +39,7 @@ export function HeroSection({ lang }: HeroSectionProps) {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.45, delay: 0.08 }}
         >
-          <b>Programmer</b>
+          <span className='hero__role-text'><b>Developer</b></span>
           <br />
           <strong>Based in Malaysia, anak 🇲🇾. Currently studying in Taiwan.</strong>
         </motion.p>
@@ -60,12 +51,12 @@ export function HeroSection({ lang }: HeroSectionProps) {
         >
           {heroDescription[lang]}
         </motion.p> */}
-        <motion.div
+        {/* <motion.div
           className="hero__cta"
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4, delay: 0.24 }}
-        >
+        > */}
           {/* <Link
             className={getButtonClass('primary')}
             to={`/${lang}/experience`}
@@ -75,7 +66,7 @@ export function HeroSection({ lang }: HeroSectionProps) {
           >
             {t.home.ctaExperience}
           </Link> */}
-          <Link
+          {/* <Link
             className={getButtonClass('secondary')}
             to={`/${lang}/contact`}
             onClick={() => trackButtonClick({ label: 'hero_contact', area: 'hero', target: `/${lang}/contact` })}
@@ -88,8 +79,8 @@ export function HeroSection({ lang }: HeroSectionProps) {
             onClick={() => trackButtonClick({ label: 'hero_about_me', area: 'hero', target: aboutMePath })}
           >
             {t.home.ctaAboutMe}
-          </Link>
-        </motion.div>
+          </Link> */}
+        {/* </motion.div> */}
       </div>
     </section>
   )

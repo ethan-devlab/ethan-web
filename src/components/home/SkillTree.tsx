@@ -11,12 +11,23 @@ type SkillTreeProps = {
 
 const skillSection = {
   title: {
-    en: 'Toolbox',
-    zh: '工具包',
+    en: 'Capabilities',
+    zh: '能力架構',
   },
   description: {
-    en: 'Overview of core technical skills and tools.',
-    zh: '一些常用工具，以 Python 為主力，主要在做 AI 應用開發和網站開發。目前專題在做無人機，以影像處理和開發視覺導航算法為主。',
+    en: '',
+    zh: '',
+  },
+}
+
+const currentFocus = {
+  title: {
+    en: 'Current Focus',
+    zh: 'Current Focus',
+  },
+  items: {
+    en: ['AI Agent Applications', 'Backend & Data Systems', 'UAV Vision Navigation'],
+    zh: ['AI Agent 應用', '後端與資料系統', '無人機視覺導航'],
   },
 }
 
@@ -27,6 +38,16 @@ export function SkillTree({ lang }: SkillTreeProps) {
       description={skillSection.description[lang]}
       className="section--spacious"
     >
+      <div className="skill-focus">
+        <p className="skill-focus__title">{currentFocus.title[lang]}</p>
+        <div className="skill-focus__items">
+          {currentFocus.items[lang].map((item) => (
+            <Badge key={item} className="skill-focus__item">
+              {item}
+            </Badge>
+          ))}
+        </div>
+      </div>
       <div className="grid skill-grid">
         {skillGroups.map((group, index) => (
           <motion.div

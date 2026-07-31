@@ -9,5 +9,7 @@
     },
     "observability": {
       "enabled": true
-    }
+    },
+    "preview_urls": false,
+    "workers_dev": false
 }

@@ -3,19 +3,39 @@ import type { ProjectItem } from './types'
 export const projects: ProjectItem[] = [
   {
     title: {
+      zh: '合作社 AI 客服系統（此專案不公開）',
+      en: 'Cooperative AI Customer Service System (Private Project)',
+    },
+    description: {
+      zh: '以 LlamaIndex、OpenAI 模型、Line Messaging API 等實作的 AI 客服系統，提供具 AI 自判斷能力的客服解決方案，並部署在 AWS 雲端',
+      en: 'AI Customer Service System implemented with OpenAI model, LlamaIndex, Line Messaging API, etc., providing AI-powered customer service solutions. Deployed on AWS cloud',
+    },
+    projectType: { zh: 'AI 應用', en: 'AI Application' },
+    role: { zh: '系統設計與實作', en: 'System Design & Implementation' },
+    techStack: ['LlamaIndex', 'Line Messaging API', 'AWS Cloud Services'],
+    highlights: {
+      zh: ['系統設計', 'AI 模型應用', 'Agent 設計', 'RAG 架構'],
+      en: ['System Design', 'AI Model Application', 'Agent Design', 'RAG Architecture'],
+    },
+    isPrivate: true,
+  },
+  {
+    title: {
       zh: '地端 AI 客服系統（此專案不公開）',
       en: 'Local AI Customer Service System (Private Project)',
     },
     description: {
-      zh: '以 Python、Flask、oMLX、LlamaIndex、Docker、ngrok 等實作的地端 AI 客服系統，提供具 AI 自判斷能力的客服解決方案',
-      en: 'Local AI Customer Service System implemented with Python, Flask, oMLX, LlamaIndex, Docker, ngrok, etc., providing AI-powered customer service solutions',
+      zh: '以 Python、Flask、Ollama、n8n、Docker、ngrok 等實作的地端 AI 客服系統，提供具 AI 自判斷能力的客服解決方案',
+      en: 'Local AI Customer Service System implemented with Python, Flask, Ollama, n8n, Docker, ngrok, etc., providing AI-powered customer service solutions',
     },
-    techStack: ['Python', 'Flask', 'oMLX', 'LlamaIndex', 'Docker', 'Line Messaging API', 'ngrok'],
+    projectType: { zh: 'AI 應用', en: 'AI Application' },
+    role: { zh: '系統設計與實作', en: 'System Design & Implementation' },
+    techStack: ['Python', 'Flask', 'Ollama', 'n8n', 'Docker', 'Line Messaging API', 'ngrok'],
     highlights: {
       zh: ['API 整合', '系統設計', 'AI 模型應用', 'Agent 設計'],
       en: ['API Integration', 'System Design', 'AI Model Application', 'Agent Design'],
     },
-    githubUrl: 'https://github.com/ethan-devlab',
+    isPrivate: true,
   },    
   {
     title: {
@@ -26,6 +46,8 @@ export const projects: ProjectItem[] = [
       zh: '以 Django 實作的旅遊規劃平台，提供 AI Agent、天氣查詢、行程規劃、行事曆紀錄和地圖導航功能',
       en: 'Web Design course project: A travel planning platform implemented with Django, providing AI Agent, weather information, trip planning, calendar recording, and map navigation features',
     },
+    projectType: { zh: '課程專案', en: 'Course Project' },
+    role: { zh: '全端網站開發', en: 'Full-stack Web Development' },
     techStack: ['Django', 'Leaflet.js', 'Python', 'JavaScript', 'LangChain', 'OpenWeather API'],
     highlights: {
       zh: ['API 整合', '系統設計', 'AI 模型應用', 'Agent 設計'],
@@ -81,22 +103,24 @@ export const projects: ProjectItem[] = [
   //   },
   //   githubUrl: 'https://github.com/ethan-devlab/Gomoku',
   // },
-  {
-    title: {
-      zh: 'C2C 網購平台',
-      en: 'C2C E-commerce Platform',
-    },
-    description: {
-      zh: '資料庫系統期末專題：以 Django + MySQL 實作的 C2C 電商平台，涵蓋使用者、商家、平台管理者的多角色功能',
-      en: 'Database Systems course final project: A C2C e-commerce platform implemented with Django and MySQL, covering multi-role functionalities for users, sellers, and platform administrators.',
-    },
-    techStack: ['Python', 'Django', 'MySQL'],
-    highlights: {
-      zh: ['MySQL 資料庫設計', 'DB Schema 設計'],
-      en: ['MySQL database design', 'DB Schema design'],
-    },
-    githubUrl: 'https://github.com/ethan-devlab/HahaLife',
-  },
+  // {
+  //   title: {
+  //     zh: 'C2C 網購平台',
+  //     en: 'C2C E-commerce Platform',
+  //   },
+  //   description: {
+  //     zh: '資料庫系統期末專題：以 Django + MySQL 實作的 C2C 電商平台，涵蓋使用者、商家、平台管理者的多角色功能',
+  //     en: 'Database Systems course final project: A C2C e-commerce platform implemented with Django and MySQL, covering multi-role functionalities for users, sellers, and platform administrators.',
+  //   },
+  //   projectType: { zh: '資料庫系統專題', en: 'Database Systems Project' },
+  //   role: { zh: '資料庫設計與網站開發', en: 'Database Design & Web Development' },
+  //   techStack: ['Python', 'Django', 'MySQL'],
+  //   highlights: {
+  //     zh: ['MySQL 資料庫設計', 'DB Schema 設計'],
+  //     en: ['MySQL database design', 'DB Schema design'],
+  //   },
+  //   githubUrl: 'https://github.com/ethan-devlab/HahaLife',
+  // },
 //  {
 //     title: {
 //       zh: 'Logic Function Solver',

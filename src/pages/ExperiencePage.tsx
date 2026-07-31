@@ -1,4 +1,4 @@
-import { useParams } from 'react-router-dom'
+import { Link, useParams } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { Section } from '../components/common/Section'
 import { Card } from '../components/common/Card'
@@ -11,6 +11,8 @@ import {
 } from '../data/experiences'
 import { DEFAULT_LANGUAGE, isLanguage, type Language } from '../i18n/locales'
 import { SEO } from '../components/common/SEO'
+import { trackButtonClick } from '../utils/analytics'
+import { getButtonClass } from '../utils/button'
 
 function resolveLanguage(lang: string | undefined): Language {
   if (!lang || !isLanguage(lang)) {
@@ -39,7 +41,21 @@ export function ExperiencePage() {
         title={language === 'zh' ? 'Professional Summary' : 'Professional Summary'}
         description={professionalSummary[language]}
       >
-        <div />
+        <div className="experience__resume-cta">
+          <Link
+            className={getButtonClass('secondary')}
+            to={`/${language}/resume`}
+            onClick={() =>
+              trackButtonClick({
+                label: 'experience_resume',
+                area: 'experience_summary',
+                target: `/${language}/resume`,
+              })
+            }
+          >
+            {language === 'zh' ? '查看履歷' : 'View Resume'}
+          </Link>
+        </div>
       </Section>
 
       <Section title={language === 'zh' ? 'Experience Timeline' : 'Experience Timeline'}>

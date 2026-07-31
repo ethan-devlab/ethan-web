@@ -10,15 +10,29 @@ export const skillGroups: SkillGroup[] = [
   },
   {
     title: {
-      en: 'Web',
-      zh: 'Web',
+      en: 'Database & Data Modeling',
+      zh: '資料庫與資料建模',
+    },
+    items: ['Relational Database Design', 'MySQL', 'PostgreSQL', 'Milvus', 'Supabase', 'Schema Design', 'Data Modeling'],
+  },
+  {
+    title: {
+      en: 'System Architecture',
+      zh: '系統架構',
+    },
+    items: ['System Design', 'API Design', 'Domain Modeling', 'Scalability Planning', 'Authentication Flow'],
+  },
+  {
+    title: {
+      en: 'Web Development',
+      zh: '網站開發',
     },
     items: ['React', 'Django', 'Flask', 'Tailwind CSS', 'HTML', 'CSS', 'JavaScript', 'Responsive Web Design'],
   },
   {
     title: {
-      en: 'AI Tools',
-      zh: 'AI 工具',
+      en: 'AI Applications',
+      zh: 'AI 應用',
     },
     items: ['Machine Learning', 'Deep Learning', 'OpenAI', 'Gemini', 'Claude', 'LangChain', 'Ollama', 'oMLX', 'LlamaIndex',],
   },
@@ -31,41 +45,16 @@ export const skillGroups: SkillGroup[] = [
   },
   {
     title: {
-      en: 'IoT',
-      zh: '物聯網',
+      en: 'DevOps, Cloud & Containers',
+      zh: 'DevOps、雲端與容器',
     },
-    items: ['Sensor Fusion', 'ESP32', 'Raspberry Pi', 'Jetson Nano'],
+    items: ['Docker', 'GCP', 'Isaac Sim', 'Git', 'GitHub', 'Zeabur', 'CI/CD', 'Deployment Workflow'],
   },
   {
     title: {
-      en: 'Automation',
-      zh: '自動化',
+      en: 'Automation & IoT',
+      zh: '自動化與物聯網',
     },
-    items: ['n8n', 'Google Apps Script'],
-  },
-  // {
-  //   title: 'System Architecture',
-  //   items: ['System Design', 'API Design', 'Domain Modeling', 'Scalability Planning', 'Authentication Flow'],
-  // },
-  {
-    title: {
-      en: 'Database',
-      zh: '資料庫',
-    },
-    items: ['Relational Database Design', 'MySQL', 'PostgreSQL', 'Milvus', 'Supabase', 'Schema Design', 'Data Modeling'],
-  },
-  {
-    title: {
-      en: 'Containerization, Cloud & Simulation',
-      zh: '容器化、雲端與模擬平台',
-    },
-    items: ['Docker', 'GCP', 'Isaac Sim'],
-  },
-  {
-    title: {
-      en: 'DevOps',
-      zh: 'DevOps',
-    },
-    items: ['Git', 'GitHub', 'Zeabur', 'CI/CD', 'Deployment Workflow'],
+    items: ['Sensor Fusion', 'ESP32', 'Raspberry Pi', 'Jetson Nano', 'n8n', 'Google Apps Script'],
   },
 ]

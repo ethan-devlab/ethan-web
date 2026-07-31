@@ -7,9 +7,12 @@ export type LocalizedStringList = Record<Language, string[]>
 export type ProjectItem = {
   title: LocalizedText
   description: LocalizedText
+  projectType: LocalizedText
+  role: LocalizedText
   techStack: string[]
   highlights: LocalizedStringList
-  githubUrl: string
+  githubUrl?: string
+  isPrivate?: boolean
 }
 
 export type SkillGroup = {

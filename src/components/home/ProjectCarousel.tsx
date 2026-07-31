@@ -25,6 +25,13 @@ const projectSection = {
 }
 
 export function ProjectCarousel({ lang }: ProjectCarouselProps) {
+  const copy = {
+    role: lang === 'zh' ? '角色' : 'Role',
+    private: lang === 'zh' ? '私人專案' : 'Private Project',
+    unavailable: lang === 'zh' ? 'Repository unavailable' : 'Repository unavailable',
+    repository: lang === 'zh' ? 'GitHub Repo' : 'GitHub Repo',
+  }
+
   return (
     <Section
       title={projectSection.title[lang]}
@@ -33,59 +40,66 @@ export function ProjectCarousel({ lang }: ProjectCarouselProps) {
     >
       <Swiper spaceBetween={24} slidesPerView={1} breakpoints={{ 768: { slidesPerView: 2 }, 1200: { slidesPerView: 3 } }}
               className='swiper'>
-        {projects.map((project, index) => (
+        {projects.map((project, index) => {
+          const hiddenTechCount = project.techStack.length - 4
+
+          return (
           <SwiperSlide key={project.title.en}>
             <motion.div
+              className="project-carousel__item"
               initial={{ opacity: 0, y: 16 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: '-80px' }}
               transition={{ duration: 0.35, delay: index * 0.04 }}
             >
               <Card className="project-card">
-                <h3><a
-                  href={project.githubUrl}
-                  target="_blank"
-                  rel="noreferrer"
-                  onClick={() =>
-                    trackButtonClick({
-                      label: `project_title_github_${index + 1}`,
-                      area: 'project_carousel',
-                      target: 'github',
-                    })
-                  }
-                >
-                  {project.title[lang]}
-                </a></h3>
+                <div className="project-card__meta">
+                  <span className="project-card__type">{project.projectType[lang]}</span>
+                  {project.isPrivate ? <span className="project-card__status">{copy.private}</span> : null}
+                </div>
+                <h3>{project.title[lang]}</h3>
                 <p>{project.description[lang]}</p>
+                <div className="project-card__role">
+                  <span>{copy.role}</span>
+                  <strong>{project.role[lang]}</strong>
+                </div>
                 <div className="stack-list">
-                  {project.techStack.map((tech) => (
+                  {project.techStack.slice(0, 4).map((tech) => (
                     <Badge key={tech}>{tech}</Badge>
                   ))}
+                  {hiddenTechCount > 0 ? <span className="project-card__tech-overflow">+{hiddenTechCount}</span> : null}
                 </div>
-                <div className="highlight-list">
+                <ul className="highlight-list">
                   {project.highlights[lang].map((highlight) => (
-                    <Badge key={highlight}>{highlight}</Badge>
+                    <li key={highlight}>{highlight}</li>
                   ))}
+                </ul>
+                <div className="project-card__cta">
+                  {project.githubUrl ? (
+                    <a
+                      className="project-card__repository-link"
+                      href={project.githubUrl}
+                      target="_blank"
+                      rel="noreferrer"
+                      onClick={() =>
+                        trackButtonClick({
+                          label: `project_github_${index + 1}`,
+                          area: 'project_carousel',
+                          target: 'github',
+                        })
+                      }
+                    >
+                      <FaGithub /> {copy.repository}
+                    </a>
+                  ) : (
+                    <span className="project-card__repository-unavailable">{copy.unavailable}</span>
+                  )}
                 </div>
-                <a
-                  className="header__link"
-                  href={project.githubUrl}
-                  target="_blank"
-                  rel="noreferrer"
-                  onClick={() =>
-                    trackButtonClick({
-                      label: `project_github_${index + 1}`,
-                      area: 'project_carousel',
-                      target: 'github',
-                    })
-                  }
-                >
-                  <FaGithub /> GitHub
-                </a>
               </Card>
             </motion.div>
           </SwiperSlide>
-        ))}
+          )
+        })}
       </Swiper>
     </Section>
   )

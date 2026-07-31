@@ -1,18 +1,19 @@
 import type { LocalizedText } from './types'
 
 export const contactIntro: LocalizedText = {
-  zh: '如果你想交流心得、討論合作，歡迎透過以下方式聯絡我。',
-  en: 'If you would like to connect, discuss potential collaborations, or just say hi, feel free to reach out through the following channels.',
+  zh: '歡迎交流心得、討論合作。',
+  en: 'Feel free to reach out to me through the following channels.',
 }
 
 export const contactChannels = {
   email: 'hello@ethan-devlab.com',
-  github: 'https://github.com/ethan-devlab',
-  facebook: 'https://www.facebook.com/jcheng.chan',
+  github: 'github.com/ethan-devlab',
+  facebook: 'facebook.com/jcheng.chan',
+  linkedin: 'linkedin.com/in/jiasengchan/',
 }
 
 export type ContactChannelItem = {
-  key: 'email' | 'github' | 'facebook'
+  key: 'email' | 'github' | 'facebook' | 'linkedin'
   label: LocalizedText
   value: string
   href: string
@@ -26,28 +27,38 @@ export const contactChannelItems: ContactChannelItem[] = [
     value: contactChannels.email,
     href: `mailto:${contactChannels.email}`,
     note: {
-      zh: '歡迎合作洽談',
-      en: 'Best for collaboration',
+      zh: '',
+      en: '',
+    },
+  },
+  {
+    key: 'linkedin',
+    label: { zh: 'LinkedIn', en: 'LinkedIn' },
+    value: contactChannels.linkedin,
+    href: `https://${contactChannels.linkedin}`,
+    note: {
+      zh: '',
+      en: '',
     },
   },
   {
     key: 'github',
     label: { zh: 'GitHub', en: 'GitHub' },
     value: contactChannels.github,
-    href: contactChannels.github,
+    href: `https://${contactChannels.github}`,
     note: {
-      zh: '查看程式碼、架構實作與開發紀錄',
-      en: 'Explore source code, architecture implementation, and work logs',
+      zh: '',
+      en: '',
     },
   },
   {
     key: 'facebook',
     label: { zh: 'Facebook', en: 'Facebook' },
     value: contactChannels.facebook,
-    href: contactChannels.facebook,
+    href: `https://www.${contactChannels.facebook}`,
     note: {
-      zh: '歡迎交流心得、討論合作',
-      en: 'Feel free to connect, discuss potential collaborations, or just say hi',
+      zh: '',
+      en: '',
     },
   },
 ]

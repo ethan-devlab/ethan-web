@@ -3,7 +3,6 @@ import { Link, NavLink } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import type { Theme } from '../../utils/theme'
 import type { Language } from '../../i18n/locales'
-import { translations } from '../../i18n/translations'
 import { navigationItems } from '../../data/navigation'
 import { trackButtonClick } from '../../utils/analytics'
 import { withLanguageBase } from '../../utils/language'
@@ -19,8 +18,6 @@ type HeaderProps = {
 export function Header({ lang, theme, onToggleTheme }: HeaderProps) {
   const [isScrolled, setIsScrolled] = useState(false)
   const [isMenuOpen, setIsMenuOpen] = useState(false)
-  const t = translations[lang]
-
   useEffect(() => {
     const onScroll = () => setIsScrolled(window.scrollY > 24)
     onScroll()
@@ -80,7 +77,7 @@ export function Header({ lang, theme, onToggleTheme }: HeaderProps) {
                     setIsMenuOpen(false)
                   }}
                 >
-                  {item.label[lang] ?? t.nav[item.key]}
+                  {item.label[lang]}
                 </NavLink>
               )
             })}

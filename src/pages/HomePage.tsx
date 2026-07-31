@@ -2,6 +2,7 @@ import { useParams } from 'react-router-dom'
 import { HeroSection } from '../components/home/HeroSection'
 import { SkillTree } from '../components/home/SkillTree'
 import { ProjectCarousel } from '../components/home/ProjectCarousel'
+import { ClosingCta } from '../components/home/ClosingCta'
 import { DEFAULT_LANGUAGE, isLanguage, type Language } from '../i18n/locales'
 import { SEO } from '../components/common/SEO'
 
@@ -26,6 +27,7 @@ export function HomePage() {
       <HeroSection lang={language} />
       <SkillTree lang={language} />
       <ProjectCarousel lang={language} />
+      <ClosingCta lang={language} />
     </>
   )
 }
