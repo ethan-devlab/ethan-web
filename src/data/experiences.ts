@@ -1,4 +1,4 @@
-import type { ExperienceItem, LocalizedText, ProjectExperience } from './types'
+import type { ExperienceItem, LocalizedText } from './types'
 
 export const professionalSummary: LocalizedText = {
   zh: '喜歡 coding 和研究新科技，對 AI、資安、IoT 和軟體工程都有興趣。目前專注在無人機影像處理、無人機導航算法、AI Agent 應用、自動化應用開發、網站開發和系統架構分析與設計。',

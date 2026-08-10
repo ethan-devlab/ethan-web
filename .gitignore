@@ -17,6 +17,7 @@ mdxjs
 .README.md
 src/assets/fonts_/
 .wrangler/
+improvement.md
 
 # stop github deploy
 .github/workflows/deploy.yml
