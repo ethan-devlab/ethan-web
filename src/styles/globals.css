@@ -482,6 +482,10 @@ a:focus-visible {
   margin-bottom: 16px;
 }
 
+.experience__timeline {
+  margin-top: -45px;
+}
+
 .timeline {
   display: grid;
   gap: 20px;

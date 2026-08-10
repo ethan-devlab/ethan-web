@@ -3,6 +3,31 @@ import type { ProjectItem } from './types'
 export const projects: ProjectItem[] = [
   {
     title: {
+      zh: "Codex Token Dashboard",
+      en: "Codex Token Dashboard",
+    },
+    description: {
+      zh: "輕量的 Codex 用量統計儀錶盤，可同時支援 Windows 和 macOS，並提供不同時期用量、等價金額和圖表分析",
+      en: "A lightweight usage statistics dashboard for Codex, supporting both Windows and macOS, providing usage data, equivalent amounts, and chart analysis for different periods.",
+    },
+    projectType: { 
+      zh: "Side Project", 
+      en: "Side Project", 
+    },
+    role: {
+      zh: "輕量級網站開發",
+      en: "Lightweight Web Development",
+    },
+    techStack: ["MJS", "Node.js"],
+    highlights: {
+      zh: ["輕量級架構", "Token 用量分析"],
+      en: ["Lightweight Architecture", "Token Usage Analysis"],
+    },
+    githubUrl: "https://github.com/ethan-devlab/codex-token-dashboard",
+    isPrivate: false,
+  },
+  {
+    title: {
       zh: '合作社 AI 客服系統（此專案不公開）',
       en: 'Cooperative AI Customer Service System (Private Project)',
     },

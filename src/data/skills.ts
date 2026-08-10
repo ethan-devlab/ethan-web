@@ -48,7 +48,7 @@ export const skillGroups: SkillGroup[] = [
       en: 'DevOps, Cloud & Containers',
       zh: 'DevOps、雲端與容器',
     },
-    items: ['Docker', 'GCP', 'Isaac Sim', 'Git', 'GitHub', 'Zeabur', 'CI/CD', 'Deployment Workflow'],
+    items: ['Docker', 'GCP', 'Isaac Sim', 'Git', 'GitHub', 'Cloudflare', 'CI/CD', 'Deployment Workflow'],
   },
   {
     title: {

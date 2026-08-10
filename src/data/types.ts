@@ -24,9 +24,9 @@ export type ExperienceItem = {
   title: LocalizedText
   organization?: LocalizedText
   period: string
-  description: LocalizedText
-  responsibilities: LocalizedText[]
-  technologies: string[]
+  description?: LocalizedText
+  responsibilities?: LocalizedText[]
+  technologies?: string[]
 }
 
 export type ProjectExperience = {

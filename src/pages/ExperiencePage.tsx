@@ -7,7 +7,7 @@ import {
   // architectureHighlights,
   experienceTimeline,
   professionalSummary,
-  projectExperiences,
+  // projectExperiences,
 } from '../data/experiences'
 import { DEFAULT_LANGUAGE, isLanguage, type Language } from '../i18n/locales'
 import { SEO } from '../components/common/SEO'
@@ -58,7 +58,7 @@ export function ExperiencePage() {
         </div>
       </Section>
 
-      <Section title={language === 'zh' ? 'Experience Timeline' : 'Experience Timeline'}>
+      <Section title={language === 'zh' ? 'Experience Timeline' : 'Experience Timeline'} className="experience__timeline">
         <div className="timeline">
           {experienceTimeline.map((item, index) => (
             <motion.div
@@ -72,24 +72,24 @@ export function ExperiencePage() {
                 <h3>{item.title[language]}</h3>
                 {item.organization ? <p>{item.organization[language]}</p> : null}
                 <p className="timeline__period">{item.period}</p>
-                <p>{item.description[language]}</p>
-                <ul className="timeline__list">
+                {item.description ? <p>{item.description[language]}</p> : null}
+                {item.responsibilities ? <ul className="timeline__list">
                   {item.responsibilities.map((line, lineIndex) => (
                     <li key={`${item.period}-${lineIndex}`}>{line[language]}</li>
                   ))}
-                </ul>
-                <div className="stack-list timeline__technologies">
+                </ul> : null}
+                {item.technologies ? <div className="stack-list timeline__technologies">
                   {item.technologies.map((tech) => (
                     <Badge key={tech}>{tech}</Badge>
                   ))}
-                </div>
+                </div> : null}
               </Card>
             </motion.div>
           ))}
         </div>
       </Section>
 
-      <Section title={language === 'zh' ? 'Project Experience' : 'Project Experience'}>
+      {/* <Section title={language === 'zh' ? 'Project Experience' : 'Project Experience'}>
         <div className="project-experience">
           {projectExperiences.map((project) => (
             <Card key={project.name.en} className="project-experience__item">
@@ -110,7 +110,7 @@ export function ExperiencePage() {
             </Card>
           ))}
         </div>
-      </Section>
+      </Section> */}
 
       {/* <Section title={language === 'zh' ? 'Architecture Highlights' : 'Architecture Highlights'}>
         <Card className="timeline__item">
