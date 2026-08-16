@@ -49,8 +49,8 @@ export const experienceTimeline: ExperienceItem[] = [
     period: "2026/8 - Present",
     responsibilities: [
       {
-        zh: "負責 AIoT 智慧精靈開發",
-        en: "Participated in the development of AIoT Intelligent Assistant",
+        zh: "負責 EywaLink Center 製造管理中心智慧精靈開發",
+        en: "Participated in the development of EywaLink Center Intelligent Assistant",
       },
       {
         zh: "系統維護與優化",
