@@ -39,8 +39,8 @@ export const experienceTimeline: ExperienceItem[] = [
   // },
   {
     title: {
-      zh: "實習",
-      en: "Internship",
+      zh: "兼職實習生",
+      en: "Part Time Intern",
     },
     organization: {
       zh: "日峰科技股份有限公司",
@@ -49,12 +49,12 @@ export const experienceTimeline: ExperienceItem[] = [
     period: "2026/8 - Present",
     responsibilities: [
       {
-        zh: "負責 EywaLink Center 製造管理中心智慧精靈開發",
+        zh: "負責 EywaLink Center 智慧精靈開發",
         en: "Participated in the development of EywaLink Center Intelligent Assistant",
       },
       {
-        zh: "系統維護與優化",
-        en: "System maintenance and optimization",
+        zh: "系統維護、安全性優化",
+        en: "System maintenance and security optimization",
       }
     ],
   },

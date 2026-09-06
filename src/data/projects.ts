@@ -2,6 +2,31 @@ import type { ProjectItem } from './types'
 
 export const projects: ProjectItem[] = [
   {
+    title: { 
+      zh: 'SecretGen', 
+      en: 'SecretGen',
+    },
+    description: { 
+      zh: '整合 80+ 種密碼生成演算法的密碼生成器，支援自訂密碼長度、bundle。',
+      en: 'A password generator that integrates over 80 password generation algorithms, supporting custom password length and bundling.',
+    },
+    projectType: { 
+      zh: 'SIDE PROJECT', 
+      en: 'SIDE PROJECT', 
+    },
+    role: { 
+      zh: '開源專案開發', 
+      en: 'Open Source Project Development', 
+    },
+    techStack: ['Node.js', 'npm'],
+    highlights: {
+      zh: ['開源專案', '一站式密碼生成器'],
+      en: ['Open Source Project', 'All-in-One Password Generator']
+    },
+    githubUrl: 'https://github.com/ethan-devlab/secretgen',
+    isPrivate: false
+  },
+  {
     title: {
       zh: "Codex Token Dashboard",
       en: "Codex Token Dashboard",
@@ -37,7 +62,7 @@ export const projects: ProjectItem[] = [
     },
     projectType: { zh: 'AI 應用', en: 'AI Application' },
     role: { zh: '系統設計與實作', en: 'System Design & Implementation' },
-    techStack: ['LlamaIndex', 'Line Messaging API', 'AWS Cloud Services'],
+    techStack: ['LlamaIndex', 'Line Messaging API', 'AWS Cloud Services', 'OpenAI'],
     highlights: {
       zh: ['系統設計', 'AI 模型應用', 'Agent 設計', 'RAG 架構'],
       en: ['System Design', 'AI Model Application', 'Agent Design', 'RAG Architecture'],
@@ -78,6 +103,7 @@ export const projects: ProjectItem[] = [
       zh: ['API 整合', '系統設計', 'AI 模型應用', 'Agent 設計'],
       en: ['API Integration', 'System Design', 'AI Model Application', 'Agent Design'],
     },
+    isPrivate: false,
     githubUrl: 'https://github.com/ethan-devlab/travel_planner_agent',
   },    
   // {

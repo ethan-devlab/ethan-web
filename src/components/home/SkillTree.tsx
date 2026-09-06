@@ -12,7 +12,7 @@ type SkillTreeProps = {
 const skillSection = {
   title: {
     en: 'Capabilities',
-    zh: '能力架構',
+    zh: '技術能力',
   },
   description: {
     en: '',
@@ -26,8 +26,8 @@ const currentFocus = {
     zh: 'Current Focus',
   },
   items: {
-    en: ['AI Agent Applications', 'Backend & Data Systems', 'UAV Vision Navigation'],
-    zh: ['AI Agent 應用', '後端與資料系統', '無人機視覺導航'],
+    en: ['AI Agent Applications', 'System Design', 'UAV Vision Navigation'],
+    zh: ['AI Agent 應用', '系統設計', '無人機視覺導航'],
   },
 }
 

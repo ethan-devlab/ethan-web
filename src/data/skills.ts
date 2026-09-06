@@ -34,21 +34,21 @@ export const skillGroups: SkillGroup[] = [
       en: 'AI Applications',
       zh: 'AI 應用',
     },
-    items: ['Machine Learning', 'Deep Learning', 'OpenAI', 'Gemini', 'Claude', 'LangChain', 'Ollama', 'oMLX', 'LlamaIndex',],
+    items: ['Machine Learning', 'OpenAI', 'Gemini', 'Claude', 'LangChain', 'Ollama', 'oMLX', 'LlamaIndex',],
   },
   {
     title: {
       en: 'Drone & Computer Vision',
       zh: '無人機與電腦視覺',
     },
-    items: ['OpenCV', 'Pegasus Simulator', 'PX4 Autopilot', 'QGroundControl', 'Mission Planner', 'MAVSDK'],
+    items: ['OpenCV', 'Pegasus Simulator', 'PX4 Autopilot', 'QGroundControl', 'Mission Planner', 'MAVSDK', 'Isaac Sim'],
   },
   {
     title: {
       en: 'DevOps, Cloud & Containers',
       zh: 'DevOps、雲端與容器',
     },
-    items: ['Docker', 'GCP', 'Isaac Sim', 'Git', 'GitHub', 'Cloudflare', 'CI/CD', 'Deployment Workflow'],
+    items: ['Docker', 'GCP', 'AWS', 'Git', 'GitHub', 'Cloudflare', 'CI/CD', 'Deployment Workflow'],
   },
   {
     title: {
