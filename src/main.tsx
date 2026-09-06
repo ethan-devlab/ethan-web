@@ -5,6 +5,7 @@ import { initializeTheme } from './utils/theme'
 import { initializeAnalytics } from './utils/analytics'
 import './styles/tokens.css'
 import './styles/globals.css'
+import './styles/semantic-overrides.css'
 
 initializeTheme()
 initializeAnalytics()
