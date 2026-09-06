@@ -86,13 +86,15 @@ a:focus-visible {
   color: var(--fg-default);
 }
 
-:root[data-theme='light'] .header--scrolled .header__panel {
-  background: var(--bg-surface-2);
-  border-color: var(--border-subtle);
-}
+@media (max-width: 1023px) {
+  :root[data-theme='light'] .header--scrolled .header__panel {
+    background: var(--bg-surface-2);
+    border-color: var(--border-subtle);
+  }
 
-:root[data-theme='light'] .header--scrolled .header__menu-button {
-  color: var(--fg-default);
+  :root[data-theme='light'] .header--scrolled .header__menu-button {
+    color: var(--fg-default);
+  }
 }
 
 /* Photography is a deliberate paper-and-ink exception to the app chrome. */
