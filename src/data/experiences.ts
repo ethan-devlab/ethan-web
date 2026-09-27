@@ -49,12 +49,20 @@ export const experienceTimeline: ExperienceItem[] = [
     period: "2026/8 - Present",
     responsibilities: [
       {
-        zh: "負責 EywaLink Center 智慧精靈開發",
-        en: "Participated in the development of EywaLink Center Intelligent Assistant",
+        zh: "負責 EywaLink Center / AIoT 智慧精靈開發，打造具備工具調用與知識回答的 AI Agent",
+        en: "Participated in the development of EywaLink Center / AIoT Intelligent Assistant, creating an AI Agent capable of tool invocation and knowledge-based responses",
       },
       {
-        zh: "系統維護、安全性優化",
-        en: "System maintenance and security optimization",
+        zh: "資安風險分析與優化——重構EywaLink Center身分驗證安全通道，加強人對機、機對機的資安，並加入預檢機制，避免既有部署機器因版本升級而發生兼容性問題",
+        en: "Conducted security risk analysis and optimization by refactoring the authentication security channel of EywaLink Center, enhancing the security between humans and machines, as well as between machines and machines, and incorporating a pre-check mechanism to prevent compatibility issues with existing deployed machines due to version upgrades.",
+      },
+      {
+        zh: "參與跨部門專案合作，與軟體工程師、架構師、DevOps 工程師及產品相關團隊進行溝通協作、問題與需求分析，協助進行產品測試、優化與驗證",
+        en: "Engaged in cross-departmental project collaboration, communicating and coordinating with software engineers, architects, DevOps engineers, and product-related teams for problem and requirement analysis, assisting in product testing, optimization, and validation.",
+      },
+      {
+        zh: "累積 AI 應用於智慧製造產業的實務經驗",
+        en: "Accumulated practical experience in applying AI to the smart manufacturing industry.",
       }
     ],
   },
