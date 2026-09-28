@@ -1,0 +1,257 @@
+/*
+ * Semantic color overrides.
+ *
+ * This layer is intentionally loaded after globals.css so the existing
+ * component markup can migrate toward semantic tokens without a large,
+ * high-risk stylesheet rewrite.
+ */
+
+/* Interactive hierarchy */
+.card:hover .badge {
+  background: var(--accent-soft);
+}
+
+.btn:focus-visible,
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+a:focus-visible {
+  outline-color: var(--focus-ring);
+  outline-offset: 3px;
+}
+
+.btn--primary {
+  background: var(--accent);
+  color: var(--accent-on);
+  border-color: var(--accent);
+}
+
+.btn--primary:hover {
+  background: var(--accent-hover);
+  border-color: var(--accent-hover);
+}
+
+.btn--primary:active {
+  background: var(--accent-active);
+  border-color: var(--accent-active);
+}
+
+.btn--secondary {
+  background: transparent;
+  color: var(--fg-default);
+  border-color: var(--border-control);
+}
+
+.btn--secondary:hover {
+  background: var(--bg-surface-3);
+  border-color: var(--border-control);
+}
+
+.btn--tertiary {
+  background: transparent;
+  color: var(--fg-muted);
+  border-color: transparent;
+}
+
+.btn--tertiary:hover {
+  background: var(--bg-surface-2);
+  color: var(--fg-default);
+  border-color: transparent;
+}
+
+/* Theme-aware sticky header */
+:root[data-theme='dark'] .header--scrolled,
+:root[data-theme='light'] .header--scrolled {
+  background: var(--header-bg-scrolled);
+  color: var(--fg-default);
+}
+
+:root[data-theme='dark'] .language-switcher,
+:root[data-theme='dark'] .theme-toggle,
+:root[data-theme='light'] .language-switcher,
+:root[data-theme='light'] .theme-toggle,
+:root[data-theme='dark'] .header--scrolled .language-switcher,
+:root[data-theme='dark'] .header--scrolled .theme-toggle,
+:root[data-theme='light'] .header--scrolled .language-switcher,
+:root[data-theme='light'] .header--scrolled .theme-toggle {
+  border-color: var(--border-control);
+}
+
+:root[data-theme='light'] .header--scrolled .header__brand,
+:root[data-theme='light'] .header--scrolled .header__link,
+:root[data-theme='light'] .header--scrolled .header__link--active,
+:root[data-theme='light'] .header--scrolled .language-switcher,
+:root[data-theme='light'] .header--scrolled .theme-toggle,
+:root[data-theme='light'] .header--scrolled .header__menu-button {
+  color: var(--fg-default);
+}
+
+@media (max-width: 1023px) {
+  :root[data-theme='light'] .header--scrolled .header__panel {
+    background: var(--bg-surface-2);
+    border-color: var(--border-subtle);
+  }
+
+  :root[data-theme='light'] .header--scrolled .header__menu-button {
+    color: var(--fg-default);
+  }
+}
+
+/* Photography is a deliberate paper-and-ink exception to the app chrome. */
+.photography-card {
+  background: var(--photo-paper);
+  color: var(--photo-ink);
+  box-shadow:
+    oklch(0% 0 0 / 28%) 0 18px 42px -24px,
+    oklch(100% 0 0 / 14%) 0 1px 0 inset;
+}
+
+.photography-card:hover {
+  box-shadow:
+    oklch(0% 0 0 / 34%) 0 28px 56px -28px,
+    oklch(100% 0 0 / 20%) 0 1px 0 inset;
+}
+
+.photography-card__image-frame {
+  background: var(--photo-paper-muted);
+}
+
+.photography-card__nav,
+.photography-modal__close,
+.photography-modal__nav,
+.photography-modal__group-nav {
+  border-color: var(--media-control-border);
+  background: var(--media-control-bg);
+  color: var(--media-control-fg);
+}
+
+.photography-card__nav:hover,
+.photography-modal__close:hover,
+.photography-modal__nav:hover,
+.photography-modal__group-nav:hover {
+  border-color: var(--accent-border);
+  background: var(--media-control-bg-hover);
+}
+
+.photography-card__dot {
+  background: oklch(100% 0 0 / 54%);
+}
+
+.photography-card__dot--active {
+  background: var(--media-control-fg);
+}
+
+.photography-card__dot:hover {
+  background: var(--accent-hover);
+}
+
+.photography-card__meta,
+.photography-card__datetime {
+  color: var(--photo-meta);
+}
+
+.photography-card__title {
+  color: var(--photo-ink);
+}
+
+.photography-modal__backdrop {
+  background: var(--overlay);
+}
+
+.photography-modal__media {
+  background:
+    radial-gradient(circle at 50% 0%, var(--accent-wash), transparent 38%),
+    oklch(8% 0.01 195);
+}
+
+.photography-modal__counter {
+  border-color: var(--media-control-border);
+  background: var(--media-control-bg);
+  color: var(--media-control-fg);
+}
+
+/* Accent-bearing states */
+.draft-preview[data-active='true'],
+.blog-card--draft,
+.blog-draft-badge,
+.blog-article__draft-badge,
+.contact-channel:hover,
+.contact-channel__icon {
+  border-color: var(--accent-border);
+}
+
+.contact-channel:hover,
+.contact-channel__icon {
+  background: var(--accent-wash);
+}
+
+.blog-draft-badge,
+.blog-article__draft-badge,
+.contact-channel__icon,
+.blog-article a {
+  color: var(--accent);
+}
+
+.blog-article :not(pre)>code:not([data-theme]) {
+  border-color: color-mix(in oklch, var(--border-subtle) 74%, var(--accent) 26%);
+  background: color-mix(in oklch, var(--bg-surface-2) 88%, var(--accent) 12%);
+}
+
+/* Callout semantics expressed in perceptual color rather than RGB literals. */
+.blog-callout {
+  --callout-accent: oklch(70% 0.14 255 / 72%);
+  --callout-bg: oklch(70% 0.14 255 / 8%);
+  --callout-shadow: oklch(70% 0.14 255 / 10%);
+  box-shadow:
+    inset 0 1px 0 oklch(100% 0 0 / 4%),
+    0 14px 30px oklch(0% 0 0 / 18%),
+    0 0 0 1px var(--callout-shadow);
+}
+
+.blog-callout[data-callout-type='note'] {
+  --callout-accent: oklch(70% 0.14 255 / 72%);
+  --callout-bg: oklch(70% 0.14 255 / 8%);
+  --callout-shadow: oklch(70% 0.14 255 / 10%);
+}
+
+.blog-callout[data-callout-type='info'] {
+  --callout-accent: oklch(78% 0.13 210 / 72%);
+  --callout-bg: oklch(78% 0.13 210 / 8%);
+  --callout-shadow: oklch(78% 0.13 210 / 10%);
+}
+
+.blog-callout[data-callout-type='tip'] {
+  --callout-accent: var(--accent-border);
+  --callout-bg: var(--accent-wash);
+  --callout-shadow: oklch(83% 0.18 159 / 9%);
+}
+
+.blog-callout[data-callout-type='success'] {
+  --callout-accent: oklch(80% 0.17 145 / 72%);
+  --callout-bg: oklch(80% 0.17 145 / 8%);
+  --callout-shadow: oklch(80% 0.17 145 / 10%);
+}
+
+.blog-callout[data-callout-type='important'] {
+  --callout-accent: oklch(72% 0.16 305 / 72%);
+  --callout-bg: oklch(72% 0.16 305 / 8%);
+  --callout-shadow: oklch(72% 0.16 305 / 10%);
+}
+
+.blog-callout[data-callout-type='warning'] {
+  --callout-accent: oklch(84% 0.16 90 / 76%);
+  --callout-bg: oklch(84% 0.16 90 / 9%);
+  --callout-shadow: oklch(84% 0.16 90 / 10%);
+}
+
+.blog-callout[data-callout-type='caution'] {
+  --callout-accent: oklch(76% 0.17 60 / 76%);
+  --callout-bg: oklch(76% 0.17 60 / 9%);
+  --callout-shadow: oklch(76% 0.17 60 / 10%);
+}
+
+.blog-callout[data-callout-type='danger'] {
+  --callout-accent: oklch(70% 0.17 25 / 76%);
+  --callout-bg: oklch(70% 0.17 25 / 9%);
+  --callout-shadow: oklch(70% 0.17 25 / 11%);
+}
