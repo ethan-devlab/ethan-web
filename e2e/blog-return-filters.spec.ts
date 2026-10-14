@@ -1,0 +1,60 @@
+import { expect, test } from '@playwright/test'
+
+test('restores all Chinese list filters after opening an article title', async ({ page }) => {
+  await page.goto('/zh/blog')
+  await page.getByRole('searchbox').fill('Jetson')
+  await page.getByRole('combobox', { name: '所有語言', exact: true }).selectOption('zh')
+  await page.getByRole('combobox', { name: '所有分類', exact: true }).selectOption('Tutorial')
+  await page.getByRole('combobox', { name: '所有標籤', exact: true }).selectOption('Windows')
+  await page.getByRole('link', { name: 'Jetson Nano Setup Guide (Windows)', exact: true }).click()
+  await page.getByRole('link', { name: '返回部落格', exact: true }).click()
+  await expect(page).toHaveURL(/\/zh\/blog$/)
+  await expect(page.getByRole('searchbox')).toHaveValue('Jetson')
+  await expect(page.locator('select').nth(0)).toHaveValue('zh')
+  await expect(page.locator('select').nth(1)).toHaveValue('Tutorial')
+  await expect(page.locator('select').nth(2)).toHaveValue('Windows')
+  await expect(page.locator('.blog-card')).toHaveCount(1)
+})
+
+test('restores English list filters through the reading link', async ({ page }) => {
+  await page.goto('/en/blog')
+  await page.getByRole('searchbox').fill('Direct Ethernet')
+  await page.getByRole('combobox', { name: 'All languages', exact: true }).selectOption('en')
+  await page.getByRole('combobox', { name: 'All categories', exact: true }).selectOption('Tutorial')
+  await page.getByRole('combobox', { name: 'All tags', exact: true }).selectOption('Raspberry Pi')
+  await expect(page.locator('.blog-card')).toHaveCount(1)
+  await page.getByRole('link', { name: 'Read Article', exact: true }).click()
+  await page.getByRole('link', { name: 'Back to Blog', exact: true }).click()
+  await expect(page).toHaveURL(/\/en\/blog$/)
+  await expect(page.getByRole('searchbox')).toHaveValue('Direct Ethernet')
+  await expect(page.locator('select').nth(0)).toHaveValue('en')
+  await expect(page.locator('select').nth(1)).toHaveValue('Tutorial')
+  await expect(page.locator('select').nth(2)).toHaveValue('Raspberry Pi')
+  await expect(page.locator('.blog-card')).toHaveCount(1)
+})
+
+test('returns a direct article visit to the unfiltered list', async ({ page }) => {
+  await page.goto('/zh/blog/hello-world')
+  await page.getByRole('link', { name: '返回部落格', exact: true }).click()
+  await expect(page.getByRole('searchbox')).toHaveValue('')
+  for (const select of await page.locator('select').all()) {
+    await expect(select).toHaveValue('all')
+  }
+  await expect(page.locator('.blog-card')).toHaveCount(9)
+})
+
+test('keeps list filters through browser back and forward navigation', async ({ page }) => {
+  await page.goto('/zh/blog')
+  await page.getByRole('searchbox').fill('Jetson')
+  await page.getByRole('combobox', { name: '所有分類', exact: true }).selectOption('Tutorial')
+  await page.getByRole('link', { name: 'Jetson Nano Setup Guide (Windows)', exact: true }).click()
+  await page.goBack()
+  await expect(page.getByRole('searchbox')).toHaveValue('Jetson')
+  await expect(page.locator('select').nth(1)).toHaveValue('Tutorial')
+  await expect(page.locator('.blog-card')).toHaveCount(1)
+  await page.goForward()
+  await expect(page.getByRole('heading', { name: 'Jetson Nano Setup Guide (Windows)', exact: true })).toBeVisible()
+  await page.getByRole('link', { name: '返回部落格', exact: true }).click()
+  await expect(page.getByRole('searchbox')).toHaveValue('Jetson')
+  await expect(page.locator('select').nth(1)).toHaveValue('Tutorial')
+})

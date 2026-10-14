@@ -1,4 +1,5 @@
 import type { LocalizedText } from './types'
+import { photographyWebpImages } from './photographyImages'
 
 export type PhotographyItem = {
   id: string
@@ -204,11 +205,19 @@ export function getPhotographyImageSrc(image: string): string {
     return image
   }
 
+  const localImage = image.replace(/^\/+/, '')
+  const resolvedImage = photographyWebpImages[localImage] ?? localImage
+  return getOriginalPhotographyImageSrc(resolvedImage)
+}
+
+export function getOriginalPhotographyImageSrc(image: string): string {
+  if (/^https?:\/\//i.test(image)) return image
+  const localImage = image.replace(/^\/+/, '')
   const base = import.meta.env.BASE_URL.endsWith('/')
     ? import.meta.env.BASE_URL
     : `${import.meta.env.BASE_URL}/`
 
-  return `${base}photography/${image.replace(/^\/+/, '')}`
+  return `${base}photography/${localImage}`
 }
 
 export function getGoogleMapsEmbedUrl(item: PhotographyItem): string {

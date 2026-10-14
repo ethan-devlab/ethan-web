@@ -1,0 +1,222 @@
+.app-shell[data-button-system] .btn {
+  --button-ink: var(--color-white);
+  --button-white: oklch(100% 0 0);
+  --button-edge: color-mix(in srgb, var(--color-muted-text) 70%, transparent);
+  border-width: 1px;
+  min-height: 50px;
+  font-weight: 550;
+  transition:
+    background-color 180ms ease,
+    border-color 180ms ease,
+    color 180ms ease,
+    box-shadow 180ms ease,
+    transform 180ms cubic-bezier(0.22, 1, 0.36, 1),
+    text-decoration-color 180ms ease;
+}
+
+.app-shell[data-button-system] .btn--primary {
+  background: var(--color-functional-accent);
+  border-color: var(--button-edge);
+  color: var(--button-white);
+}
+
+.app-shell[data-button-system] .btn--secondary {
+  background: transparent;
+  border-color: var(--button-edge);
+  color: var(--button-ink);
+}
+
+.app-shell[data-button-system] .btn--tertiary {
+  border-color: transparent;
+  background: transparent;
+  color: var(--button-ink);
+  text-decoration-color: var(--button-edge);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 6px;
+}
+
+.app-shell[data-button-system] .btn--primary:hover:not(:disabled) {
+  border-color: var(--button-white);
+}
+
+.app-shell[data-button-system] .btn--secondary:hover:not(:disabled) {
+  background: var(--color-functional-accent);
+  border-color: var(--button-edge);
+  color: var(--button-white);
+}
+
+.app-shell[data-button-system] .btn--tertiary:hover:not(:disabled) {
+  text-decoration-color: currentColor;
+}
+
+.app-shell[data-button-system] .btn {
+  position: relative;
+  isolation: isolate;
+}
+
+.app-shell[data-button-system] .closing-cta__actions {
+  align-items: center;
+}
+
+.app-shell[data-button-system='contour'] .btn:not(.btn--tertiary) {
+  border-color: transparent;
+  box-shadow: none;
+}
+
+.app-shell[data-button-system='contour'] .btn--primary {
+  --button-edge: var(--button-white);
+  font-weight: 600;
+}
+
+:root[data-theme='dark'] .app-shell[data-button-system='contour'] :is(.btn--primary, .btn--secondary),
+:root[data-theme='dark'] .app-shell[data-button-system='contour'] :is(.btn--primary, .btn--secondary):hover:not(:disabled) {
+  background: transparent;
+}
+
+.main-content:has(> .page-load-error) {
+  display: grid;
+  place-items: center;
+}
+
+.page-load-error {
+  width: 100%;
+  text-align: center;
+}
+
+.app-shell[data-button-system] .main-content .page-load-error {
+  padding-block: 40px;
+}
+
+.app-shell[data-button-system='contour'] .page-load-error .btn,
+.app-shell[data-button-system='contour'] .page-load-error .btn:hover:not(:disabled) {
+  background: transparent;
+}
+
+.app-shell[data-button-system='contour'] .btn--secondary,
+.app-shell[data-button-system='contour'] .btn--tertiary {
+  --button-edge: color-mix(in srgb, var(--color-muted-text) 55%, transparent);
+  font-weight: 450;
+}
+
+:root[data-theme='light'] .app-shell[data-button-system='contour'] .btn--primary,
+:root[data-theme='light'] .app-shell[data-button-system='contour'] .btn--primary:hover:not(:disabled) {
+  --button-edge: var(--color-functional-accent);
+  background: transparent;
+  color: var(--color-functional-accent);
+}
+
+:root[data-theme='light'] .app-shell[data-button-system='contour'] .btn--primary::before,
+:root[data-theme='light'] .app-shell[data-button-system='contour'] .btn--primary::after {
+  border-width: 1.5px;
+}
+
+:root[data-theme='light'] .app-shell[data-button-system='contour'] .btn--secondary:hover:not(:disabled) {
+  background: transparent;
+  color: var(--button-ink);
+}
+
+.app-shell[data-button-system='contour'] .header .header__actions .language-switcher {
+  --button-edge: color-mix(in srgb, var(--color-muted-text) 55%, transparent);
+  position: relative;
+  border-color: transparent;
+}
+
+.app-shell[data-button-system='contour'] .header--scrolled .header__actions .language-switcher {
+  --button-edge: color-mix(in srgb, currentColor 55%, transparent);
+}
+
+.app-shell[data-button-system='contour'] .header__actions .language-switcher:focus-visible {
+  outline: 2px solid oklch(100% 0 0);
+  outline-offset: 5px;
+  box-shadow: none;
+}
+
+:root[data-theme='light'] .app-shell[data-button-system='contour'] .header__actions .language-switcher:focus-visible {
+  outline-color: var(--color-functional-accent);
+}
+
+:root[data-theme='light'] .app-shell[data-button-system='contour'] .header--scrolled .header__actions .language-switcher:focus-visible {
+  outline-color: oklch(100% 0 0);
+}
+
+.app-shell[data-button-system='contour'] .btn:not(.btn--tertiary):hover:not(:disabled) {
+  border-color: transparent;
+}
+
+.app-shell[data-button-system='contour'] .btn:active:not(:disabled) {
+  transform: none;
+}
+
+.app-shell[data-button-system='contour'] :is(.btn:not(.btn--tertiary), .language-switcher)::before,
+.app-shell[data-button-system='contour'] :is(.btn:not(.btn--tertiary), .language-switcher)::after {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  border: 1px solid var(--button-edge);
+  border-radius: inherit;
+  pointer-events: none;
+  transition: clip-path 320ms cubic-bezier(0.22, 1, 0.36, 1), border-color 180ms ease;
+}
+
+.app-shell[data-button-system='contour'] :is(.btn:not(.btn--tertiary), .language-switcher)::before {
+  clip-path: inset(0 86% 0 0);
+}
+
+.app-shell[data-button-system='contour'] :is(.btn:not(.btn--tertiary), .language-switcher)::after {
+  clip-path: inset(0 0 0 86%);
+}
+
+.app-shell[data-button-system='contour'] :is(.btn:not(.btn--tertiary), .language-switcher):hover:not(:disabled)::before,
+.app-shell[data-button-system='contour'] :is(.btn:not(.btn--tertiary), .language-switcher):focus-visible::before {
+  clip-path: inset(0 50% 0 0);
+  border-color: currentColor;
+}
+
+.app-shell[data-button-system='contour'] :is(.btn:not(.btn--tertiary), .language-switcher):hover:not(:disabled)::after,
+.app-shell[data-button-system='contour'] :is(.btn:not(.btn--tertiary), .language-switcher):focus-visible::after {
+  clip-path: inset(0 0 0 50%);
+  border-color: currentColor;
+}
+
+.app-shell[data-button-system] .btn--tertiary {
+  text-decoration: none;
+}
+
+.app-shell[data-button-system] .btn--tertiary::after {
+  content: '';
+  position: absolute;
+  bottom: 10px;
+  left: 20px;
+  right: 20px;
+  height: 1px;
+  background: currentColor;
+  transform: scaleX(0.35);
+  transform-origin: left;
+  transition: transform 310ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.app-shell[data-button-system] .btn--tertiary:hover:not(:disabled)::after,
+.app-shell[data-button-system] .btn--tertiary:focus-visible::after {
+  transform: scaleX(1);
+}
+
+.app-shell[data-button-system] :is(.btn, .language-switcher):focus-visible {
+  outline: 2px solid var(--color-white);
+  outline-offset: 5px;
+  box-shadow: 0 0 0 3px var(--color-functional-accent);
+}
+
+.app-shell[data-button-system='contour'] :is(.btn:not(.btn--tertiary), .language-switcher):focus-visible::before,
+.app-shell[data-button-system='contour'] :is(.btn:not(.btn--tertiary), .language-switcher):focus-visible::after {
+  opacity: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .app-shell[data-button-system] .btn,
+  .app-shell[data-button-system] .btn::before,
+  .app-shell[data-button-system] .btn::after,
+  .app-shell[data-button-system='contour'] :is(.btn:not(.btn--tertiary), .language-switcher)::before,
+  .app-shell[data-button-system='contour'] :is(.btn:not(.btn--tertiary), .language-switcher)::after {
+    transition: none;
+  }
+}

@@ -1,0 +1,52 @@
+:root[data-theme='dark'] [data-accent-review='forest'] {
+  --color-functional-accent: var(--color-dark-forest);
+  --review-accent-foreground: var(--color-white);
+}
+
+:root[data-theme='dark'] [data-accent-review='forest'] .contact-channel__icon {
+  color: var(--review-accent-foreground);
+  background: var(--color-functional-accent);
+  border-color: var(--color-muted-text);
+}
+
+:root[data-theme='dark'] [data-accent-review='forest'] .contact-channel:hover {
+  background: transparent;
+}
+
+:root[data-theme='dark'] [data-accent-review='forest'] .skill-accordion__toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  color: var(--review-accent-foreground);
+  background: var(--color-functional-accent);
+}
+
+:root[data-theme='dark'] [data-accent-review='forest'] .blog-article a,
+:root[data-theme='dark'] [data-accent-review='forest'] .blog-draft-badge,
+:root[data-theme='dark'] [data-accent-review='forest'] .blog-article__draft-badge,
+:root[data-theme='dark'] [data-accent-review='forest'] .project-card__repository-link:hover {
+  color: var(--review-accent-foreground);
+  background: var(--color-functional-accent);
+}
+
+:root[data-theme='dark'] [data-accent-review='forest'] :focus-visible {
+  outline-color: var(--review-accent-foreground);
+  box-shadow: 0 0 0 4px var(--color-functional-accent);
+}
+
+:root[data-theme='dark'] [data-accent-review='forest'] .photography-card__dot:focus-visible {
+  outline-color: var(--color-functional-accent);
+  box-shadow: none;
+}
+
+:root[data-theme='light'] .contact-channel__icon {
+  border-color: color-mix(in srgb, var(--color-functional-accent) 55%, transparent);
+  background: color-mix(in srgb, var(--color-functional-accent) 8%, transparent);
+}
+
+:root[data-theme='light'] .contact-channel:hover {
+  background: transparent;
+}

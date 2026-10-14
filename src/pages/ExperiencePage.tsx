@@ -1,5 +1,6 @@
 import { Link, useParams } from 'react-router-dom'
 import { motion } from 'framer-motion'
+import { useReducedMotionPreference } from '../utils/useReducedMotionPreference'
 import { Section } from '../components/common/Section'
 import { Card } from '../components/common/Card'
 import { Badge } from '../components/common/Badge'
@@ -13,6 +14,8 @@ import { DEFAULT_LANGUAGE, isLanguage, type Language } from '../i18n/locales'
 import { SEO } from '../components/common/SEO'
 import { trackButtonClick } from '../utils/analytics'
 import { getButtonClass } from '../utils/button'
+import { ButtonLabel } from '../components/common/ButtonLabel'
+import '../styles/experience-review.css'
 
 function resolveLanguage(lang: string | undefined): Language {
   if (!lang || !isLanguage(lang)) {
@@ -22,6 +25,7 @@ function resolveLanguage(lang: string | undefined): Language {
 }
 
 export function ExperiencePage() {
+  const reducedMotion = useReducedMotionPreference()
   const { lang } = useParams()
   const language = resolveLanguage(lang)
 
@@ -53,25 +57,30 @@ export function ExperiencePage() {
               })
             }
           >
-            {language === 'zh' ? '查看履歷' : 'View Resume'}
+            <ButtonLabel>{language === 'zh' ? '查看履歷' : 'View Resume'}</ButtonLabel>
           </Link>
         </div>
       </Section>
 
-      <Section title={language === 'zh' ? 'Experience Timeline' : 'Experience Timeline'} className="experience__timeline">
+      <Section
+        title={language === 'zh' ? 'Experience Timeline' : 'Experience Timeline'}
+        className="experience__timeline experience-review--split"
+      >
         <div className="timeline">
           {experienceTimeline.map((item, index) => (
             <motion.div
               key={`${item.title.en}-${item.period}`}
-              initial={{ opacity: 0, y: 18 }}
-              whileInView={{ opacity: 1, y: 0 }}
+              className="experience-review__entry"
+              initial={reducedMotion ? false : { opacity: 0, y: 18 }}
+              animate={reducedMotion ? { opacity: 1, y: 0 } : undefined}
+              whileInView={reducedMotion ? undefined : { opacity: 1, y: 0 }}
               viewport={{ once: true, margin: '-80px' }}
-              transition={{ duration: 0.35, delay: index * 0.04 }}
+              transition={{ duration: reducedMotion ? 0 : 0.35, delay: reducedMotion ? 0 : index * 0.04 }}
             >
-              <Card className="timeline__item">
+              <p className="timeline__period experience-review__period">{item.period}</p>
+              <Card className="timeline__item experience-review__card">
                 <h3>{item.title[language]}</h3>
                 {item.organization ? <p>{item.organization[language]}</p> : null}
-                <p className="timeline__period">{item.period}</p>
                 {item.description ? <p>{item.description[language]}</p> : null}
                 {item.responsibilities ? <ul className="timeline__list">
                   {item.responsibilities.map((line, lineIndex) => (

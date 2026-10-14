@@ -1,7 +1,8 @@
-import { useParams } from 'react-router-dom'
+import { Link, useParams, useSearchParams } from 'react-router-dom'
 import { HeroSection } from '../components/home/HeroSection'
 import { SkillTree } from '../components/home/SkillTree'
-import { ProjectCarousel } from '../components/home/ProjectCarousel'
+import { HomeProjectList } from '../components/home/HomeProjectList'
+import { DeferredHomePhotography } from '../components/home/DeferredHomePhotography'
 import { ClosingCta } from '../components/home/ClosingCta'
 import { DEFAULT_LANGUAGE, isLanguage, type Language } from '../i18n/locales'
 import { SEO } from '../components/common/SEO'
@@ -15,6 +16,13 @@ function resolveLanguage(lang: string | undefined): Language {
 
 export function HomePage() {
   const { lang } = useParams()
+  const [searchParams] = useSearchParams()
+  const heroLayout = searchParams.get('hero') === 'original' ? 'original' : 'split'
+  const heroReview = (layout: 'split' | 'original') => {
+    const params = new URLSearchParams(searchParams)
+    params.set('hero', layout)
+    return `?${params.toString()}`
+  }
   const language = resolveLanguage(lang)
   const description =
     language === 'zh'
@@ -24,10 +32,21 @@ export function HomePage() {
   return (
     <>
       <SEO title={language === 'zh' ? '首頁' : 'Home'} description={description} path={`/${language}/`} />
-      <HeroSection lang={language} />
+      {searchParams.has('hero') ? <nav className="container hero-review" aria-label="首頁構圖比較">
+        <Link to={heroReview('split')} aria-current={heroLayout === 'split' ? 'true' : undefined}>
+          1 · 左右構圖
+        </Link>
+        <Link to={heroReview('original')} aria-current={heroLayout === 'original' ? 'true' : undefined}>
+          2 · 原版構圖
+        </Link>
+      </nav> : null}
+      <div className="home-page">
+      <HeroSection lang={language} layout={heroLayout} />
+      <HomeProjectList lang={language} />
+      <DeferredHomePhotography lang={language} />
       <SkillTree lang={language} />
-      <ProjectCarousel lang={language} />
       <ClosingCta lang={language} />
+      </div>
     </>
   )
 }

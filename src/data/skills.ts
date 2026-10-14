@@ -6,7 +6,7 @@ export const skillGroups: SkillGroup[] = [
       en: 'Backend Engineering',
       zh: '後端',
     },
-    items: ['Node.js', 'Python', 'Java', 'RESTful APIs', 'Microservices', 'API Integration'],
+    items: ['Node.js', 'Python', 'Java', 'TypeScript', 'RESTful APIs', 'Microservices', 'API Integration'],
   },
   {
     title: {
@@ -55,6 +55,6 @@ export const skillGroups: SkillGroup[] = [
       en: 'Automation & IoT',
       zh: '自動化與物聯網',
     },
-    items: ['Sensor Fusion', 'ESP32', 'Raspberry Pi', 'Jetson Nano', 'n8n', 'Google Apps Script'],
+    items: ['ESP32', 'Raspberry Pi', 'Jetson Nano', 'n8n', 'Google Apps Script'],
   },
 ]

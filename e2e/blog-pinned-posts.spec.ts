@@ -1,6 +1,24 @@
 import { expect, test } from '@playwright/test'
 
 test.describe('blog pinned posts', () => {
+  test('orders by update date with publication fallback after pin priority', async ({ page }) => {
+    const titles = page.locator('.blog-card__title-link')
+    for (const language of ['zh', 'en']) {
+      await page.goto(`/${language}/blog`)
+      await expect(titles.nth(0)).toHaveText('Hello World')
+      await expect(titles.nth(1)).toHaveText('Raspberry Pi 5 Setup Guide')
+      await expect(titles.nth(2)).toHaveText('Direct Ethernet SSH from Windows to Raspberry Pi 5')
+      await expect(titles.nth(3)).toHaveText('Raspberry Pi 5 Hotspot (Without Internet)')
+
+      await page.getByRole('searchbox').fill('Raspberry')
+      await expect(titles).toHaveText([
+        'Raspberry Pi 5 Setup Guide',
+        'Direct Ethernet SSH from Windows to Raspberry Pi 5',
+        'Raspberry Pi 5 Hotspot (Without Internet)',
+      ])
+    }
+  })
+
   test('places pinned published posts first and hides drafts', async ({ page }) => {
     await page.goto('/zh/blog')
 

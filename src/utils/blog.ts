@@ -1,5 +1,6 @@
 import Fuse from 'fuse.js'
 import type { ComponentType, ElementType } from 'react'
+import { lazy } from 'react'
 import type { Language } from '../i18n/locales'
 import { isLanguage } from '../i18n/locales'
 
@@ -19,6 +20,7 @@ export type BlogPost = {
   lang: Language
   slug: string
   Component: ComponentType<MdxComponentProps>
+  loadComponent: () => Promise<BlogModule>
 }
 
 export type BlogModule = {
@@ -34,8 +36,13 @@ const DRAFT_PREVIEW_PARAM = 'preview'
 const DRAFT_PREVIEW_VALUE = 'drafts'
 
 const compiledModules = import.meta.glob('../content/blog/*/*.mdx', {
+}) as Record<string, () => Promise<BlogModule>>
+
+const metadataModules = import.meta.glob('../content/blog/*/*.mdx', {
   eager: true,
-}) as Record<string, BlogModule>
+  query: '?frontmatter',
+  import: 'frontmatter',
+}) as Record<string, Record<string, unknown> | undefined>
 
 function asString(value: unknown, fallback = ''): string {
   return typeof value === 'string' ? value : fallback
@@ -71,21 +78,25 @@ function sortPosts(a: BlogPost, b: BlogPost): number {
     return a.pin ? -1 : 1
   }
 
-  if (a.date !== b.date) {
-    return a.date < b.date ? 1 : -1
+  const aSortDate = a.lastmod || a.date
+  const bSortDate = b.lastmod || b.date
+
+  if (aSortDate !== bSortDate) {
+    return aSortDate < bSortDate ? 1 : -1
   }
 
   return a.title.localeCompare(b.title)
 }
 
 function buildPostList(): BlogPost[] {
-  return Object.entries(compiledModules)
-    .map(([path, module]) => {
-      if (!module.default) {
+  return Object.entries(metadataModules)
+    .map(([path, frontmatter]): BlogPost | null => {
+      const load = compiledModules[path]
+      if (!load) {
         return null
       }
 
-      const data = module.frontmatter ?? {}
+      const data = frontmatter ?? {}
       const pathLang = getLangFromPath(path)
       const frontmatterLang = asString(data.lang, pathLang)
       const lang = isLanguage(frontmatterLang) ? frontmatterLang : pathLang
@@ -102,7 +113,8 @@ function buildPostList(): BlogPost[] {
         pin: data.pin === true,
         lang,
         slug,
-        Component: module.default,
+        Component: lazy(load),
+        loadComponent: load,
       } satisfies BlogPost
     })
     .filter((post): post is BlogPost => Boolean(post))
@@ -110,6 +122,10 @@ function buildPostList(): BlogPost[] {
 }
 
 const allPosts = buildPostList()
+
+export function preloadBlogPost(slug: string, lang: Language) {
+  return getBlogPostBySlug(slug, lang)?.loadComponent()
+}
 
 export function isDraftPreviewEnabled(searchParams: URLSearchParams): boolean {
   return import.meta.env.DEV && searchParams.get(DRAFT_PREVIEW_PARAM) === DRAFT_PREVIEW_VALUE

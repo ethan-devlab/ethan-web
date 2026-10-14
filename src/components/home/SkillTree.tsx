@@ -1,8 +1,6 @@
-import { motion } from 'framer-motion'
 import type { Language } from '../../i18n/locales'
 import { skillGroups } from '../../data/skills'
 import { Badge } from '../common/Badge'
-import { Card } from '../common/Card'
 import { Section } from '../common/Section'
 
 type SkillTreeProps = {
@@ -48,24 +46,16 @@ export function SkillTree({ lang }: SkillTreeProps) {
           ))}
         </div>
       </div>
-      <div className="grid skill-grid">
+      <div className="skill-accordion">
         {skillGroups.map((group, index) => (
-          <motion.div
-            key={group.title[lang]}
-            initial={{ opacity: 0, y: 18 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: '-80px' }}
-            transition={{ duration: 0.35, delay: index * 0.04 }}
-          >
-            <Card className="skill-card">
-              <h3>{group.title[lang]}</h3>
-              <div className="skill-badges">
-                {group.items.map((item) => (
-                  <Badge key={item}>{item}</Badge>
-                ))}
-              </div>
-            </Card>
-          </motion.div>
+          <details key={group.title.en}>
+            <summary>
+              <span className="skill-accordion__number" aria-hidden="true">{String(index + 1).padStart(2, '0')}</span>
+              <span>{group.title[lang]}</span>
+              <span className="skill-accordion__toggle" aria-hidden="true">+</span>
+            </summary>
+            <ul>{group.items.map((item) => <li key={item}>{item}</li>)}</ul>
+          </details>
         ))}
       </div>
     </Section>

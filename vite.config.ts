@@ -1,4 +1,5 @@
 import { defineConfig } from 'vite'
+import { readFile } from 'node:fs/promises'
 import react from '@vitejs/plugin-react'
 import mdx from '@mdx-js/rollup'
 import rehypePrettyCode from 'rehype-pretty-code'
@@ -307,8 +308,20 @@ export default defineConfig({
   base: '/',
   plugins: [
     {
+      name: 'blog-frontmatter-only',
+      enforce: 'pre',
+      async load(id) {
+        if (!id.endsWith('.mdx?frontmatter')) return
+        const path = id.slice(0, -'?frontmatter'.length)
+        this.addWatchFile(path)
+        const source = await readFile(path, 'utf8')
+        return source.match(/^---\r?\n[\s\S]*?\r?\n---(?:\r?\n|$)/)?.[0] ?? ''
+      },
+    },
+    {
       enforce: 'pre',
       ...mdx({
+        include: /\.mdx(?:\?frontmatter)?$/,
         remarkPlugins: [
           remarkFrontmatter,
           [remarkMdxFrontmatter, { name: 'frontmatter' }],

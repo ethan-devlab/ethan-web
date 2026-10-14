@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom'
 import type { Language } from '../../i18n/locales'
 import { trackButtonClick } from '../../utils/analytics'
 import { getButtonClass } from '../../utils/button'
+import { ButtonLabel } from '../common/ButtonLabel'
 import { Card } from '../common/Card'
 import { Section } from '../common/Section'
 
@@ -52,7 +53,7 @@ export function ClosingCta({ lang }: ClosingCtaProps) {
                 to={target}
                 onClick={() => trackButtonClick({ label: `home_closing_${link.key}`, area: 'home_closing_cta', target })}
               >
-                {link.label}
+                <ButtonLabel>{link.label}</ButtonLabel>
               </Link>
             )
           })}

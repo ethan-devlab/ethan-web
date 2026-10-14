@@ -18,6 +18,13 @@ mdxjs
 src/assets/fonts_/
 .wrangler/
 improvement.md
+README.local.md
+
+# Local review and browser test output
+.impeccable/
+test-results/
+playwright-report/
+blob-report/
 
 # stop github deploy
 .github/workflows/deploy.yml

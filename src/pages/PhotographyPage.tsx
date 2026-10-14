@@ -1,7 +1,9 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useLayoutEffect, useMemo, useRef, useState, type ReactNode } from 'react'
 import { useParams } from 'react-router-dom'
 import { FaChevronLeft, FaChevronRight, FaTimes } from 'react-icons/fa'
 import { AnimatePresence, motion } from 'framer-motion'
+import { useReducedMotionPreference } from '../utils/useReducedMotionPreference'
+import { fallbackToOriginalPhotographyImage } from '../utils/photographyImageFallback'
 import { SEO } from '../components/common/SEO'
 import { Section } from '../components/common/Section'
 import { DEFAULT_LANGUAGE, isLanguage, type Language } from '../i18n/locales'
@@ -11,6 +13,70 @@ import {
   getPhotographyImageSrc,
   photographyItems,
 } from '../data/photography'
+import '../styles/photography-controls.css'
+import { GalleryLights } from '../components/photography/GalleryLights'
+
+function PhotographyTransition({ children, reducedMotion, direction }: { children: ReactNode; reducedMotion: boolean; direction: number }) {
+  if (reducedMotion) return children
+  return <AnimatePresence initial={false} custom={direction} mode="wait">{children}</AnimatePresence>
+}
+
+function PhotographyDialog({ children, onDismiss, returnFocusTo }: { children: ReactNode; onDismiss: () => void; returnFocusTo: HTMLElement | null }) {
+  const reducedMotion = useReducedMotionPreference()
+  const dialogRef = useRef<HTMLDialogElement>(null)
+
+  useLayoutEffect(() => {
+    const dialog = dialogRef.current
+    const opener = returnFocusTo ?? document.activeElement
+    if (!dialog) return
+
+    dialog.showModal()
+    dialog.querySelector<HTMLButtonElement>('.photography-modal__close')?.focus({ preventScroll: true })
+    return () => {
+      dialog.close()
+      if (opener instanceof HTMLElement && opener.isConnected) {
+        opener.focus({ preventScroll: true })
+      }
+    }
+  }, [returnFocusTo])
+
+  return (
+    <motion.dialog
+      ref={dialogRef}
+      className="photography-modal"
+      aria-labelledby="photography-modal-title"
+      onCancel={(event) => {
+        event.preventDefault()
+        onDismiss()
+      }}
+      initial={reducedMotion ? false : { opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={reducedMotion ? undefined : { opacity: 0 }}
+      transition={{ duration: reducedMotion ? 0 : 0.22 }}
+    >
+      {children}
+    </motion.dialog>
+  )
+}
+
+function PhotographyGroupNavigation({ inline, previousLabel, nextLabel, onPrevious, onNext }: {
+  inline: boolean
+  previousLabel: string
+  nextLabel: string
+  onPrevious: () => void
+  onNext: () => void
+}) {
+  return (
+    <div className={`photography-modal__group-controls photography-modal__group-controls--${inline ? 'inline' : 'floating'}`}>
+      <button type="button" className="photography-modal__group-nav photography-modal__group-nav--previous" aria-label={previousLabel} onClick={onPrevious}>
+        <FaChevronLeft aria-hidden="true" />
+      </button>
+      <button type="button" className="photography-modal__group-nav photography-modal__group-nav--next" aria-label={nextLabel} onClick={onNext}>
+        <FaChevronRight aria-hidden="true" />
+      </button>
+    </div>
+  )
+}
 
 function resolveLanguage(lang: string | undefined): Language {
   if (!lang || !isLanguage(lang)) {
@@ -68,9 +134,51 @@ const carouselDetailsVariants = {
 }
 
 export function PhotographyPage() {
+  const galleryRef = useRef<HTMLDivElement>(null)
+
+  useLayoutEffect(() => {
+    const gallery = galleryRef.current
+    if (!gallery) return
+    const cards = Array.from(gallery.querySelectorAll<HTMLElement>('.photography-card'))
+    const update = () => {
+      const columns = getComputedStyle(gallery).gridTemplateColumns.split(' ').length
+      const heights = Array<number>(columns).fill(0)
+      for (const card of cards) {
+        const frame = card.querySelector<HTMLElement>('.photography-card__image-frame')
+        card.style.setProperty('--preview-height', `${frame?.offsetHeight ?? 244}px`)
+        // Place successive works at the next lowest position without changing DOM order.
+        const column = heights.indexOf(Math.min(...heights))
+        const span = Math.ceil(card.offsetHeight + 28)
+        card.style.gridColumnStart = `${column + 1}`
+        card.style.gridRowStart = `${heights[column] + 1}`
+        card.style.gridRowEnd = `span ${span}`
+        heights[column] += span
+      }
+    }
+    let frameRequest = 0
+    const observer = new ResizeObserver(() => {
+      cancelAnimationFrame(frameRequest)
+      frameRequest = requestAnimationFrame(update)
+    })
+    observer.observe(gallery)
+    cards.forEach(card => observer.observe(card))
+    update()
+    return () => {
+      observer.disconnect()
+      cancelAnimationFrame(frameRequest)
+      cards.forEach(card => {
+        card.style.removeProperty('grid-row-end')
+        card.style.removeProperty('grid-row-start')
+        card.style.removeProperty('grid-column-start')
+        card.style.removeProperty('--preview-height')
+      })
+    }
+  }, [])
+  const reducedMotion = useReducedMotionPreference()
   const { lang } = useParams()
   const language = resolveLanguage(lang)
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null)
+  const [dialogOpener, setDialogOpener] = useState<HTMLButtonElement | null>(null)
   const [selectedImageIndex, setSelectedImageIndex] = useState(0)
   const [carouselDirection, setCarouselDirection] = useState<1 | -1>(1)
   const [itemDirection, setItemDirection] = useState<1 | -1>(1)
@@ -130,10 +238,6 @@ export function PhotographyPage() {
     document.body.style.overflow = 'hidden'
 
     const onKeyDown = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') {
-        setSelectedIndex(null)
-      }
-
       if (event.key === 'ArrowRight') {
         setCarouselDirection(1)
         setSelectedImageIndex((index) =>
@@ -182,7 +286,8 @@ export function PhotographyPage() {
     )
   }
 
-  const openItem = (index: number, imageIndex: number) => {
+  const openItem = (index: number, imageIndex: number, opener: HTMLButtonElement) => {
+    setDialogOpener(opener)
     setCarouselDirection(1)
     setItemDirection(1)
     setSelectedImageIndex(imageIndex)
@@ -214,8 +319,9 @@ export function PhotographyPage() {
         path={`/${language}/photography`}
       />
 
-      <Section title={pageText.title} description={pageText.description} className="section--spacious">
-        <div className="photography-grid" aria-label={pageText.title}>
+      <Section title={pageText.title} description={pageText.description} className="section--spacious section--gallery-exhibition">
+        <GalleryLights paused={selectedItem !== null} />
+        <div ref={galleryRef} className="photography-grid photography-grid--proportional" aria-label={pageText.title}>
           {photographyItems.map((item, index) => {
             const previewIndex = Math.min(previewImageIndexes[item.id] ?? 0, item.images.length - 1)
             const previewDirection = previewDirections[item.id] ?? 1
@@ -224,35 +330,37 @@ export function PhotographyPage() {
             return (
               <motion.article
                 key={item.id}
-                className="photography-card"
-                initial={{ opacity: 0, y: 22, rotate: index % 2 === 0 ? -0.8 : 0.8 }}
-                whileInView={{ opacity: 1, y: 0, rotate: 0 }}
-                whileHover={{ y: -6, rotate: index % 2 === 0 ? -0.5 : 0.5 }}
+                className="photography-card photography-card--dots-paper"
+                initial={reducedMotion ? false : { opacity: 0, y: 22, rotate: index % 2 === 0 ? -0.8 : 0.8 }}
+                animate={reducedMotion ? { opacity: 1, y: 0, rotate: 0 } : undefined}
+                whileInView={reducedMotion ? undefined : { opacity: 1, y: 0, rotate: 0 }}
+                whileHover={reducedMotion ? undefined : { y: -6, rotate: index % 2 === 0 ? -0.5 : 0.5 }}
                 viewport={{ once: true, margin: '-60px' }}
-                transition={{ duration: 0.36, delay: index * 0.025, ease: [0.22, 1, 0.36, 1] }}
+                transition={{ duration: reducedMotion ? 0 : 0.36, delay: reducedMotion ? 0 : index * 0.025, ease: [0.22, 1, 0.36, 1] }}
               >
                 <button
                   type="button"
                   className="photography-card__open"
-                  onClick={() => openItem(index, previewIndex)}
+                  onClick={event => openItem(index, previewIndex, event.currentTarget)}
                   aria-label={`${pageText.openLabel}: ${item.location[language]}`}
                 >
                   <span className="photography-card__image-frame">
-                    <AnimatePresence initial={false} custom={previewDirection} mode="wait">
+                    <PhotographyTransition reducedMotion={reducedMotion} direction={previewDirection}>
                       <motion.img
                         key={`${item.id}-${previewIndex}`}
                         src={getPhotographyImageSrc(previewImage)}
+                        onError={event => fallbackToOriginalPhotographyImage(event, previewImage)}
                         alt={item.name[language]}
                         loading="lazy"
                         className="photography-card__image"
                         custom={previewDirection}
                         variants={carouselImageVariants}
-                        initial="enter"
+                        initial={reducedMotion ? false : 'enter'}
                         animate="center"
-                        exit="exit"
-                        transition={carouselTransition}
+                        exit={reducedMotion ? undefined : 'exit'}
+                        transition={reducedMotion ? { duration: 0 } : carouselTransition}
                       />
-                    </AnimatePresence>
+                    </PhotographyTransition>
                   </span>
                   <span className="photography-card__meta">
                     <span className="photography-card__title">
@@ -307,51 +415,32 @@ export function PhotographyPage() {
 
       <AnimatePresence>
         {selectedItem ? (
-          <motion.div
-            className="photography-modal"
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby="photography-modal-title"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.22 }}
-          >
+          <PhotographyDialog returnFocusTo={dialogOpener} onDismiss={() => setSelectedIndex(null)}>
             <motion.button
               type="button"
               className="photography-modal__backdrop"
               aria-label={pageText.closeLabel}
-              initial={{ opacity: 0 }}
+              initial={reducedMotion ? false : { opacity: 0 }}
               animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.22 }}
+              exit={reducedMotion ? undefined : { opacity: 0 }}
+              transition={{ duration: reducedMotion ? 0 : 0.22 }}
               onClick={() => setSelectedIndex(null)}
             />
 
-            <button
-              type="button"
-              className="photography-modal__group-nav photography-modal__group-nav--previous"
-              aria-label={pageText.previousGroupLabel}
-              onClick={() => showAdjacentItem(-1)}
-            >
-              <FaChevronLeft aria-hidden="true" />
-            </button>
-
-            <button
-              type="button"
-              className="photography-modal__group-nav photography-modal__group-nav--next"
-              aria-label={pageText.nextGroupLabel}
-              onClick={() => showAdjacentItem(1)}
-            >
-              <FaChevronRight aria-hidden="true" />
-            </button>
+            <PhotographyGroupNavigation
+              inline={false}
+              previousLabel={pageText.previousGroupLabel}
+              nextLabel={pageText.nextGroupLabel}
+              onPrevious={() => showAdjacentItem(-1)}
+              onNext={() => showAdjacentItem(1)}
+            />
 
             <motion.div
               className="photography-modal__content"
-              initial={{ opacity: 0, y: 28, scale: 0.96 }}
+              initial={reducedMotion ? false : { opacity: 0, y: 28, scale: 0.96 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
-              exit={{ opacity: 0, y: 18, scale: 0.97 }}
-              transition={{ duration: 0.32, ease: [0.22, 1, 0.36, 1] }}
+              exit={reducedMotion ? undefined : { opacity: 0, y: 18, scale: 0.97 }}
+              transition={{ duration: reducedMotion ? 0 : 0.32, ease: [0.22, 1, 0.36, 1] }}
             >
               <button
                 type="button"
@@ -363,56 +452,69 @@ export function PhotographyPage() {
               </button>
 
               <div className="photography-modal__media">
-                <button
-                  type="button"
-                  className="photography-modal__nav photography-modal__nav--previous"
-                  aria-label={pageText.previousLabel}
-                  onClick={showPreviousImage}
-                >
-                  <FaChevronLeft aria-hidden="true" />
-                </button>
+                {selectedItem.images.length > 1 ? (
+                  <button
+                    type="button"
+                    className="photography-modal__nav photography-modal__nav--previous"
+                    aria-label={pageText.previousLabel}
+                    onClick={showPreviousImage}
+                  >
+                    <FaChevronLeft aria-hidden="true" />
+                  </button>
+                ) : null}
 
                 <div className="photography-modal__image-stage">
-                  <AnimatePresence initial={false} custom={carouselDirection} mode="wait">
+                  <PhotographyTransition reducedMotion={reducedMotion} direction={carouselDirection}>
                     <motion.img
                       key={`${selectedItem.id}-${selectedImageIndex}`}
                       src={getPhotographyImageSrc(selectedImage)}
+                      onError={event => fallbackToOriginalPhotographyImage(event, selectedImage)}
                       alt={selectedItem.name[language]}
                       className="photography-modal__image"
                       custom={carouselDirection}
                       variants={carouselImageVariants}
-                      initial="enter"
+                      initial={reducedMotion ? false : 'enter'}
                       animate="center"
-                      exit="exit"
-                      transition={carouselTransition}
+                      exit={reducedMotion ? undefined : 'exit'}
+                      transition={reducedMotion ? { duration: 0 } : carouselTransition}
                     />
-                  </AnimatePresence>
+                  </PhotographyTransition>
                   <div className="photography-modal__counter">
                     {selectedImageIndex + 1} / {selectedItem.images.length}
                   </div>
                 </div>
 
-                <button
-                  type="button"
-                  className="photography-modal__nav photography-modal__nav--next"
-                  aria-label={pageText.nextLabel}
-                  onClick={showNextImage}
-                >
-                  <FaChevronRight aria-hidden="true" />
-                </button>
+                {selectedItem.images.length > 1 ? (
+                  <button
+                    type="button"
+                    className="photography-modal__nav photography-modal__nav--next"
+                    aria-label={pageText.nextLabel}
+                    onClick={showNextImage}
+                  >
+                    <FaChevronRight aria-hidden="true" />
+                  </button>
+                ) : null}
               </div>
 
+              <PhotographyGroupNavigation
+                inline
+                previousLabel={pageText.previousGroupLabel}
+                nextLabel={pageText.nextGroupLabel}
+                onPrevious={() => showAdjacentItem(-1)}
+                onNext={() => showAdjacentItem(1)}
+              />
+
               <aside className="photography-modal__details">
-                <AnimatePresence initial={false} custom={carouselDirection} mode="wait">
+                <PhotographyTransition reducedMotion={reducedMotion} direction={carouselDirection}>
                   <motion.div
                     key={selectedItem.id}
                     className="photography-modal__details-inner"
                     custom={itemDirection}
                     variants={carouselDetailsVariants}
-                    initial="enter"
+                    initial={reducedMotion ? false : 'enter'}
                     animate="center"
-                    exit="exit"
-                    transition={carouselTransition}
+                    exit={reducedMotion ? undefined : 'exit'}
+                    transition={reducedMotion ? { duration: 0 } : carouselTransition}
                   >
                     <p className="photography-modal__eyebrow">{pageText.locationLabel}</p>
                     <h2 id="photography-modal-title">{selectedItem.location[language]}</h2>
@@ -443,10 +545,10 @@ export function PhotographyPage() {
                       <p>{selectedItem.thought[language]}</p>
                     </div>
                   </motion.div>
-                </AnimatePresence>
+                </PhotographyTransition>
               </aside>
             </motion.div>
-          </motion.div>
+          </PhotographyDialog>
         ) : null}
       </AnimatePresence>
     </>

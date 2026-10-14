@@ -1,0 +1,236 @@
+.photography-card--dots-paper {
+  --paper-control-color: oklch(20.2156888% 0.026423931 203.9733503);
+}
+
+.photography-card--dots-paper .photography-card__open {
+  row-gap: 28px;
+}
+
+.photography-card--dots-paper .photography-card__dots {
+  top: 257.5px;
+}
+
+.photography-card--dots-paper .photography-card__dot {
+  border: 0;
+  background: transparent;
+}
+
+.photography-card--dots-paper .photography-card__dot::before {
+  border: 1px solid var(--paper-control-color);
+  background: transparent;
+}
+
+.photography-card--dots-paper .photography-card__dot--active::before,
+.photography-card--dots-paper .photography-card__dot:hover::before {
+  background: var(--paper-control-color);
+}
+
+.photography-card--dots-paper .photography-card__dot:focus-visible {
+  outline-color: var(--paper-control-color);
+}
+
+.app-shell :is(.photography-card__nav, .photography-modal__nav, .photography-modal__group-nav) {
+  border-color: transparent;
+  transform: translateY(-50%);
+}
+
+.app-shell :is(.photography-card__nav, .photography-modal__nav, .photography-modal__group-nav):hover {
+  transform: translateY(-50%);
+}
+
+.app-shell .photography-modal__group-controls--inline .photography-modal__group-nav {
+  position: relative;
+  inset: auto;
+  transform: none;
+}
+
+.app-shell .photography-modal__group-controls--inline .photography-modal__group-nav:hover {
+  transform: none;
+}
+
+.app-shell :is(.photography-card__nav, .photography-modal__nav, .photography-modal__group-nav)::before,
+.app-shell :is(.photography-card__nav, .photography-modal__nav, .photography-modal__group-nav)::after {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  border: 1px solid color-mix(in srgb, var(--color-muted-text) 55%, transparent);
+  border-radius: inherit;
+  pointer-events: none;
+  transition: clip-path 320ms cubic-bezier(0.22, 1, 0.36, 1), border-color 180ms ease;
+}
+
+.app-shell :is(.photography-card__nav, .photography-modal__nav, .photography-modal__group-nav)::before {
+  clip-path: inset(0 75% 0 0);
+}
+
+.app-shell :is(.photography-card__nav, .photography-modal__nav, .photography-modal__group-nav)::after {
+  clip-path: inset(0 0 0 75%);
+}
+
+.app-shell :is(.photography-card__nav, .photography-modal__nav, .photography-modal__group-nav):hover:not(:disabled) {
+  border-color: transparent;
+}
+
+.app-shell :is(.photography-card__nav, .photography-modal__nav, .photography-modal__group-nav):hover:not(:disabled)::before {
+  clip-path: inset(0 50% 0 0);
+  border-color: var(--color-white);
+}
+
+.app-shell :is(.photography-card__nav, .photography-modal__nav, .photography-modal__group-nav):hover:not(:disabled)::after {
+  clip-path: inset(0 0 0 50%);
+  border-color: var(--color-white);
+}
+
+.app-shell :is(.photography-card__nav, .photography-modal__nav, .photography-modal__group-nav):focus-visible {
+  outline: 2px solid var(--color-white);
+  outline-offset: 3px;
+  box-shadow: 0 0 0 3px var(--color-functional-accent);
+}
+
+.app-shell :is(.photography-card__nav, .photography-modal__nav, .photography-modal__group-nav):focus-visible::before,
+.app-shell :is(.photography-card__nav, .photography-modal__nav, .photography-modal__group-nav):focus-visible::after {
+  opacity: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .app-shell :is(.photography-card__nav, .photography-modal__nav, .photography-modal__group-nav)::before,
+  .app-shell :is(.photography-card__nav, .photography-modal__nav, .photography-modal__group-nav)::after {
+    transition: none;
+  }
+}
+
+@media (max-width: 560px) {
+  .photography-card--dots-paper .photography-card__dots {
+    top: 249.5px;
+  }
+
+}
+.app-shell .photography-modal .photography-modal__group-nav,
+.app-shell .photography-modal .photography-modal__group-nav:hover {
+  background: transparent;
+  color: oklch(20.2156888% 0.026423931 203.9733503);
+}
+
+.app-shell .photography-modal .photography-modal__group-nav svg path {
+  stroke: oklch(100% 0 0);
+  stroke-width: 0.75px;
+  vector-effect: non-scaling-stroke;
+  paint-order: stroke fill;
+}
+
+.app-shell .photography-modal .photography-modal__group-nav::before,
+.app-shell .photography-modal .photography-modal__group-nav::after {
+  border-color: oklch(20.2156888% 0.026423931 203.9733503);
+  box-shadow: 0 0 0 1px oklch(100% 0 0), inset 0 0 0 1px oklch(100% 0 0);
+}
+
+.app-shell .photography-modal .photography-modal__nav,
+.app-shell .photography-modal .photography-modal__nav:hover {
+  background: transparent;
+  color: oklch(100% 0 0);
+}
+
+.app-shell .photography-modal .photography-modal__nav::before,
+.app-shell .photography-modal .photography-modal__nav::after {
+  border-color: oklch(100% 0 0 / 0.55);
+}
+
+.app-shell .photography-modal .photography-modal__nav:hover::before,
+.app-shell .photography-modal .photography-modal__nav:hover::after {
+  border-color: oklch(100% 0 0);
+}
+
+.app-shell .photography-modal :is(.photography-modal__nav, .photography-modal__group-nav):focus-visible {
+  outline-color: oklch(100% 0 0);
+  box-shadow: none;
+}
+
+@media (max-width: 900px) {
+  .photography-modal .photography-modal__close {
+    position: fixed;
+    top: 32px;
+    right: 32px;
+  }
+}
+
+@media (max-width: 560px) {
+  .photography-modal .photography-modal__close {
+    top: 26px;
+    right: 26px;
+  }
+}
+
+@media (min-width: 901px) {
+  .photography-modal__content {
+    height: min(760px, calc(100dvh - 48px));
+    grid-template-rows: minmax(0, 1fr);
+  }
+
+  .photography-modal__media,
+  .photography-modal__details {
+    min-height: 0;
+  }
+
+  .photography-modal__image-stage {
+    min-height: 0;
+    max-height: 100%;
+  }
+}
+
+@media (min-width: 1376px) {
+  .photography-modal__group-controls--floating .photography-modal__group-nav--previous {
+    left: max(18px, calc((100vw - 1180px) / 2 - 80px));
+  }
+
+  .photography-modal__group-controls--floating .photography-modal__group-nav--next {
+    right: max(18px, calc((100vw - 1180px) / 2 - 80px));
+  }
+}
+
+@media (max-width: 900px) and (max-height: 600px) and (orientation: landscape) {
+  .photography-modal .photography-modal__content {
+    max-height: calc(100dvh - 32px);
+  }
+
+  .photography-modal .photography-modal__media {
+    min-height: 0;
+    padding: 48px 56px 24px;
+  }
+
+  .photography-modal .photography-modal__image-stage {
+    height: clamp(120px, calc(100dvh - 200px), 260px);
+    min-height: 0;
+  }
+}
+
+.photography-grid--proportional {
+  grid-auto-rows: 1px;
+  row-gap: 0;
+  align-items: start;
+}
+
+.photography-grid--proportional .photography-card {
+  min-height: 0;
+}
+
+.photography-grid--proportional .photography-card__open {
+  grid-template-rows: auto auto;
+}
+
+.photography-grid--proportional .photography-card__image-frame {
+  height: auto;
+  min-height: 1px;
+}
+
+.photography-grid--proportional .photography-card__image {
+  height: auto;
+  display: block;
+}
+
+.photography-grid--proportional .photography-card__nav {
+  top: calc(12px + var(--preview-height, 244px) / 2);
+}
+
+.photography-grid--proportional .photography-card__dots {
+  top: calc(13.5px + var(--preview-height, 244px));
+}

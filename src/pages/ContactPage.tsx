@@ -7,6 +7,7 @@ import { SEO } from '../components/common/SEO'
 import { trackButtonClick } from '../utils/analytics'
 import { FaGithub, FaFacebook, FaLinkedin } from 'react-icons/fa'
 import { MdEmail } from 'react-icons/md'
+import '../styles/contact-review.css'
 
 function resolveLanguage(lang: string | undefined): Language {
   if (!lang || !isLanguage(lang)) {
@@ -49,11 +50,10 @@ export function ContactPage() {
       <Section
         title={language === 'zh' ? '聯絡' : 'Contact'}
         description={contactIntro[language]}
-        className="section--spacious"
+        className="section--spacious contact-page--rows"
       >
         <div className="contact-grid">
           <Card className="contact-card contact-card--primary">
-            <p className="contact-card__eyebrow">{language === 'zh' ? '聯絡方式' : 'Channels'}</p>
             <div className="contact-channel-list">
               {contactChannelItems.map((channel) => (
                 <a

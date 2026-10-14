@@ -46,7 +46,7 @@ export const experienceTimeline: ExperienceItem[] = [
       zh: "日峰科技股份有限公司",
       en: "Reformtek CO., LTD.",
     },
-    period: "2026/8 - Present",
+    period: "2026/8 - 2026/10",
     responsibilities: [
       {
         zh: "負責 EywaLink Center / AIoT 智慧精靈開發，打造具備工具調用與知識回答的 AI Agent",

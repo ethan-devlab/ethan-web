@@ -1,10 +1,13 @@
-import { Link, useParams, useSearchParams } from 'react-router-dom'
+import { Link, useLocation, useParams, useSearchParams } from 'react-router-dom'
 import { BlogLayout } from '../components/blog/BlogLayout'
-import { Callout, MdxCodeBlock, MdxInlineCode } from '../components/blog/MDXComponents'
+import { Callout, MdxCodeBlock, MdxInlineCode, MdxTable } from '../components/blog/MDXComponents'
+import { ButtonLabel } from '../components/common/ButtonLabel'
+import { ContentErrorBoundary } from '../components/common/ContentErrorBoundary'
 import { SEO } from '../components/common/SEO'
 import { DEFAULT_LANGUAGE, isLanguage, type Language } from '../i18n/locales'
 import { trackButtonClick } from '../utils/analytics'
 import { getBlogPostBySlug, isDraftPreviewEnabled } from '../utils/blog'
+import { getBlogFiltersFromState } from '../utils/blogNavigation'
 
 function resolveLanguage(lang: string | undefined): Language {
   if (!lang || !isLanguage(lang)) {
@@ -15,6 +18,9 @@ function resolveLanguage(lang: string | undefined): Language {
 
 export function BlogPostPage() {
   const { lang, slug } = useParams()
+  const location = useLocation()
+  const filters = getBlogFiltersFromState(location.state)
+  const returnState = filters ? { blogFilters: filters } : undefined
   const [searchParams] = useSearchParams()
   const language = resolveLanguage(lang)
   const draftPreviewEnabled = isDraftPreviewEnabled(searchParams)
@@ -30,11 +36,12 @@ export function BlogPostPage() {
         <Link
           className="btn btn--secondary"
           to={blogIndexPath}
+          state={returnState}
           onClick={() =>
             trackButtonClick({ label: 'back_to_blog', area: 'blog_post_empty_state', target: blogIndexPath })
           }
         >
-          {language === 'zh' ? '返回部落格' : 'Back to Blog'}
+          <ButtonLabel>{language === 'zh' ? '返回部落格' : 'Back to Blog'}</ButtonLabel>
         </Link>
       </BlogLayout>
     )
@@ -43,8 +50,10 @@ export function BlogPostPage() {
   const PostComponent = post.Component
   const mdxComponents = {
     Callout,
+    MdxTable,
     pre: MdxCodeBlock,
     code: MdxInlineCode,
+    table: MdxTable,
   }
 
   return (
@@ -69,8 +78,22 @@ export function BlogPostPage() {
             <h1>{post.title}</h1>
             <p>{post.description}</p>
           </header>
-          <PostComponent components={mdxComponents} />
+          <ContentErrorBoundary key={`${post.lang}-${post.slug}`}>
+            <PostComponent components={mdxComponents} />
+          </ContentErrorBoundary>
         </article>
+        <div className="blog-article__navigation">
+          <Link
+            className="btn btn--secondary"
+            to={blogIndexPath}
+            state={returnState}
+            onClick={() =>
+              trackButtonClick({ label: 'back_to_blog', area: 'blog_post_footer', target: blogIndexPath })
+            }
+          >
+            <ButtonLabel>{language === 'zh' ? '返回部落格' : 'Back to Blog'}</ButtonLabel>
+          </Link>
+        </div>
       </BlogLayout>
     </>
   )

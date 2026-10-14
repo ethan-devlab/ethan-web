@@ -13,6 +13,7 @@ import {
 
 type PreProps = PropsWithChildren<ComponentPropsWithoutRef<'pre'>>
 type CodeProps = PropsWithChildren<ComponentPropsWithoutRef<'code'>>
+type TableProps = ComponentPropsWithoutRef<'table'>
 type CalloutProps = PropsWithChildren<{
   type?: string
   title?: string
@@ -55,6 +56,14 @@ export function MdxCodeBlock({ children, ...props }: PreProps) {
 
 export function MdxInlineCode({ children, ...props }: CodeProps) {
   return <code {...props}>{children}</code>
+}
+
+export function MdxTable(props: TableProps) {
+  return (
+    <div className="blog-article__table-scroll" tabIndex={0}>
+      <table {...props} />
+    </div>
+  )
 }
 
 export function Callout({ children, type, title }: CalloutProps) {

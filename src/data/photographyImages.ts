@@ -1,0 +1,21 @@
+export const photographyWebpImages: Record<string, string> = {
+  "D72_2766.JPG": "webp/D72_2766.JPG.webp",
+  "D72_2767.JPG": "webp/D72_2767.JPG.webp",
+  "DSC_0991_E.jpg": "webp/DSC_0991_E.jpg.webp",
+  "DSC_0998_E.jpg": "webp/DSC_0998_E.jpg.webp",
+  "DSC_1007_E.jpg": "webp/DSC_1007_E.jpg.webp",
+  "DSC_1015_E.jpg": "webp/DSC_1015_E.jpg.webp",
+  "DSC_1234.JPG": "webp/DSC_1234.JPG.webp",
+  "DSC_1706.JPG": "webp/DSC_1706.JPG.webp",
+  "DSC_9500.jpg": "webp/DSC_9500.jpg.webp",
+  "DSC_9769.jpg": "webp/DSC_9769.jpg.webp",
+  "IMG_2880.jpg": "webp/IMG_2880.jpg.webp",
+  "IMG_2996.JPEG": "webp/IMG_2996.JPEG.webp",
+  "IMG_6224.jpg": "webp/IMG_6224.jpg.webp",
+  "fxn 2025-08-15 191250.536.JPG": "webp/fxn 2025-08-15 191250.536.JPG.webp",
+  "fxn 2025-10-11 151445.222.JPG": "webp/fxn 2025-10-11 151445.222.JPG.webp",
+  "fxn 2026-01-17 110145.149.JPG": "webp/fxn 2026-01-17 110145.149.JPG.webp",
+  "fxn 2026-03-18 175048280436F8A06D.JPG": "webp/fxn 2026-03-18 175048280436F8A06D.JPG.webp",
+  "tamsui-1.JPG": "webp/tamsui-1.JPG.webp",
+  "tamsui-2.JPG": "webp/tamsui-2.JPG.webp"
+}

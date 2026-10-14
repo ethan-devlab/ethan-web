@@ -53,12 +53,12 @@ export const projects: ProjectItem[] = [
   },
   {
     title: {
-      zh: '合作社 AI 客服系統（此專案不公開）',
-      en: 'Cooperative AI Customer Service System (Private Project)',
+      zh: '社團法人臺灣合作社照顧聯盟與伯拉罕共生照顧勞動合作社 AI 客服系統',
+      en: 'Cooperative AI Customer Service System',
     },
     description: {
-      zh: '以 LlamaIndex、OpenAI 模型、Line Messaging API 等實作的 AI 客服系統，提供具 AI 自判斷能力的客服解決方案，並部署在 AWS 雲端',
-      en: 'AI Customer Service System implemented with OpenAI model, LlamaIndex, Line Messaging API, etc., providing AI-powered customer service solutions. Deployed on AWS cloud',
+      zh: '以 LlamaIndex、OpenAI 模型、Line Messaging API 等實作的 AI 客服系統，提供具 AI 自判斷能力的客服解決方案',
+      en: 'AI Customer Service System implemented with OpenAI model, LlamaIndex, Line Messaging API, etc., providing AI-powered customer service solutions.',
     },
     projectType: { zh: 'AI 應用', en: 'AI Application' },
     role: { zh: '系統設計與實作', en: 'System Design & Implementation' },
@@ -71,8 +71,8 @@ export const projects: ProjectItem[] = [
   },
   {
     title: {
-      zh: '地端 AI 客服系統（此專案不公開）',
-      en: 'Local AI Customer Service System (Private Project)',
+      zh: '「有心肉鋪子」地端 AI 客服系統 Demo',
+      en: 'Local AI Customer Service System Demo',
     },
     description: {
       zh: '以 Python、Flask、Ollama、n8n、Docker、ngrok 等實作的地端 AI 客服系統，提供具 AI 自判斷能力的客服解決方案',

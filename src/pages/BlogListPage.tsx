@@ -1,11 +1,14 @@
-import { useMemo, useState } from 'react'
-import { useParams, useSearchParams } from 'react-router-dom'
+import { useEffect, useMemo, useState } from 'react'
+import { useLocation, useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import { BlogCard } from '../components/blog/BlogCard'
 import { BlogFilters } from '../components/blog/BlogFilters'
 import { BlogLayout } from '../components/blog/BlogLayout'
+import { ButtonLabel } from '../components/common/ButtonLabel'
 import { SEO } from '../components/common/SEO'
 import { DEFAULT_LANGUAGE, isLanguage, type Language } from '../i18n/locales'
 import { filterPosts, getBlogPosts, getCategories, getTags, isDraftPreviewEnabled } from '../utils/blog'
+import { getBlogFiltersFromState } from '../utils/blogNavigation'
+import '../styles/blog-list-review.css'
 
 function resolveLanguage(lang: string | undefined): Language {
   if (!lang || !isLanguage(lang)) {
@@ -16,6 +19,9 @@ function resolveLanguage(lang: string | undefined): Language {
 
 export function BlogListPage() {
   const { lang } = useParams()
+  const location = useLocation()
+  const navigate = useNavigate()
+  const initialFilters = getBlogFiltersFromState(location.state)
   const [searchParams, setSearchParams] = useSearchParams()
   const language = resolveLanguage(lang)
   const draftPreviewEnabled = isDraftPreviewEnabled(searchParams)
@@ -23,10 +29,31 @@ export function BlogListPage() {
   const categories = useMemo(() => getCategories(posts), [posts])
   const tags = useMemo(() => getTags(posts), [posts])
 
-  const [searchText, setSearchText] = useState('')
-  const [selectedLanguage, setSelectedLanguage] = useState('all')
-  const [selectedCategory, setSelectedCategory] = useState('all')
-  const [selectedTag, setSelectedTag] = useState('all')
+  const [searchText, setSearchText] = useState(initialFilters?.searchText ?? '')
+  const [selectedLanguage, setSelectedLanguage] = useState(initialFilters?.selectedLanguage ?? 'all')
+  const [selectedCategory, setSelectedCategory] = useState(initialFilters?.selectedCategory ?? 'all')
+  const [selectedTag, setSelectedTag] = useState(initialFilters?.selectedTag ?? 'all')
+
+  useEffect(() => {
+    const storedFilters = getBlogFiltersFromState(location.state)
+    if (
+      storedFilters?.searchText === searchText
+      && storedFilters.selectedLanguage === selectedLanguage
+      && storedFilters.selectedCategory === selectedCategory
+      && storedFilters.selectedTag === selectedTag
+    ) return
+
+    navigate(
+      { pathname: location.pathname, search: location.search, hash: location.hash },
+      {
+        replace: true,
+        state: {
+          ...(location.state && typeof location.state === 'object' ? location.state : {}),
+          blogFilters: { searchText, selectedLanguage, selectedCategory, selectedTag },
+        },
+      },
+    )
+  }, [location.hash, location.pathname, location.search, location.state, navigate, searchText, selectedLanguage, selectedCategory, selectedTag])
 
   const filtered = useMemo(
     () => filterPosts(posts, searchText, selectedLanguage, selectedCategory, selectedTag),
@@ -85,7 +112,7 @@ export function BlogListPage() {
               aria-pressed={draftPreviewEnabled}
               onClick={handleDraftPreviewToggle}
             >
-              {previewButtonLabel}
+              <ButtonLabel>{previewButtonLabel}</ButtonLabel>
             </button>
           </div>
         ) : null}
@@ -109,13 +136,15 @@ export function BlogListPage() {
             {language === 'zh' ? '目前沒有符合條件的文章。' : 'No posts matched your filters.'}
           </div>
         ) : (
-          <div className="blog-grid">
+          <div className="blog-grid blog-grid--rows blog-grid--clear-lines">
             {filtered.map((post) => (
               <BlogCard
                 key={`${post.lang}-${post.slug}`}
                 lang={language}
                 post={post}
                 preserveDraftPreview={draftPreviewEnabled}
+                rowsLayout
+                filters={{ searchText, selectedLanguage, selectedCategory, selectedTag }}
               />
             ))}
           </div>

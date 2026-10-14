@@ -1,9 +1,18 @@
 import { motion } from 'framer-motion'
+import { useReducedMotionPreference } from '../../utils/useReducedMotionPreference'
 import type { Language } from '../../i18n/locales'
 import avatarImage from '../../assets/me.jpg'
+import avatarWebp from '../../assets/me.webp'
+import '../../styles/hero-review.css'
 
 type HeroSectionProps = {
   lang: Language
+  layout?: 'original' | 'split'
+}
+
+function setPortraitFallback(image: HTMLImageElement | null) {
+  // WebKit can request a detached img before its picture source is attached.
+  if (image) image.src = avatarImage
 }
 
 // const heroDescription = {
@@ -11,33 +20,40 @@ type HeroSectionProps = {
 //   en: 'Passionate about coding and exploring new technologies, with interests spanning AI, information security, IoT, and software engineering. Currently focused on drone image processing, drone navigation algorithms, ground-based AI application development, automation application development, web development, and system architecture analysis and design.',
 // }
 
-export function HeroSection({ lang }: HeroSectionProps) {
+export function HeroSection({ lang, layout = 'original' }: HeroSectionProps) {
+  const reducedMotion = useReducedMotionPreference()
   return (
-    <section className="section hero-section" lang={lang === 'zh' ? 'zh-Hant' : 'en'}>
+    <section
+      className={`section hero-section${layout === 'split' ? ' hero-section--split' : ''}`}
+      lang={lang === 'zh' ? 'zh-Hant' : 'en'}
+    >
       <div className="container">
         <div className="hero__intro">
           <motion.h1
             className="hero__name"
-            initial={{ opacity: 0, y: 24 }}
+            initial={reducedMotion ? false : { opacity: 0, y: 24 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.45 }}
+            transition={{ duration: reducedMotion ? 0 : 0.45 }}
           >
-            Ethan Chan 曾嘉誠
+            Ethan Chan <span className="hero__chinese-name">曾嘉誠</span>
           </motion.h1>
           <motion.div
             className="hero__avatarFrame"
-            initial={{ opacity: 0, scale: 0.96 }}
+            initial={reducedMotion ? false : { opacity: 0, scale: 0.96 }}
             animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.45, delay: 0.06 }}
+            transition={{ duration: reducedMotion ? 0 : 0.45, delay: reducedMotion ? 0 : 0.06 }}
           >
-            <img src={avatarImage} alt="Ethan Chan portrait" className="hero__avatar" />
+            <picture>
+              <source srcSet={avatarWebp} type="image/webp" />
+              <img ref={setPortraitFallback} alt="Ethan Chan portrait" className="hero__avatar" />
+            </picture>
           </motion.div>
         </div>
         <motion.p
           className="hero__role"
-          initial={{ opacity: 0, y: 20 }}
+          initial={reducedMotion ? false : { opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.45, delay: 0.08 }}
+          transition={{ duration: reducedMotion ? 0 : 0.45, delay: reducedMotion ? 0 : 0.08 }}
         >
           <span className='hero__role-text'><b>Developer</b></span>
           <br />

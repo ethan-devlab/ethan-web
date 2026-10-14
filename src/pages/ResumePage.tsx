@@ -1,11 +1,13 @@
 import { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import { Card } from '../components/common/Card'
+import { ButtonLabel } from '../components/common/ButtonLabel'
 import { SEO } from '../components/common/SEO'
 import { Section } from '../components/common/Section'
 import { DEFAULT_LANGUAGE, isLanguage, type Language } from '../i18n/locales'
 import { trackButtonClick } from '../utils/analytics'
 import { getButtonClass } from '../utils/button'
+import '../styles/resume-review.css'
 
 type ResumeCopy = {
   title: string
@@ -52,11 +54,6 @@ const resumeFiles = {
   zh: '/resume/Ethan-Chan-Resume-ZH.pdf',
 } as const
 
-type PreviewAvailability = {
-  file: string
-  isAvailable: boolean
-}
-
 function resolveLanguage(lang: string | undefined): Language {
   return lang && isLanguage(lang) ? lang : DEFAULT_LANGUAGE
 }
@@ -66,41 +63,43 @@ export function ResumePage() {
   const language = resolveLanguage(lang)
   const copy = resumeCopy[language]
   const previewFile = resumeFiles[language]
-  const [previewAvailability, setPreviewAvailability] = useState<PreviewAvailability | null>(null)
+  const [documentAvailability, setDocumentAvailability] = useState<Partial<Record<Language, boolean>>>({})
 
   useEffect(() => {
     let isCurrent = true
-    void fetch(previewFile, { method: 'HEAD' })
-      .then((response) => {
-        const contentType = response.headers.get('content-type')
-        if (isCurrent) {
-          setPreviewAvailability({
-            file: previewFile,
-            isAvailable: response.ok && contentType?.includes('application/pdf') === true,
-          })
-        }
-      })
-      .catch(() => {
-        if (isCurrent) {
-          setPreviewAvailability({ file: previewFile, isAvailable: false })
-        }
-      })
+    for (const documentLanguage of ['en', 'zh'] as const) {
+      void fetch(resumeFiles[documentLanguage], { method: 'HEAD' })
+        .then((response) => {
+          const contentType = response.headers.get('content-type')
+          if (isCurrent) {
+            setDocumentAvailability((current) => ({
+              ...current,
+              [documentLanguage]: response.ok && contentType?.includes('application/pdf') === true,
+            }))
+          }
+        })
+        .catch(() => {
+          if (isCurrent) {
+            setDocumentAvailability((current) => ({ ...current, [documentLanguage]: false }))
+          }
+        })
+    }
 
     return () => {
       isCurrent = false
     }
-  }, [previewFile])
+  }, [])
 
-  const isPreviewAvailable =
-    previewAvailability?.file === previewFile ? previewAvailability.isAvailable : null
+  const isPreviewAvailable = documentAvailability[language] ?? null
+  const isEnglishPreviewUnavailable = language === 'en' && isPreviewAvailable === false
 
   return (
     <>
       <SEO title={copy.title} description={copy.description} path={`/${language}/resume`} />
-      <Section title={copy.title} description={copy.description} className="resume-section">
+      <Section title={copy.title} description={copy.description} className={`resume-section resume-section--preview${isEnglishPreviewUnavailable ? ' resume-review--single' : ''}`}>
         <p className="resume__updated">{copy.updated}</p>
         <div className="resume__documents">
-          {(['en', 'zh'] as const).map((documentLanguage) => {
+          {(['zh', 'en'] as const).map((documentLanguage) => {
             const documentPath = resumeFiles[documentLanguage]
             const documentTitle = documentLanguage === 'en' ? copy.english : copy.chinese
 
@@ -108,6 +107,13 @@ export function ResumePage() {
               <Card key={documentLanguage} className="resume__document">
                 <h3>{documentTitle}</h3>
                 <div className="resume__actions">
+                  {documentAvailability[documentLanguage] !== true ? (
+                    <>
+                      <button className={getButtonClass('secondary')} type="button" disabled><ButtonLabel>{copy.view}</ButtonLabel></button>
+                      <button className={getButtonClass('tertiary')} type="button" disabled><ButtonLabel>{copy.download}</ButtonLabel></button>
+                    </>
+                  ) : (
+                    <>
                   <a
                     className={getButtonClass('secondary')}
                     href={documentPath}
@@ -121,7 +127,7 @@ export function ResumePage() {
                       })
                     }
                   >
-                    {copy.view}
+                    <ButtonLabel>{copy.view}</ButtonLabel>
                   </a>
                   <a
                     className={getButtonClass('tertiary')}
@@ -135,8 +141,10 @@ export function ResumePage() {
                       })
                     }
                   >
-                    {copy.download}
+                    <ButtonLabel>{copy.download}</ButtonLabel>
                   </a>
+                    </>
+                  )}
                 </div>
               </Card>
             )
@@ -149,7 +157,7 @@ export function ResumePage() {
               {copy.previewFallback}
             </iframe>
           </Card>
-        ) : isPreviewAvailable === false ? (
+        ) : isPreviewAvailable === false && language !== 'en' ? (
           <Card className="resume__preview">
             <h3>{copy.preview}</h3>
             <p className="resume__preview-unavailable">{copy.previewUnavailable}</p>

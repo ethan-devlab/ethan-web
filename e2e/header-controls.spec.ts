@@ -1,0 +1,35 @@
+import { expect, test } from '@playwright/test'
+
+test.use({ colorScheme: 'dark' })
+
+for (const width of [390, 1280]) {
+  test(`keeps language arcs, theme appearance, and language intent at ${width}px`, async ({ page, browserName }, testInfo) => {
+    await page.setViewportSize({ width, height: 844 })
+    await page.goto('/zh/experience?check=preserved')
+    if (width === 390) await page.getByRole('button', { name: 'Menu', exact: true }).click()
+    const switcher = page.locator('.language-switcher')
+    await page.evaluate(() => document.fonts.ready)
+    const bounds = await switcher.boundingBox()
+    await expect(switcher).toHaveCSS('border-color', 'rgba(0, 0, 0, 0)')
+    await switcher.hover()
+    await expect.poll(() => switcher.evaluate(element => getComputedStyle(element, '::before').clipPath)).toContain('50%')
+    const hovered = await switcher.boundingBox()
+    expect(hovered?.width).toBe(bounds?.width)
+    expect(hovered?.height).toBe(bounds?.height)
+    await page.mouse.move(1, 700)
+    await expect.poll(() => switcher.evaluate(element => getComputedStyle(element, '::before').clipPath)).toContain('86%')
+    await page.screenshot({ path: testInfo.outputPath('header-language-arcs.png') })
+    const theme = page.getByRole('button', { name: 'Toggle theme', exact: true })
+    await expect(theme).toHaveCSS('border-top-width', '0px')
+    await theme.focus()
+    await page.keyboard.press(browserName === 'webkit' ? 'Alt+Shift+Tab' : 'Shift+Tab')
+    await expect(switcher).toBeFocused()
+    await expect(switcher).toHaveCSS('outline-style', 'solid')
+    expect(await switcher.evaluate(element => getComputedStyle(element, '::before').opacity)).toBe('0')
+    await page.emulateMedia({ reducedMotion: 'reduce' })
+    expect(await switcher.evaluate(element => getComputedStyle(element, '::before').transitionDuration)).toBe('0s')
+    await page.keyboard.press('Enter')
+    await expect(page).toHaveURL(/\/en\/experience\?check=preserved$/)
+    await expect(page.locator('main')).toBeFocused()
+  })
+}

@@ -1,4 +1,5 @@
 import { Link, useLocation } from 'react-router-dom'
+import { ButtonLabel } from '../components/common/ButtonLabel'
 import { Section } from '../components/common/Section'
 import { trackButtonClick } from '../utils/analytics'
 import { getLanguageFromPath } from '../utils/language'
@@ -22,7 +23,7 @@ export function NotFoundPage() {
         to={`/${lang}/`}
         onClick={() => trackButtonClick({ label: 'back_to_home', area: 'not_found', target: `/${lang}/` })}
       >
-        {lang === 'zh' ? '返回首頁' : 'Back to Home'}
+        <ButtonLabel>{lang === 'zh' ? '返回首頁' : 'Back to Home'}</ButtonLabel>
       </Link>
     </Section>
   )
