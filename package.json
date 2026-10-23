@@ -1,4 +1,5 @@
 {
+  "engines": { "node": "24.22.1" },
   "name": "personal-poftfolio",
   "private": true,
   "version": "0.0.0",
